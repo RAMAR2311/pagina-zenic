@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Space Grotesk', system-ui, sans-serif;
+  --font-marker: 'Permanent Marker', cursive;
+  --color-zenic-purple: #4A2574;
+  --color-zenic-violet: #9C4DCC;
+  --color-zenic-cyan: #80DEEA;
+  --color-zenic-lavender: #E8E8F2;
+  --color-zenic-slate: #3D4A60;
+  --color-zenic-dark: #0D0B14;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  width: 100%;
+  overflow-x: hidden;
+  background: #E8E8F2;
+  color: #3D4A60;
+  transition: background 0.5s ease, color 0.5s ease;
+}
+
+body.dark-mode {
+  background: #0D0B14;
+  color: #E8E8F2;
+}
+
+#root {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(156, 77, 204, 0.18);
+  border-radius: 20px;
+}
+
+.dark-mode .glass {
+  background: rgba(30, 20, 50, 0.65);
+  border-color: rgba(128, 222, 234, 0.12);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #9C4DCC 0%, #80DEEA 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(156,77,204,0.4); border-radius: 3px; }
