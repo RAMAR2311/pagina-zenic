@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
+import WhatsAppButton from './components/WhatsAppButton'
 import Home from './pages/Home'
 import Servicios from './pages/Servicios'
 import Nosotros from './pages/Nosotros'
@@ -46,6 +47,7 @@ function App() {
         </Routes>
 
         {!isAdmin && <Footer darkMode={darkMode} />}
+        {!isAdmin && <WhatsAppButton />}
       </div>
     </ContentProvider>
   )
