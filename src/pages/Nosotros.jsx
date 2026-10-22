@@ -98,18 +98,18 @@ export default function Nosotros({ darkMode }) {
         </div>
       </section>
 
-      {/* ── MISIÓN / VISIÓN ── */}
-      <section style={{ padding: '0 clamp(1rem,5vw,2.5rem) clamp(4rem,6vw,5rem)' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: 'clamp(1rem,3vw,2rem)' }}>
+      {/* ── MISIÓN / VISIÓN / PROPÓSITO ── */}
+      <section style={{ padding: '0 clamp(1rem,3vw,2rem) clamp(2.5rem,4vw,3.5rem)' }}>
+        <div style={{ maxWidth: 1360, margin: '0 auto' }} className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-5">
           {[
             { label: 'Misión', color: '#9C4DCC', icon: '🎯', colorHex: 0x9c4dcc, shape: 'icosahedron', texto: 'Democratizar la inteligencia de negocio para el comercio popular colombiano. Que el tendero de la esquina tenga las mismas herramientas que una gran cadena.' },
             { label: 'Visión', color: '#80DEEA', icon: '🔭', colorHex: 0x80deea, shape: 'torus',       texto: 'Ser el sistema operativo de referencia para el retail latinoamericano en 2030. Presentes en cada galería, cada centro comercial popular, cada negocio que madruga.' },
             { label: 'Propósito', color: '#F59E0B', icon: '💡', colorHex: 0xf59e0b, shape: 'octa',     texto: 'Que ningún comerciante pierda dinero por no tener datos. Que la informalidad encuentre en ZENIC su camino a la formalidad sin dolor ni burocracia.' },
           ].map((item, i) => (
-            <div key={i} className="nos-fade" style={{ padding: 'clamp(1.5rem,4vw,2rem)', borderRadius: 24, background: darkMode ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.7)', backdropFilter: 'blur(16px)', border: `1px solid ${item.color}25`, boxShadow: `0 4px 30px ${item.color}12`, position: 'relative', overflow: 'hidden' }}>
-              <span style={{ fontSize: '2rem', display: 'block', marginBottom: '0.75rem', position: 'relative', zIndex: 1 }}>{item.icon}</span>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: item.color, marginBottom: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.08em', position: 'relative', zIndex: 1 }}>{item.label}</h3>
-              <p style={{ fontSize: '0.9rem', lineHeight: 1.7, color: `${dim}0.65)`, position: 'relative', zIndex: 1 }}>{item.texto}</p>
+            <div key={i} className="nos-fade" style={{ padding: 'clamp(1.2rem,2vw,1.6rem)', borderRadius: 20, background: darkMode ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.7)', backdropFilter: 'blur(16px)', border: `1px solid ${item.color}25`, boxShadow: `0 4px 26px ${item.color}12`, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+              <span style={{ fontSize: '1.75rem', display: 'block', marginBottom: '0.5rem', position: 'relative', zIndex: 1 }}>{item.icon}</span>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: item.color, marginBottom: '0.45rem', textTransform: 'uppercase', letterSpacing: '0.08em', position: 'relative', zIndex: 1 }}>{item.label}</h3>
+              <p style={{ fontSize: '0.84rem', lineHeight: 1.65, color: `${dim}0.65)`, position: 'relative', zIndex: 1 }}>{item.texto}</p>
             </div>
           ))}
         </div>
