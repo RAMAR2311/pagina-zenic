@@ -202,17 +202,17 @@ export default function Nosotros({ darkMode }) {
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#4ade80', boxShadow: '0 0 8px #4ade80', display: 'inline-block', animation: 'pulse 2s infinite' }} />
-                  <span style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', color: '#80DEEA', textTransform: 'uppercase' }}>HQ · BOGOTÁ</span>
+                  <span style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', color: '#80DEEA', textTransform: 'uppercase' }}>HQ · NORMANDÍA, BOGOTÁ</span>
                 </div>
                 <span style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.45)', fontFamily: 'monospace' }}>
-                  4.6738° N · 74.1108° W
+                  Zona Normandía · Bogotá
                 </span>
               </div>
 
-              {/* Mapa embebido — Calle 52 B Bis #85 A-40, Bogotá */}
+              {/* Mapa embebido — Zona Normandía, Bogotá */}
               <div style={{ position: 'relative', flex: 1, minHeight: 360 }}>
                 <iframe
-                  title="ZENIC Sede Bogotá"
+                  title="ZENIC Zona Normandía Bogotá"
                   src="https://www.openstreetmap.org/export/embed.html?bbox=-74.1208%2C4.6688%2C-74.1008%2C4.6788&layer=mapnik&marker=4.6738%2C-74.1108"
                   style={{
                     width: '100%', height: '100%', border: 0,
@@ -256,8 +256,8 @@ export default function Nosotros({ darkMode }) {
                   <span style={{ fontSize: '1.1rem' }}>📍</span>
                   <p style={{ fontSize: '0.95rem', fontWeight: 700, color: '#fff' }}>Sede ZENIC · Bogotá</p>
                 </div>
-                <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.65)', marginBottom: '0.85rem', lineHeight: 1.4 }}>
-                  Calle 52 B Bis #85 A-40
+                <p style={{ fontSize: '0.85rem', color: '#80DEEA', marginBottom: '0.85rem', lineHeight: 1.4, fontWeight: 600 }}>
+                  Zona Normandía · Bogotá D.C.
                 </p>
 
                 {/* Contact rows */}

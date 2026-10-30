@@ -58,6 +58,7 @@ const stats = [
 
 import GalaxyBackground from '../components/GalaxyBackground'
 import GalleryHoverCarousel from '../components/ui/gallery-hover-carousel'
+import BeforeAfterSlider from '../components/BeforeAfterSlider'
 import { useContent } from '../store/ContentContext'
 
 export default function CasosDeExito({ darkMode }) {
@@ -66,6 +67,9 @@ export default function CasosDeExito({ darkMode }) {
 
   return (
     <div style={{ paddingTop: '80px' }}>
+
+      {/* ── COMPARADOR INTERACTIVO ANTES VS. DESPUÉS ── */}
+      <BeforeAfterSlider darkMode={darkMode} />
 
       {/* ── GALERÍA DESTACADA (carrusel hover) con fondo de galaxia ── */}
       <div style={{ position: 'relative', overflow: 'hidden' }}>

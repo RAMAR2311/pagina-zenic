@@ -106,7 +106,7 @@ export function SplineSection({ darkMode }: SplineSectionProps) {
               </div>
 
               <a
-                href="#contacto"
+                href="#agendar-demo"
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: 8,
                   padding: '0.7rem 1.6rem', borderRadius: 12, alignSelf: 'flex-start', marginTop: '0.25rem',

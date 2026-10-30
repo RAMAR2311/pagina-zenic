@@ -1,6 +1,8 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 import { Mail, Globe } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import TeamMemberCard from "./team-member-card"
 
 interface TeamMember {
   name: string
@@ -18,6 +20,19 @@ interface TeamSectionProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export const TeamSection = React.forwardRef<HTMLDivElement, TeamSectionProps>(
   ({ darkMode, members, className, ...props }, ref) => {
+    const [selectedMember, setSelectedMember] = React.useState<TeamMember | null>(null)
+
+    // Close on Escape key
+    React.useEffect(() => {
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") setSelectedMember(null)
+      }
+      if (selectedMember) {
+        window.addEventListener("keydown", handleKeyDown)
+      }
+      return () => window.removeEventListener("keydown", handleKeyDown)
+    }, [selectedMember])
+
     const dim = darkMode ? "rgba(255,255,255," : "rgba(61,74,96,"
 
     const accents = ["#9C4DCC", "#80DEEA", "#9C4DCC", "#80DEEA"]
@@ -99,14 +114,31 @@ export const TeamSection = React.forwardRef<HTMLDivElement, TeamSectionProps>(
                           <Mail size={12} /> Contactar
                         </a>
                       )}
-                      {member.web && (
-                        <a href={member.web} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "0.4rem 0.75rem", borderRadius: 8, fontSize: "0.74rem", fontWeight: 600, textDecoration: "none", background: darkMode ? "rgba(255,255,255,0.05)" : "rgba(61,74,96,0.06)", color: `${dim}0.6)`, border: `1px solid ${darkMode ? "rgba(255,255,255,0.08)" : "rgba(61,74,96,0.12)"}`, transition: "background 0.2s" }}
-                          onMouseEnter={e => { e.currentTarget.style.background = `${accent}15`; e.currentTarget.style.color = accent }}
-                          onMouseLeave={e => { e.currentTarget.style.background = darkMode ? "rgba(255,255,255,0.05)" : "rgba(61,74,96,0.06)"; e.currentTarget.style.color = `${dim}0.6)` }}
-                        >
-                          <Globe size={12} /> Perfil
-                        </a>
-                      )}
+                      <button
+                        onClick={() => setSelectedMember(member)}
+                        style={{
+                          display: "inline-flex", alignItems: "center", gap: 5,
+                          padding: "0.4rem 0.75rem", borderRadius: 8,
+                          fontSize: "0.74rem", fontWeight: 600,
+                          cursor: "pointer",
+                          background: darkMode ? "rgba(255,255,255,0.05)" : "rgba(61,74,96,0.06)",
+                          color: `${dim}0.85)`,
+                          border: `1px solid ${darkMode ? "rgba(255,255,255,0.12)" : "rgba(61,74,96,0.15)"}`,
+                          transition: "all 0.2s"
+                        }}
+                        onMouseEnter={e => {
+                          e.currentTarget.style.background = `${accent}20`
+                          e.currentTarget.style.borderColor = accent
+                          e.currentTarget.style.color = accent
+                        }}
+                        onMouseLeave={e => {
+                          e.currentTarget.style.background = darkMode ? "rgba(255,255,255,0.05)" : "rgba(61,74,96,0.06)"
+                          e.currentTarget.style.borderColor = darkMode ? "rgba(255,255,255,0.12)" : "rgba(61,74,96,0.15)"
+                          e.currentTarget.style.color = `${dim}0.85)`
+                        }}
+                      >
+                        <Globe size={12} /> Perfil
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -114,6 +146,55 @@ export const TeamSection = React.forwardRef<HTMLDivElement, TeamSectionProps>(
             })}
           </div>
         </div>
+
+        {/* ── PROFILE MODAL POPUP (TeamMemberCard) ── */}
+        <AnimatePresence>
+          {selectedMember && (
+            <div
+              style={{
+                position: "fixed",
+                inset: 0,
+                zIndex: 99999,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "1rem",
+              }}
+            >
+              {/* Blur Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
+                onClick={() => setSelectedMember(null)}
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background: "rgba(4, 8, 16, 0.78)",
+                  backdropFilter: "blur(14px)",
+                  WebkitBackdropFilter: "blur(14px)",
+                }}
+              />
+
+              {/* Animated Card Container */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9, y: 25 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 25 }}
+                transition={{ type: "spring", damping: 26, stiffness: 320 }}
+                style={{ position: "relative", zIndex: 10, width: "100%", maxWidth: 620 }}
+              >
+                <TeamMemberCard
+                  member={selectedMember}
+                  darkMode={darkMode}
+                  onClose={() => setSelectedMember(null)}
+                  isModal={true}
+                />
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
       </section>
     )
   }

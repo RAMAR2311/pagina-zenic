@@ -17,6 +17,7 @@ const motivos = [
 ]
 
 import GalaxyBackground from '../components/GalaxyBackground'
+import DirectDemoBooking from '../components/DirectDemoBooking'
 
 export default function Contacto({ darkMode }) {
   const dim = darkMode ? 'rgba(255,255,255,' : 'rgba(61,74,96,'
@@ -26,7 +27,7 @@ export default function Contacto({ darkMode }) {
   const inputStyle = {
     width: '100%', padding: '0.75rem 1rem', borderRadius: 12, fontSize: '0.9rem',
     background: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.8)',
-    border: `1px solid ${darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(156,77,204,0.2)'}`,
+    border: `1px solid ${darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0, 229, 255, 0.25)'}`,
     color: darkMode ? '#fff' : '#3D4A60',
     outline: 'none', boxSizing: 'border-box',
     transition: 'border-color 0.2s',
@@ -42,23 +43,23 @@ export default function Contacto({ darkMode }) {
   return (
     <div style={{ paddingTop: '80px' }}>
 
-      {/* ── HERO ── */}
-      <section style={{ padding: 'clamp(4rem,8vw,7rem) clamp(1rem,5vw,2.5rem)', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: darkMode ? 'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(156,77,204,0.08) 0%, transparent 70%)' : 'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(156,77,204,0.05) 0%, transparent 70%)' }} />
-        <GalaxyBackground darkMode={darkMode} density={600} />
+      {/* ── AGENDAMIENTO DIRECTO DE DEMO (2 CLICS) ── */}
+      <DirectDemoBooking darkMode={darkMode} />
+
+      {/* ── HERO CANALES GENERALES ── */}
+      <section style={{ padding: 'clamp(3rem,6vw,5rem) clamp(1rem,5vw,2.5rem)', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: darkMode ? 'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(0,255,135,0.08) 0%, transparent 70%)' : 'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(0,229,255,0.05) 0%, transparent 70%)' }} />
+        <GalaxyBackground darkMode={darkMode} density={400} />
         <div style={{ maxWidth: 700, margin: '0 auto', position: 'relative', zIndex: 2 }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '0.35rem 1rem', borderRadius: 999, marginBottom: '1.25rem', background: darkMode ? 'rgba(156,77,204,0.1)' : 'rgba(156,77,204,0.08)', border: '1px solid rgba(156,77,204,0.25)', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#9C4DCC' }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#9C4DCC', boxShadow: '0 0 8px #9C4DCC', display: 'inline-block' }} />
-            Contacto
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '0.35rem 1rem', borderRadius: 999, marginBottom: '1.25rem', background: 'rgba(0,255,135,0.1)', border: '1px solid rgba(0,255,135,0.25)', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#00FF87' }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#00FF87', boxShadow: '0 0 8px #00FF87', display: 'inline-block' }} />
+            Otras Consultas & Soporte
           </span>
-          <h1 style={{ fontSize: 'clamp(2.5rem,6vw,4rem)', fontWeight: 800, lineHeight: 1.1, marginBottom: '1rem', color: darkMode ? '#fff' : '#3D4A60' }}>
-            Hablemos de<br />
-            <span style={{ background: 'linear-gradient(135deg, #9C4DCC, #80DEEA)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-              tu negocio
-            </span>
-          </h1>
-          <p style={{ fontSize: 'clamp(1rem,2vw,1.15rem)', lineHeight: 1.7, color: `${dim}0.6)` }}>
-            Sin formularios eternos. Cuéntanos qué necesitas y te contactamos en menos de 24 horas.
+          <h2 style={{ fontSize: 'clamp(2rem,5vw,3rem)', fontWeight: 800, lineHeight: 1.15, marginBottom: '0.75rem', color: darkMode ? '#fff' : '#3D4A60' }}>
+            ¿Prefieres escribirnos un mensaje?
+          </h2>
+          <p style={{ fontSize: 'clamp(0.95rem,2vw,1.1rem)', lineHeight: 1.6, color: `${dim}0.6)` }}>
+            Para dudas sobre facturación, alianzas de distribución o soporte técnico, déjanos tu nota.
           </p>
         </div>
       </section>

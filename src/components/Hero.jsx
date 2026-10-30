@@ -87,31 +87,18 @@ export default function Hero({ darkMode }) {
 
         {/* Actions */}
         <div className="hero-actions" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: '1rem', marginBottom: '1.75rem' }}>
-          <button
+          <a
             ref={ctaRef}
+            href="#modulos"
             style={{
-              padding: '0.9rem 2.25rem', borderRadius: '1rem',
-              fontSize: 'clamp(0.9rem,2vw,1.05rem)', fontWeight: 700,
-              color: '#fff', background: 'linear-gradient(135deg, #4A2574, #9C4DCC)',
-              border: 'none', cursor: 'pointer',
-              boxShadow: '0 4px 24px rgba(156,77,204,0.35)',
-              transition: 'box-shadow 0.3s',
+              padding: '0.9rem 2rem', borderRadius: '1rem',
+              fontSize: 'clamp(0.85rem,2vw,1rem)', fontWeight: 600,
+              color: darkMode ? 'rgba(255,255,255,0.75)' : 'rgba(61,74,96,0.75)',
+              background: darkMode ? 'rgba(255,255,255,0.06)' : 'rgba(61,74,96,0.06)',
+              border: `1px solid ${darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(61,74,96,0.12)'}`,
+              textDecoration: 'none',
+              transition: 'border-color 0.3s, color 0.3s',
             }}
-            onMouseEnter={e => e.currentTarget.style.boxShadow = '0 6px 36px rgba(156,77,204,0.55)'}
-            onMouseLeave={e => e.currentTarget.style.boxShadow = '0 4px 24px rgba(156,77,204,0.35)'}
-          >
-            📅 Agendar Auditoría de Negocio
-          </button>
-
-          <a href="#modulos" style={{
-            padding: '0.9rem 2rem', borderRadius: '1rem',
-            fontSize: 'clamp(0.85rem,2vw,1rem)', fontWeight: 600,
-            color: darkMode ? 'rgba(255,255,255,0.75)' : 'rgba(61,74,96,0.75)',
-            background: darkMode ? 'rgba(255,255,255,0.06)' : 'rgba(61,74,96,0.06)',
-            border: `1px solid ${darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(61,74,96,0.12)'}`,
-            textDecoration: 'none',
-            transition: 'border-color 0.3s, color 0.3s',
-          }}
             onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(156,77,204,0.4)'; e.currentTarget.style.color = '#9C4DCC' }}
             onMouseLeave={e => {
               e.currentTarget.style.borderColor = darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(61,74,96,0.12)'
