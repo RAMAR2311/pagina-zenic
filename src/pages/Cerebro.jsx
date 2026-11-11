@@ -25,8 +25,14 @@ import {
   ArrowUpRight,
   MessageSquare,
   HelpCircle,
+  BookOpen,
+  Workflow,
+  FolderTree,
+  Network,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import ZenicBrainGraph from '../components/ZenicBrainGraph'
+import GalaxyBackground from '../components/GalaxyBackground'
 
 // Predefined retail cognitive scenarios
 const PRESET_SCENARIOS = [
@@ -350,6 +356,9 @@ const BRAIN_MEMORIES = [
 export default function Cerebro({ darkMode }) {
   const canvasRef = useRef(null)
 
+  // Active View Tab: 'grafo' | 'simulador' | 'entrenamiento' | 'todos'
+  const [activeTab, setActiveTab] = useState('grafo')
+
   // Brain Cognitive State
   const [brainStatus, setBrainStatus] = useState('vigilante') // 'vigilante' | 'pensando' | 'infiriendo' | 'aprendiendo'
   const [neuralImpulseRate, setNeuralImpulseRate] = useState(48)
@@ -533,7 +542,7 @@ export default function Cerebro({ darkMode }) {
       canvas.removeEventListener('mousemove', onMouseMove)
       canvas.removeEventListener('mouseleave', onMouseLeave)
     }
-  }, [brainStatus])
+  }, [brainStatus, activeTab])
 
   // Trigger Cognitive Inference on a Scenario or Custom Prompt
   const executeInference = (scenario = null, customText = '') => {
@@ -621,7 +630,10 @@ export default function Cerebro({ darkMode }) {
           ? 'radial-gradient(circle at 50% 10%, #0c2035 0%, #080E15 70%)'
           : 'radial-gradient(circle at 50% 10%, #E2E8F0 0%, #F8FAFC 70%)',
         borderBottom: `1px solid ${darkMode ? 'rgba(0, 229, 255, 0.15)' : 'rgba(0, 0, 0, 0.06)'}`,
+        overflow: 'hidden',
       }}>
+        {/* Fondo de galaxia con partículas y paralaje 3D (mismo efecto de Nosotros) */}
+        <GalaxyBackground darkMode={darkMode} density={600} />
         <div style={{ maxWidth: 1320, margin: '0 auto', position: 'relative', zIndex: 10 }}>
 
           {/* Top Title Bar */}
@@ -654,7 +666,7 @@ export default function Cerebro({ darkMode }) {
                 </span>
               </h1>
               <p style={{ fontSize: 'clamp(0.95rem, 1.8vw, 1.15rem)', color: subColor, maxWidth: 640, marginTop: 6 }}>
-                Modelo neuronal multicapa autónomo con aprendizaje continuo, procesamiento de tensores sensoriales y toma de decisiones comerciales en tiempo real.
+                Grafo de conocimiento empresarial y mapa sináptico de entidades, equipo, producto y clientes en tiempo real.
               </p>
             </div>
 
@@ -699,90 +711,217 @@ export default function Cerebro({ darkMode }) {
             </div>
           </div>
 
-          {/* ── THE LIVING NEURAL NETWORK CANVAS ── */}
+          {/* ── VIEW MODE NAVIGATION TABS ── */}
           <div style={{
-            position: 'relative',
-            borderRadius: 26,
-            overflow: 'hidden',
-            border: `1.5px solid ${darkMode ? 'rgba(0, 229, 255, 0.28)' : 'rgba(0, 0, 0, 0.1)'}`,
-            background: darkMode ? '#060B10' : '#FFFFFF',
-            boxShadow: darkMode
-              ? '0 25px 70px rgba(0, 0, 0, 0.6), 0 0 50px rgba(0, 229, 255, 0.1)'
-              : '0 15px 40px rgba(0, 0, 0, 0.08)',
-            height: 'clamp(360px, 48vh, 460px)',
             display: 'flex',
-            flexDirection: 'column',
+            gap: '0.65rem',
+            flexWrap: 'wrap',
+            margin: '0.5rem 0 2rem',
+            padding: '0.4rem',
+            background: darkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)',
+            borderRadius: 16,
+            border: cardBorder,
+            width: 'fit-content',
           }}>
-            {/* Top HUD Bar */}
-            <div style={{
-              position: 'absolute', top: 14, left: 16, right: 16,
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              zIndex: 20, pointerEvents: 'none',
-            }}>
-              <div style={{
-                display: 'inline-flex', alignItems: 'center', gap: 8,
-                padding: '0.35rem 0.85rem', borderRadius: 999,
-                background: darkMode ? 'rgba(8, 14, 21, 0.88)' : 'rgba(255, 255, 255, 0.92)',
-                backdropFilter: 'blur(12px)',
-                border: `1px solid ${darkMode ? 'rgba(0, 255, 135, 0.25)' : 'rgba(0, 0, 0, 0.08)'}`,
-                fontSize: '0.78rem', fontWeight: 700,
+            <button
+              onClick={() => setActiveTab('grafo')}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '0.65rem 1.25rem',
+                borderRadius: 12,
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '0.86rem',
+                fontWeight: 800,
+                background: activeTab === 'grafo'
+                  ? 'linear-gradient(135deg, #9C4DCC 0%, #7928CA 100%)'
+                  : 'transparent',
+                color: activeTab === 'grafo' ? '#FFFFFF' : subColor,
+                boxShadow: activeTab === 'grafo' ? '0 4px 18px rgba(156, 77, 204, 0.4)' : 'none',
+                transition: 'all 0.2s ease',
+              }}
+            >
+              <Network size={16} />
+              <span>Grafo de Conocimiento (Grafo Vivo)</span>
+              <span style={{
+                fontSize: '0.68rem',
+                padding: '0.15rem 0.55rem',
+                borderRadius: 999,
+                background: activeTab === 'grafo' ? 'rgba(255,255,255,0.22)' : 'rgba(156, 77, 204, 0.2)',
+                color: activeTab === 'grafo' ? '#FFFFFF' : '#C084FC',
+                fontWeight: 800,
               }}>
-                <Brain size={15} color={darkMode ? '#00FF87' : '#059669'} />
-                <span style={{ color: titleColor }}>Mapeo Sináptico 3D</span>
-                <span style={{ color: darkMode ? '#00FF87' : '#059669' }}>● {brainStatus.toUpperCase()}</span>
-              </div>
-
-              <div style={{
-                display: 'inline-flex', alignItems: 'center', gap: 10,
-                padding: '0.35rem 0.85rem', borderRadius: 999,
-                background: darkMode ? 'rgba(8, 14, 21, 0.88)' : 'rgba(255, 255, 255, 0.92)',
-                backdropFilter: 'blur(12px)',
-                border: `1px solid ${darkMode ? 'rgba(0, 229, 255, 0.25)' : 'rgba(0, 0, 0, 0.08)'}`,
-                fontSize: '0.78rem', color: subColor,
-              }}>
-                <span>Pasa el cursor para emitir estímulos sinápticos</span>
-              </div>
-            </div>
-
-            {/* Neural Canvas Element */}
-            <canvas ref={canvasRef} style={{ width: '100%', height: '100%', display: 'block', cursor: 'crosshair' }} />
-
-            {/* Bottom HUD: Neural Topology Layers Indicator */}
-            <div style={{
-              position: 'absolute', bottom: 12, left: 16, right: 16,
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8,
-              zIndex: 20, pointerEvents: 'none',
-              fontSize: '0.75rem',
-            }}>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                <span style={{ background: darkMode ? 'rgba(0, 229, 255, 0.15)' : 'rgba(2, 132, 199, 0.1)', color: darkMode ? '#00E5FF' : '#0284C7', padding: '0.2rem 0.6rem', borderRadius: 6, fontWeight: 700 }}>
-                  [Capa 0: Sensores de Entrada · 10 Dim]
-                </span>
-                <span style={{ background: darkMode ? 'rgba(0, 255, 135, 0.15)' : 'rgba(5, 150, 105, 0.1)', color: darkMode ? '#00FF87' : '#059669', padding: '0.2rem 0.6rem', borderRadius: 6, fontWeight: 700 }}>
-                  [Capa 1: Red Profunda · 64 Neuronas ReLU]
-                </span>
-                <span style={{ background: darkMode ? 'rgba(0, 255, 135, 0.15)' : 'rgba(5, 150, 105, 0.1)', color: darkMode ? '#00FF87' : '#059669', padding: '0.2rem 0.6rem', borderRadius: 6, fontWeight: 700 }}>
-                  [Capa 2: Mecanismo de Atención · 64 Neuronas]
-                </span>
-                <span style={{ background: 'rgba(156, 77, 204, 0.18)', color: '#9C4DCC', padding: '0.2rem 0.6rem', borderRadius: 6, fontWeight: 700 }}>
-                  [Capa 3: Decisión Ejecutiva · 1 Salida]
-                </span>
-              </div>
-              <span style={{ color: subColor, fontFamily: 'monospace' }}>
-                FP32 Tensors · PyTorch Engine Core
+                INTERACTIVO
               </span>
-            </div>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('simulador')}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '0.65rem 1.25rem',
+                borderRadius: 12,
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '0.86rem',
+                fontWeight: 800,
+                background: activeTab === 'simulador'
+                  ? 'linear-gradient(135deg, #9C4DCC 0%, #7928CA 100%)'
+                  : 'transparent',
+                color: activeTab === 'simulador' ? '#FFFFFF' : subColor,
+                boxShadow: activeTab === 'simulador' ? '0 4px 18px rgba(156, 77, 204, 0.4)' : 'none',
+                transition: 'all 0.2s ease',
+              }}
+            >
+              <Brain size={16} />
+              <span>Simulador Sináptico & Decisiones</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('entrenamiento')}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '0.65rem 1.25rem',
+                borderRadius: 12,
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '0.86rem',
+                fontWeight: 800,
+                background: activeTab === 'entrenamiento'
+                  ? 'linear-gradient(135deg, #9C4DCC 0%, #7928CA 100%)'
+                  : 'transparent',
+                color: activeTab === 'entrenamiento' ? '#FFFFFF' : subColor,
+                boxShadow: activeTab === 'entrenamiento' ? '0 4px 18px rgba(156, 77, 204, 0.4)' : 'none',
+                transition: 'all 0.2s ease',
+              }}
+            >
+              <Gauge size={16} />
+              <span>Laboratorio Neural</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('todos')}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '0.65rem 1rem',
+                borderRadius: 12,
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '0.82rem',
+                fontWeight: 700,
+                background: activeTab === 'todos'
+                  ? 'linear-gradient(135deg, #9C4DCC 0%, #7928CA 100%)'
+                  : 'transparent',
+                color: activeTab === 'todos' ? '#FFFFFF' : subColor,
+                transition: 'all 0.2s ease',
+              }}
+            >
+              <span>Ver Todo</span>
+            </button>
           </div>
+
+          {/* ── GRAFO DE CONOCIMIENTO (EXACTO A LA IMAGEN) ── */}
+          {(activeTab === 'grafo' || activeTab === 'todos') && (
+            <div style={{ marginTop: '0.5rem', marginBottom: '2rem' }}>
+              <ZenicBrainGraph darkMode={darkMode} />
+            </div>
+          )}
+
+          {/* ── THE LIVING NEURAL NETWORK CANVAS ── */}
+          {(activeTab === 'simulador' || activeTab === 'todos') && (
+            <div style={{
+              position: 'relative',
+              borderRadius: 26,
+              overflow: 'hidden',
+              border: `1.5px solid ${darkMode ? 'rgba(0, 229, 255, 0.28)' : 'rgba(0, 0, 0, 0.1)'}`,
+              background: darkMode ? '#060B10' : '#FFFFFF',
+              boxShadow: darkMode
+                ? '0 25px 70px rgba(0, 0, 0, 0.6), 0 0 50px rgba(0, 229, 255, 0.1)'
+                : '0 15px 40px rgba(0, 0, 0, 0.08)',
+              height: 'clamp(360px, 48vh, 460px)',
+              display: 'flex',
+              flexDirection: 'column',
+            }}>
+              {/* Top HUD Bar */}
+              <div style={{
+                position: 'absolute', top: 14, left: 16, right: 16,
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                zIndex: 20, pointerEvents: 'none',
+              }}>
+                <div style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 8,
+                  padding: '0.35rem 0.85rem', borderRadius: 999,
+                  background: darkMode ? 'rgba(8, 14, 21, 0.88)' : 'rgba(255, 255, 255, 0.92)',
+                  backdropFilter: 'blur(12px)',
+                  border: `1px solid ${darkMode ? 'rgba(0, 255, 135, 0.25)' : 'rgba(0, 0, 0, 0.08)'}`,
+                  fontSize: '0.78rem', fontWeight: 700,
+                }}>
+                  <Brain size={15} color={darkMode ? '#00FF87' : '#059669'} />
+                  <span style={{ color: titleColor }}>Mapeo Sináptico 3D</span>
+                  <span style={{ color: darkMode ? '#00FF87' : '#059669' }}>● {brainStatus.toUpperCase()}</span>
+                </div>
+
+                <div style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 10,
+                  padding: '0.35rem 0.85rem', borderRadius: 999,
+                  background: darkMode ? 'rgba(8, 14, 21, 0.88)' : 'rgba(255, 255, 255, 0.92)',
+                  backdropFilter: 'blur(12px)',
+                  border: `1px solid ${darkMode ? 'rgba(0, 229, 255, 0.25)' : 'rgba(0, 0, 0, 0.08)'}`,
+                  fontSize: '0.78rem', color: subColor,
+                }}>
+                  <span>Pasa el cursor para emitir estímulos sinápticos</span>
+                </div>
+              </div>
+
+              {/* Neural Canvas Element */}
+              <canvas ref={canvasRef} style={{ width: '100%', height: '100%', display: 'block', cursor: 'crosshair' }} />
+
+              {/* Bottom HUD: Neural Topology Layers Indicator */}
+              <div style={{
+                position: 'absolute', bottom: 12, left: 16, right: 16,
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8,
+                zIndex: 20, pointerEvents: 'none',
+                fontSize: '0.75rem',
+              }}>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  <span style={{ background: darkMode ? 'rgba(0, 229, 255, 0.15)' : 'rgba(2, 132, 199, 0.1)', color: darkMode ? '#00E5FF' : '#0284C7', padding: '0.2rem 0.6rem', borderRadius: 6, fontWeight: 700 }}>
+                    [Capa 0: Sensores de Entrada · 10 Dim]
+                  </span>
+                  <span style={{ background: darkMode ? 'rgba(0, 255, 135, 0.15)' : 'rgba(5, 150, 105, 0.1)', color: darkMode ? '#00FF87' : '#059669', padding: '0.2rem 0.6rem', borderRadius: 6, fontWeight: 700 }}>
+                    [Capa 1: Red Profunda · 64 Neuronas ReLU]
+                  </span>
+                  <span style={{ background: darkMode ? 'rgba(0, 255, 135, 0.15)' : 'rgba(5, 150, 105, 0.1)', color: darkMode ? '#00FF87' : '#059669', padding: '0.2rem 0.6rem', borderRadius: 6, fontWeight: 700 }}>
+                    [Capa 2: Mecanismo de Atención · 64 Neuronas]
+                  </span>
+                  <span style={{ background: 'rgba(156, 77, 204, 0.18)', color: '#9C4DCC', padding: '0.2rem 0.6rem', borderRadius: 6, fontWeight: 700 }}>
+                    [Capa 3: Decisión Ejecutiva · 1 Salida]
+                  </span>
+                </div>
+                <span style={{ color: subColor, fontFamily: 'monospace' }}>
+                  FP32 Tensors · PyTorch Engine Core
+                </span>
+              </div>
+            </div>
+          )}
 
         </div>
       </section>
 
       {/* ── CORE SECTION: CONSULTAR & EJECUTAR AL CEREBRO (REASONING ENGINE) ── */}
-      <section style={{
-        maxWidth: 1320,
-        margin: '0 auto',
-        padding: 'clamp(2.5rem, 5vw, 4rem) clamp(1rem, 4vw, 2.5rem)',
-      }}>
+      {(activeTab === 'simulador' || activeTab === 'todos') && (
+        <section style={{
+          maxWidth: 1320,
+          margin: '0 auto',
+          padding: 'clamp(2.5rem, 5vw, 4rem) clamp(1rem, 4vw, 2.5rem)',
+        }}>
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 540px), 1fr))',
@@ -1187,13 +1326,15 @@ export default function Cerebro({ darkMode }) {
 
         </div>
       </section>
+      )}
 
       {/* ── LIVE LEARNING LABORATORY (ENTRENAR EL CEREBRO) ── */}
-      <section style={{
-        maxWidth: 1320,
-        margin: '0 auto',
-        padding: '0 clamp(1rem, 4vw, 2.5rem) clamp(3rem, 6vw, 5rem)',
-      }}>
+      {(activeTab === 'entrenamiento' || activeTab === 'todos') && (
+        <section style={{
+          maxWidth: 1320,
+          margin: '0 auto',
+          padding: '0 clamp(1rem, 4vw, 2.5rem) clamp(3rem, 6vw, 5rem)',
+        }}>
         <div style={{
           background: cardBg,
           borderRadius: 24,
@@ -1325,6 +1466,7 @@ export default function Cerebro({ darkMode }) {
 
         </div>
       </section>
+      )}
 
     </div>
   )

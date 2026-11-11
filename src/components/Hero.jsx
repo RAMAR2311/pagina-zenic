@@ -9,11 +9,9 @@ export default function Hero({ darkMode }) {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.from('.hero-eyebrow', { y: 30, opacity: 0, duration: 0.9, ease: 'power3.out', delay: 0.4 })
-      gsap.from('.hero-title', { y: 60, opacity: 0, scale: 0.92, duration: 1.3, ease: 'power3.out', delay: 0.6 })
-      gsap.from('.hero-subtitle', { y: 40, opacity: 0, duration: 1, ease: 'power3.out', delay: 0.9 })
-      gsap.from('.hero-actions', { y: 30, opacity: 0, duration: 0.8, ease: 'power3.out', delay: 1.1 })
-      gsap.from('.hero-badge', { scale: 0, opacity: 0, duration: 0.6, ease: 'back.out(2)', delay: 1.35 })
+      gsap.from('.hero-title', { y: 60, opacity: 0, scale: 0.92, duration: 1.3, ease: 'power3.out', delay: 0.4 })
+      gsap.from('.hero-subtitle', { y: 40, opacity: 0, duration: 1, ease: 'power3.out', delay: 0.7 })
+      gsap.from('.hero-actions', { y: 30, opacity: 0, duration: 0.8, ease: 'power3.out', delay: 0.9 })
     }, heroRef)
     return () => ctx.revert()
   }, [])

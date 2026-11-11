@@ -149,10 +149,10 @@ export default function BrainScene({ darkMode }) {
 
     // ─── ANIMATION LOOP ───
     let raf
-    const clock = new THREE.Clock()
+    const startTime = performance.now()
     const animate = () => {
       raf = requestAnimationFrame(animate)
-      const t = clock.getElapsedTime()
+      const t = (performance.now() - startTime) * 0.001
 
       // Brain rotation
       brainGroup.rotation.y += 0.002

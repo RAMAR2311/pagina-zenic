@@ -108,10 +108,10 @@ export default function GalaxyBackground({ darkMode, density = 600 }) {
     window.addEventListener('resize', onResize)
 
     // ── Animate ──
-    const clock = new THREE.Clock()
+    const startTime = performance.now()
     const animate = () => {
       if (!mounted) return
-      const t = clock.getElapsedTime()
+      const t = (performance.now() - startTime) * 0.001
 
       fgParticles.rotation.y = t * 0.03
       fgParticles.rotation.z = t * 0.005
