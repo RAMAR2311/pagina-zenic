@@ -571,6 +571,20 @@ export default function OficinaVirtual({ darkMode = true }) {
                     >
                       BOGOTÁ LIVE
                     </span>
+                    <span
+                      style={{
+                        fontSize: '0.64rem',
+                        fontWeight: 800,
+                        padding: '0.1rem 0.5rem',
+                        borderRadius: 999,
+                        background: 'rgba(156, 77, 204, 0.25)',
+                        color: '#C084FC',
+                        border: '1px solid rgba(156, 77, 204, 0.4)',
+                        fontFamily: 'monospace',
+                      }}
+                    >
+                      Clave: zenic2026
+                    </span>
                   </div>
                   <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>
                     Usa <strong>WASD</strong> para moverte · <strong>Mouse</strong> para mirar · Tecla <strong>E</strong> para interactuar

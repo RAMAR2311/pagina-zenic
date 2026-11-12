@@ -34,7 +34,6 @@ export function serveFile(res: http.ServerResponse, file: string, cache: boolean
     'content-type': MIME[ext] ?? 'application/octet-stream',
     'cache-control': cache ? 'public, max-age=31536000, immutable' : 'no-store',
     'x-content-type-options': 'nosniff',
-    'x-frame-options': 'DENY',
     'referrer-policy': 'no-referrer',
   });
   createReadStream(file).pipe(res);
