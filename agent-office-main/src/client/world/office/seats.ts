@@ -55,26 +55,30 @@ export function buildDesk(def: DeskDef, index: number, trimMat: THREE.Material):
   group.add(mesh(box(width - 0.3, 0.32, 0.03), trimMat, 0, height - 0.26, -depth / 2 + 0.06));
   // Little desk decorations. Which desk gets which stays as it is: the holiday present goes in whichever
   // back corner it leaves free (DESK_SPOTS in holiday.ts).
-  const deco = index % 3;
-  if (deco === 0) {
-    // In the chair's color.
-    const mug = deskMug(PALETTE.chairs[index % 6]);
-    mug.position.set(width / 2 - 0.25, height, -0.2);
-    group.add(mug);
-  } else if (deco === 1) {
-    const p = plant('succulent');
-    p.position.set(-width / 2 + 0.25, height, -0.25);
-    group.add(p);
-  } else {
-    // Where the old three boxes stood, the desks with books taking turns with the arrangements.
-    const books = deskBooks(Math.floor(index / 3));
-    books.position.set(width / 2 - 0.26, height, -0.3);
-    group.add(books);
+  // Executive desks have bespoke workstations, so skip random desk clutter.
+  if (!def.executive) {
+    const deco = index % 3;
+    if (deco === 0) {
+      // In the chair's color.
+      const mug = deskMug(PALETTE.chairs[index % 6]);
+      mug.position.set(width / 2 - 0.25, height, -0.2);
+      group.add(mug);
+    } else if (deco === 1) {
+      const p = plant('succulent');
+      p.position.set(-width / 2 + 0.25, height, -0.25);
+      group.add(p);
+    } else {
+      // Where the old three boxes stood, the desks with books taking turns with the arrangements.
+      const books = deskBooks(Math.floor(index / 3));
+      books.position.set(width / 2 - 0.26, height, -0.3);
+      group.add(books);
+    }
   }
 
   const laptopAnchor = new THREE.Object3D();
   laptopAnchor.position.set(0, height, -0.06);
-  laptopAnchor.scale.setScalar(1.3);
+  laptopAnchor.scale.setScalar(def.executive ? 0.0001 : 1.3);
+  if (def.executive) laptopAnchor.visible = false;
   group.add(laptopAnchor);
 
   // On the chair, facing the desk.

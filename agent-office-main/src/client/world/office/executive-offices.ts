@@ -106,7 +106,7 @@ function createExecutiveDoorPlaque(opts: {
   return g;
 }
 
-/** Executive Workstation: Clean Executive Desk with Engraved Nameplate & Corner Lamp (No clashing duplicate monitors) */
+/** Executive Workstation: Complete, logically oriented PC Workstation (Torre, Pantalla, Teclado, Mouse y Placa) */
 function createExecutiveDeskWorkstation(opts: {
   name: string;
   role: string;
@@ -116,12 +116,119 @@ function createExecutiveDeskWorkstation(opts: {
 }): THREE.Group {
   const g = new THREE.Group();
 
-  // 1. Solid Executive Desk Nameplate (Placed neatly on front-right corner of desk, angled toward visitor)
+  // 1. 🖥️ Executive Ultrawide Curved Monitor on Heavy Articulated Stand
+  const monGroup = new THREE.Group();
+  const chromeMat = toon('#cbd5e1');
+  const darkMonMat = toon('#0b0f19');
+
+  // Heavy metal desk mount stand
+  monGroup.add(mesh(roundedBox(0.26, 0.016, 0.18, 0.01), toon('#334155'), 0, 0.788, -0.18));
+  monGroup.add(mesh(box(0.04, 0.32, 0.04), chromeMat, 0, 0.94, -0.18));
+  monGroup.add(mesh(box(0.06, 0.05, 0.05), toon('#1e293b'), 0, 1.07, -0.17));
+
+  // Monitor chassis (34" ultrawide aspect ratio)
+  monGroup.add(mesh(roundedBox(0.88, 0.38, 0.024, 0.015), darkMonMat, 0, 1.07, -0.14));
+
+  // Back of monitor (faces the visitor approaching from -z)
+  // Sleek illuminated Zenic logo badge & ambient back-glow
+  const backLogo = mesh(box(0.18, 0.045, 0.005), toon(opts.accent), 0, 1.07, -0.153);
+  monGroup.add(backLogo);
+  const backGlow = mesh(box(0.65, 0.01, 0.005), toon(opts.accent), 0, 1.18, -0.153);
+  monGroup.add(backGlow);
+
+  // Front of monitor (faces the director in the chair at +z): High-resolution active software display
+  const scCanvas = document.createElement('canvas');
+  scCanvas.width = 512;
+  scCanvas.height = 220;
+  const sctx = scCanvas.getContext('2d')!;
+  sctx.fillStyle = '#090d16';
+  sctx.fillRect(0, 0, 512, 220);
+
+  if (opts.theme === 'admin') {
+    sctx.fillStyle = '#00F0FF';
+    sctx.font = '800 20px monospace';
+    sctx.fillText('ZENIC ERP // FINANCIAL DASHBOARD', 20, 32);
+    sctx.fillStyle = '#10B981';
+    sctx.fillText('▲ EBITDA +28.4%   FLUJO: $482.5M COP', 20, 68);
+    [40, 75, 55, 90, 110, 85, 130, 150].forEach((v, idx) => {
+      sctx.fillStyle = '#00E5FF';
+      sctx.fillRect(30 + idx * 56, 200 - v, 42, v);
+    });
+  } else if (opts.theme === 'tech') {
+    sctx.fillStyle = '#C084FC';
+    sctx.font = '800 20px monospace';
+    sctx.fillText('NEURAL ARCHITECTURE // ZENIC AI', 20, 32);
+    sctx.fillStyle = '#38BDF8';
+    sctx.fillText('● NODES: 64/64 ACTIVE   LATENCY: 1.8ms', 20, 68);
+    sctx.fillStyle = '#A855F7';
+    sctx.fillText('> vision_model.optimize(quantization="int8")', 20, 110);
+    sctx.fillText('> tensor_engine.deploy(pos_fleet=True)', 20, 140);
+    sctx.fillStyle = '#10B981';
+    sctx.fillText('✓ ALL SERVICES NOMINAL [200 OK]', 20, 175);
+  } else {
+    sctx.fillStyle = '#34D399';
+    sctx.font = '800 20px monospace';
+    sctx.fillText('RETAIL TELEMETRY // STORES LIVE', 20, 32);
+    sctx.fillStyle = '#F59E0B';
+    sctx.fillText('● 12 TIENDAS CONECTADAS · POS ACTIVE', 20, 68);
+    sctx.fillStyle = '#10B981';
+    sctx.fillText('VENTAS HOY: $84,920,000 COP (+14%)', 20, 110);
+    sctx.fillStyle = '#38BDF8';
+    sctx.fillText('PASARELA WOMPI & DATA: 100% UP', 20, 145);
+  }
+
+  const scTex = new THREE.CanvasTexture(scCanvas);
+  scTex.colorSpace = THREE.SRGBColorSpace;
+  const screenMat = new THREE.MeshBasicMaterial({ map: scTex });
+  const screenMesh = new THREE.Mesh(new THREE.PlaneGeometry(0.85, 0.35), screenMat);
+  screenMesh.position.set(0, 1.07, -0.127);
+  monGroup.add(screenMesh);
+  g.add(monGroup);
+
+  // 2. 🖲️ Desktop Blotter, Mechanical Keyboard & Wireless Mouse (in front of Director)
+  const blotter = mesh(roundedBox(0.92, 0.01, 0.44, 0.02), toon('#182030'), 0, 0.785, 0.14);
+  g.add(blotter);
+
+  // Mechanical Keyboard body & keycaps
+  const kbBody = mesh(box(0.44, 0.016, 0.15), toon('#334155'), -0.06, 0.796, 0.16);
+  g.add(kbBody);
+  const kbKeys = mesh(box(0.42, 0.008, 0.13), toon('#0b0f19'), -0.06, 0.806, 0.16);
+  g.add(kbKeys);
+
+  // Wireless Mouse
+  const mouse = mesh(roundedBox(0.07, 0.022, 0.11, 0.01), toon('#475569'), 0.28, 0.798, 0.16);
+  g.add(mouse);
+
+  // 3. 🖥️ Executive Studio Tower PC (Mid-Tower on right side of desk)
+  const tower = new THREE.Group();
+  const towerX = 0.82;
+  const towerY = 0.96;
+  const towerZ = -0.08;
+
+  // Main chassis
+  tower.add(mesh(roundedBox(0.18, 0.36, 0.36, 0.015), toon('#090d16'), towerX, towerY, towerZ));
+  // Front panel
+  tower.add(mesh(box(0.17, 0.34, 0.01), toon('#1e293b'), towerX, towerY, towerZ - 0.185));
+  // Front glowing LED accent bar
+  tower.add(mesh(box(0.006, 0.26, 0.005), toon(opts.accent), towerX, towerY, towerZ - 0.19));
+  // Top power switch
+  tower.add(mesh(box(0.03, 0.01, 0.03), toon('#cbd5e1'), towerX, towerY + 0.182, towerZ - 0.12));
+  // Tempered glass side panel with subtle interior RGB glow
+  const glassPanel = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.32, 0.32),
+    new THREE.MeshBasicMaterial({ color: opts.accent, transparent: true, opacity: 0.35, side: THREE.DoubleSide })
+  );
+  glassPanel.position.set(towerX - 0.091, towerY, towerZ);
+  glassPanel.rotation.y = Math.PI / 2;
+  tower.add(glassPanel);
+  g.add(tower);
+
+  // 4. 🏷️ Solid Executive Desk Nameplate (Placed neatly on front-right corner, angled toward visitor)
   const plateW = 0.44;
   const plateH = 0.09;
   const plateD = 0.08;
   const plateX = 0.65;
-  const plateZ = -0.32;
+  const plateZ = -0.34;
 
   const nameplateGroup = new THREE.Group();
   const woodMat = toon('#2d1b00');
@@ -133,7 +240,6 @@ function createExecutiveDeskWorkstation(opts: {
   canvas.height = 128;
   const ctx = canvas.getContext('2d')!;
 
-  // Solid gold background (no alpha fade)
   ctx.fillStyle = '#CA8A04';
   ctx.fillRect(0, 0, 512, 128);
 
@@ -166,7 +272,7 @@ function createExecutiveDeskWorkstation(opts: {
   nameplateGroup.rotation.y = -0.18; // Subtly angled toward visitor
   g.add(nameplateGroup);
 
-  // 2. Designer Desk Lamp on back-left corner (Clear of the central working laptop)
+  // 5. 💡 Designer Desk Lamp on back-left corner
   const lamp = new THREE.Group();
   lamp.add(mesh(new THREE.CylinderGeometry(0.08, 0.09, 0.02, 16), toon('#475569'), 0, 0.79, 0));
   lamp.add(mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.38, 8), toon('#cbd5e1'), 0, 0.98, 0));
@@ -283,6 +389,9 @@ export const executiveOffices: Fixture = (site) => {
     const doorX1 = cx + doorW / 2;
     glassWall('x', xLeft, doorX0, zFront);
     glassWall('x', doorX1, xRight, zFront);
+
+    // Back Wall with Glass & Frosted Privacy Strip (Closes the executive suite in the back!)
+    glassWall('x', xLeft, xRight, zBack);
 
     // Doorway Header Lintel (clean transom glass over door, no ugly ribbons)
     const lintelY = 2.15;
