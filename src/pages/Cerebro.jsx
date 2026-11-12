@@ -1511,22 +1511,22 @@ export default function Cerebro({ darkMode }) {
       </section>
       )}
 
-      {/* ── BOTÓN FLOTANTE Y OVERLAY DEL CHAT CON CLAUDE ── */}
+      {/* ── BOTÓN FLOTANTE Y OVERLAY DEL CHAT CON CLAUDE (SEPARADO VERTICALMENTE DE WHATSAPP) ── */}
       {activeTab !== 'chat' && (
-        <div style={{ position: 'fixed', bottom: 28, right: 28, zIndex: 9999 }}>
+        <div style={{ position: 'fixed', bottom: '94px', right: '24px', zIndex: isFloatingChatOpen ? 10000 : 9990 }}>
           <AnimatePresence>
             {isFloatingChatOpen && (
               <motion.div
-                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                initial={{ opacity: 0, y: 16, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 20, scale: 0.95 }}
+                exit={{ opacity: 0, y: 16, scale: 0.95 }}
                 transition={{ duration: 0.2 }}
                 style={{
                   position: 'absolute',
-                  bottom: 60,
+                  bottom: '54px',
                   right: 0,
                   width: 'clamp(320px, 92vw, 440px)',
-                  boxShadow: '0 20px 60px rgba(0,0,0,0.6)',
+                  boxShadow: '0 25px 70px rgba(0,0,0,0.65)',
                   borderRadius: 24,
                 }}
               >
@@ -1541,26 +1541,30 @@ export default function Cerebro({ darkMode }) {
 
           <button
             onClick={() => setIsFloatingChatOpen(!isFloatingChatOpen)}
+            aria-label="Abrir Chat Cerebro IA"
+            title="Chat Cerebro IA con Claude"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: 10,
-              padding: '0.8rem 1.35rem',
+              gap: 9,
+              padding: '0.75rem 1.25rem',
               borderRadius: 999,
-              border: 'none',
+              border: darkMode ? '1px solid rgba(0, 229, 255, 0.35)' : '1px solid rgba(156, 77, 204, 0.3)',
               background: 'linear-gradient(135deg, #00E5FF 0%, #9C4DCC 100%)',
               color: '#FFFFFF',
               fontWeight: 800,
-              fontSize: '0.88rem',
+              fontSize: '0.86rem',
               cursor: 'pointer',
-              boxShadow: '0 8px 30px rgba(0, 229, 255, 0.45)',
-              transition: 'transform 0.2s ease',
+              boxShadow: darkMode
+                ? '0 10px 25px rgba(0, 229, 255, 0.4), 0 0 15px rgba(156, 77, 204, 0.3)'
+                : '0 8px 22px rgba(0, 0, 0, 0.15)',
+              transition: 'all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
-            onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+            onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.06) translateY(-2px)')}
+            onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1) translateY(0)')}
           >
             <MessageSquare size={17} />
-            <span>Chat Cerebro IA</span>
+            <span>Chat Cerebro</span>
             <span
               style={{
                 width: 8,

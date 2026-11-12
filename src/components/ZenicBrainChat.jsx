@@ -294,8 +294,8 @@ Todo lo que respondo se basa exclusivamente en los 28 documentos oficiales de la
       style={{
         display: 'flex',
         flexDirection: 'column',
-        height: isFloating ? '580px' : '700px',
-        maxHeight: '85vh',
+        height: isFloating ? 'min(580px, calc(100vh - 170px))' : '700px',
+        maxHeight: isFloating ? 'calc(100vh - 170px)' : '85vh',
         background: containerBg,
         borderRadius: 24,
         border: cardBorder,
@@ -889,3 +889,4 @@ Todo lo que respondo se basa exclusivamente en los 28 documentos oficiales de la
     </div>
   )
 }
+
