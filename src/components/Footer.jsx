@@ -1,13 +1,24 @@
-import { useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useRef, useState } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
+import LegalModal from './LegalModal'
 
 export default function Footer({ darkMode }) {
-  const border = darkMode ? 'rgba(156,77,204,0.1)' : 'rgba(61,74,96,0.1)'
-  const textMuted = darkMode ? 'rgba(255,255,255,0.4)' : 'rgba(61,74,96,0.5)'
+  const border = darkMode ? 'rgba(156,77,204,0.12)' : 'rgba(61,74,96,0.1)'
+  const textMuted = darkMode ? 'rgba(255,255,255,0.45)' : 'rgba(61,74,96,0.55)'
   const textBase = darkMode ? '#E8E8F2' : '#3D4A60'
 
   const navigate = useNavigate()
   const clicks = useRef({ count: 0, timer: null })
+
+  // Legal modal state
+  const [legalModalOpen, setLegalModalOpen] = useState(false)
+  const [selectedDocId, setSelectedDocId] = useState('terminos')
+
+  const openLegal = (docId, e) => {
+    if (e) e.preventDefault()
+    setSelectedDocId(docId)
+    setLegalModalOpen(true)
+  }
 
   // Hidden admin access: triple-click the © symbol within 1.2s
   const handleSecretClick = () => {
@@ -29,10 +40,11 @@ export default function Footer({ darkMode }) {
         padding: 'clamp(3rem,8vw,5rem) clamp(1rem,5vw,3rem)',
         borderTop: `1px solid ${border}`,
         width: '100%',
+        position: 'relative',
       }}
     >
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: 'clamp(2rem,5vw,3rem)', marginBottom: '3rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))', gap: 'clamp(2rem,4vw,3rem)', marginBottom: '3rem' }}>
 
           {/* Brand */}
           <div style={{ gridColumn: 'span 2' }}>
@@ -45,6 +57,9 @@ export default function Footer({ darkMode }) {
             <p style={{ fontSize: '0.875rem', lineHeight: 1.7, maxWidth: 300, color: textMuted }}>
               Software de gestión comercial con inteligencia artificial. Diseñado para el comercio real colombiano.
             </p>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: '0.75rem', padding: '4px 10px', borderRadius: 8, background: darkMode ? 'rgba(156,77,204,0.1)' : 'rgba(156,77,204,0.06)', border: `1px solid ${border}` }}>
+              <span style={{ fontSize: '0.72rem', color: textMuted }}>NIT 901.842.109-4 — Bogotá D.C.</span>
+            </div>
             <div style={{ display: 'flex', gap: 10, marginTop: '1.25rem' }}>
               {['twitter', 'github', 'linkedin'].map(social => (
                 <a key={social} href="#"
@@ -62,43 +77,198 @@ export default function Footer({ darkMode }) {
             </div>
           </div>
 
-          {/* Links */}
-          {[
-            { title: 'Producto', links: ['Módulos', 'Funcionalidades', 'B2B / Bodega', 'Precios'] },
-            { title: 'Soporte', links: ['Portal Clientes', 'Documentación', 'WhatsApp', 'Changelog'] },
-          ].map(col => (
-            <div key={col.title}>
-              <h4 style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: textMuted, marginBottom: '1rem' }}>{col.title}</h4>
-              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                {col.links.map(link => (
-                  <li key={link}>
-                    <a href="#" style={{ fontSize: '0.875rem', color: textMuted, textDecoration: 'none', transition: 'color 0.2s' }}
-                      onMouseEnter={e => e.currentTarget.style.color = '#9C4DCC'}
-                      onMouseLeave={e => e.currentTarget.style.color = textMuted}
-                    >{link}</a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          {/* Producto */}
+          <div>
+            <h4 style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: textMuted, marginBottom: '1rem' }}>
+              Producto
+            </h4>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+              {[
+                { label: 'Módulos POS & ERP', to: '/servicios#modulos' },
+                { label: 'Cerebro IA', to: '/cerebro' },
+                { label: 'Oficina 3D', to: '/oficina' },
+                { label: 'B2B / Bodega', to: '/servicios#b2b' },
+                { label: 'Precios & Planes', to: '/precios' },
+              ].map(item => (
+                <li key={item.label}>
+                  <Link
+                    to={item.to}
+                    style={{ fontSize: '0.875rem', color: textMuted, textDecoration: 'none', transition: 'color 0.2s' }}
+                    onMouseEnter={e => e.currentTarget.style.color = '#9C4DCC'}
+                    onMouseLeave={e => e.currentTarget.style.color = textMuted}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Soporte */}
+          <div>
+            <h4 style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: textMuted, marginBottom: '1rem' }}>
+              Soporte & Ayuda
+            </h4>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+              <li>
+                <Link
+                  to="/contacto"
+                  style={{ fontSize: '0.875rem', color: textMuted, textDecoration: 'none', transition: 'color 0.2s' }}
+                  onMouseEnter={e => e.currentTarget.style.color = '#9C4DCC'}
+                  onMouseLeave={e => e.currentTarget.style.color = textMuted}
+                >
+                  Centro de Contacto
+                </Link>
+              </li>
+              <li>
+                <a
+                  href="https://wa.me/573115643557?text=Hola%20ZENIC,%20necesito%20soporte%20técnico."
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{ fontSize: '0.875rem', color: textMuted, textDecoration: 'none', transition: 'color 0.2s' }}
+                  onMouseEnter={e => e.currentTarget.style.color = '#25D366'}
+                  onMouseLeave={e => e.currentTarget.style.color = textMuted}
+                >
+                  WhatsApp Soporte
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/legal/pqr"
+                  onClick={(e) => openLegal('pqr', e)}
+                  style={{ fontSize: '0.875rem', color: textMuted, textDecoration: 'none', transition: 'color 0.2s' }}
+                  onMouseEnter={e => e.currentTarget.style.color = '#9C4DCC'}
+                  onMouseLeave={e => e.currentTarget.style.color = textMuted}
+                >
+                  Radicar PQR (SIC)
+                </a>
+              </li>
+              <li>
+                <Link
+                  to="/blog"
+                  style={{ fontSize: '0.875rem', color: textMuted, textDecoration: 'none', transition: 'color 0.2s' }}
+                  onMouseEnter={e => e.currentTarget.style.color = '#9C4DCC'}
+                  onMouseLeave={e => e.currentTarget.style.color = textMuted}
+                >
+                  Blog & Guías
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Legal y Cumplimiento (Mandatorio por Ley Colombiana) */}
+          <div>
+            <h4 style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#C084FC', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span>⚖️</span> Legal & Cumplimiento
+            </h4>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+              {[
+                { id: 'terminos', label: 'Términos del Servicio (SaaS)' },
+                { id: 'privacidad', label: 'Tratamiento de Datos (Ley 1581)' },
+                { id: 'cookies', label: 'Política de Cookies' },
+                { id: 'retracto', label: 'Facturación DIAN y Retracto' },
+                { id: 'pqr', label: 'Aviso Legal y Vigilancia SIC' },
+              ].map(item => (
+                <li key={item.id}>
+                  <a
+                    href={`/legal/${item.id}`}
+                    onClick={(e) => openLegal(item.id, e)}
+                    style={{ fontSize: '0.85rem', color: textMuted, textDecoration: 'none', transition: 'color 0.2s', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                    onMouseEnter={e => e.currentTarget.style.color = '#C084FC'}
+                    onMouseLeave={e => e.currentTarget.style.color = textMuted}
+                  >
+                    <span style={{ fontSize: '0.65rem', opacity: 0.6 }}>•</span>
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
         </div>
 
-        {/* Bottom bar */}
-        <div style={{ paddingTop: '1.5rem', borderTop: `1px solid ${border}`, display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center', justifyContent: 'space-between' }}>
-          <p style={{ fontSize: '0.78rem', color: textMuted }}>
-            <span
-              onClick={handleSecretClick}
-              title=""
-              style={{ cursor: 'default', userSelect: 'none' }}
-            >&copy;</span>
-            {' '}2026 ZENIC S.A.S. — Colombia.
-          </p>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'rgb(74,222,128)', display: 'inline-block', animation: 'pulse 2s infinite' }} />
-            <span style={{ fontSize: '0.78rem', color: textMuted }}>Todos los sistemas operativos</span>
+        {/* Bottom bar with Legal Badges & SIC Notice */}
+        <div
+          style={{
+            paddingTop: '1.75rem',
+            borderTop: `1px solid ${border}`,
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '1.25rem',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          {/* Copyright & NIT */}
+          <div>
+            <p style={{ fontSize: '0.78rem', color: textMuted, margin: 0 }}>
+              <span
+                onClick={handleSecretClick}
+                title=""
+                style={{ cursor: 'default', userSelect: 'none' }}
+              >&copy;</span>
+              {' '}2026 <strong>ZENIC S.A.S.</strong> — NIT 901.842.109-4 — Colombia. Todos los derechos reservados.
+            </p>
+          </div>
+
+          {/* Quick Legal Pill Links */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
+            {[
+              { id: 'privacidad', label: 'Privacidad' },
+              { id: 'terminos', label: 'Términos' },
+              { id: 'cookies', label: 'Cookies' },
+              { id: 'retracto', label: 'Retracto' },
+              { id: 'pqr', label: 'Vigilado SIC' },
+            ].map(link => (
+              <a
+                key={link.id}
+                href={`/legal/${link.id}`}
+                onClick={(e) => openLegal(link.id, e)}
+                style={{ fontSize: '0.75rem', color: textMuted, textDecoration: 'none', transition: 'color 0.2s' }}
+                onMouseEnter={e => e.currentTarget.style.color = '#9C4DCC'}
+                onMouseLeave={e => e.currentTarget.style.color = textMuted}
+              >
+                {link.label}
+              </a>
+            ))}
+          </div>
+
+          {/* System status indicator & SIC link */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'rgb(74,222,128)', display: 'inline-block', animation: 'pulse 2s infinite' }} />
+              <span style={{ fontSize: '0.75rem', color: textMuted }}>Todos los sistemas operativos</span>
+            </div>
+            <a
+              href="https://www.sic.gov.co"
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                fontSize: '0.72rem',
+                color: textMuted,
+                textDecoration: 'none',
+                padding: '2px 8px',
+                borderRadius: 6,
+                border: `1px solid ${border}`,
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.color = '#C084FC'; e.currentTarget.style.borderColor = '#C084FC' }}
+              onMouseLeave={e => { e.currentTarget.style.color = textMuted; e.currentTarget.style.borderColor = border }}
+            >
+              Vigilado SIC ↗
+            </a>
           </div>
         </div>
       </div>
+
+      {/* Interactive Legal Document Modal */}
+      <LegalModal
+        isOpen={legalModalOpen}
+        onClose={() => setLegalModalOpen(false)}
+        initialDocId={selectedDocId}
+        darkMode={darkMode}
+      />
+
       <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}`}</style>
     </footer>
   )

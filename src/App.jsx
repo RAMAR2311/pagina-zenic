@@ -14,6 +14,7 @@ import Contacto from './pages/Contacto'
 import Admin from './pages/Admin'
 import Cerebro from './pages/Cerebro'
 import OficinaVirtual from './pages/OficinaVirtual'
+import Legal from './pages/Legal'
 import { ContentProvider } from './store/ContentContext'
 
 function App() {
@@ -64,6 +65,8 @@ function App() {
           <Route path="/blog/:id"    element={<BlogArticulo  darkMode={darkMode} />} />
           <Route path="/nosotros"    element={<Nosotros      darkMode={darkMode} />} />
           <Route path="/contacto"    element={<Contacto       darkMode={darkMode} />} />
+          <Route path="/legal"       element={<Legal          darkMode={darkMode} />} />
+          <Route path="/legal/:docId" element={<Legal         darkMode={darkMode} />} />
           <Route path="/cerebro"     element={<Cerebro        darkMode={darkMode} />} />
           <Route path="/oficina"     element={<OficinaVirtual darkMode={darkMode} />} />
           <Route path="/admin"       element={<Admin          darkMode={darkMode} />} />
