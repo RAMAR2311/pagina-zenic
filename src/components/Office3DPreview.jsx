@@ -10,7 +10,7 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
   const containerRef = useRef(null)
   const [selectedStation, setSelectedStation] = useState(null)
   const [hoveredStation, setHoveredStation] = useState(null)
-  const [autoRotate, setAutoRotate] = useState(true)
+  const [autoRotate, setAutoRotate] = useState(false)
   const [zoomLevel, setZoomLevel] = useState(9)
 
   const autoRotateRef = useRef(autoRotate)
@@ -81,42 +81,22 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
     pinkCoreLight.position.set(0, 3.5, 0)
     scene.add(pinkCoreLight)
 
-    // ── MAIN OFFICE FLOOR (Solid, Clean Luxury Slate - 100% Flicker-Free) ──
-    const floorGeo = new THREE.BoxGeometry(19.4, 0.4, 17.4)
+    // ── MAIN OFFICE FLOOR (Modern Solid Plate - 100% Stable & Quiet) ──
+    const floorGeo = new THREE.BoxGeometry(19, 0.4, 17)
     const floorMat = new THREE.MeshStandardMaterial({
-      color: darkMode ? 0x090f1a : 0xf1f5f9,
-      roughness: 0.65,
-      metalness: 0.1,
+      color: darkMode ? 0x07111d : 0xebf0f7,
+      roughness: 0.35,
+      metalness: 0.2,
     })
     const floor = new THREE.Mesh(floorGeo, floorMat)
     floor.position.y = -0.2
+    floor.receiveShadow = false
     scene.add(floor)
 
-    // Architectural Perimeter Skirting Rim (Dark bronze in dark mode, platinum silver in light mode)
-    const perimeterTrim = new THREE.Mesh(
-      new THREE.BoxGeometry(19.6, 0.12, 17.6),
-      new THREE.MeshStandardMaterial({ color: darkMode ? 0x1e293b : 0xcbd5e1, metalness: 0.5, roughness: 0.35 })
-    )
-    perimeterTrim.position.y = -0.06
-    scene.add(perimeterTrim)
-
-    // Circulation Hallway Runners (Clean flush paths - NO thin lines)
-    const runnerMat = new THREE.MeshStandardMaterial({
-      color: darkMode ? 0x111c2e : 0xe2e8f0,
-      roughness: 0.85,
-      metalness: 0.05,
-    })
-    const corridorBranches = [
-      { x: 0, z: -5.35, w: 1.4, d: 5.7 },  // North
-      { x: 0, z: 5.35, w: 1.4, d: 5.7 },   // South
-      { x: -5.85, z: 0, w: 6.7, d: 1.4 },  // West
-      { x: 5.85, z: 0, w: 6.7, d: 1.4 },   // East
-    ]
-    corridorBranches.forEach(({ x, z, w, d }) => {
-      const runner = new THREE.Mesh(new THREE.BoxGeometry(w, 0.008, d), runnerMat)
-      runner.position.set(x, 0.004, z)
-      scene.add(runner)
-    })
+    // Floor Grid pattern (Clean, rock solid)
+    const grid = new THREE.GridHelper(18, 18, darkMode ? 0x00e5ff : 0x9c4dcc, darkMode ? 0x142030 : 0xd1d5db)
+    grid.position.y = 0.02
+    scene.add(grid)
 
     // ── PERIMETER GLASS WALLS ──
     const glassMat = new THREE.MeshPhysicalMaterial({
@@ -364,54 +344,11 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
       return { root: agentGroup, head, leftArm, rightArm }
     }
 
-    // ── DECORATIVE ELEMENTS PER SUITE (Luxury Rugs, Plants, Executive Credenzas, Art & Lounge) ──
+    // ── DECORATIVE ELEMENTS PER SUITE (Plants, Executive Credenzas, Art & Lounge) ──
     const addDecor = (st) => {
       if (st.id === 'cerebro') return
 
-      // 1. Executive Suite Platform & Designer Rug (Elevated 3D Island - Zero Z-Fighting)
-      const suitePlatform = new THREE.Group()
-
-      // Architectural plinth base (Elevated wood/slate floor island)
-      const plinth = new THREE.Mesh(
-        new THREE.BoxGeometry(4.6, 0.05, 4.2),
-        new THREE.MeshStandardMaterial({
-          color: darkMode ? 0x141d2b : 0xffffff,
-          roughness: 0.5,
-          metalness: 0.15,
-        })
-      )
-      plinth.position.y = 0.025
-      suitePlatform.add(plinth)
-
-      // Ambient LED under-glow rim strip around the plinth base
-      const rimGlow = new THREE.Mesh(
-        new THREE.BoxGeometry(4.66, 0.012, 4.26),
-        new THREE.MeshBasicMaterial({
-          color: new THREE.Color(st.color),
-          transparent: true,
-          opacity: 0.85,
-          depthWrite: false,
-        })
-      )
-      rimGlow.position.y = 0.025
-      suitePlatform.add(rimGlow)
-
-      // Plush executive woven carpet inlay on top of the plinth
-      const carpet = new THREE.Mesh(
-        new THREE.BoxGeometry(4.2, 0.02, 3.8),
-        new THREE.MeshStandardMaterial({
-          color: darkMode ? 0x0b1320 : 0xe2e8f0,
-          roughness: 0.9,
-          metalness: 0.05,
-        })
-      )
-      carpet.position.y = 0.06
-      suitePlatform.add(carpet)
-
-      suitePlatform.position.set(st.x, 0, st.z)
-      scene.add(suitePlatform) // ADDED EXACTLY ONCE
-
-      // 2. High-End Executive Credenza & Bookshelf against rear partition wall
+      // High-End Executive Credenza & Bookshelf against rear partition wall
       const credenzaZ = st.z > 0 ? st.z + 1.6 : st.z - 1.6
       const credenzaGroup = new THREE.Group()
 
@@ -873,7 +810,7 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
         depthWrite: false,
       })
       const ring = new THREE.Mesh(ringGeo, ringMat)
-      ring.position.y = isCentral ? 0.195 : 0.065
+      ring.position.y = isCentral ? 0.195 : 0.035
       group.add(ring)
       group.userData.ring = ring
 
