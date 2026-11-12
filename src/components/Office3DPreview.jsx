@@ -107,18 +107,19 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
     const width = container.clientWidth
     const height = container.clientHeight
 
-    // Scene & Camera (Isometric perspective)
+    // Scene & Camera (Isometric perspective with high-precision depth range)
     const scene = new THREE.Scene()
     const aspect = width / height
     let d = 9
-    const camera = new THREE.OrthographicCamera(-d * aspect, d * aspect, d, -d, 1, 1000)
+    const camera = new THREE.OrthographicCamera(-d * aspect, d * aspect, d, -d, 0.5, 120)
     camera.position.set(22, 22, 22)
     camera.lookAt(0, 0, 0)
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' })
     renderer.setSize(width, height)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     renderer.shadowMap.enabled = true
+    renderer.outputColorSpace = THREE.SRGBColorSpace
     container.appendChild(renderer.domElement)
 
     // Lighting
@@ -155,48 +156,37 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
     pinkCoreLight.position.set(0, 3.5, 0)
     scene.add(pinkCoreLight)
 
-    // ── LUXURY ARCHITECTURAL FLOOR (Procedural Designer Porcelain Tiles) ──
+    // ── LUXURY ARCHITECTURAL FLOOR (Solid, Anti-Aliased Porcelain Tiles - Zero Flickering) ──
     const createFloorCanvas = (isDark) => {
       const canvas = document.createElement('canvas')
-      canvas.width = 1024
-      canvas.height = 1024
+      canvas.width = 512
+      canvas.height = 512
       const c = canvas.getContext('2d')
 
-      // Main dark porcelain / slate background
-      c.fillStyle = isDark ? '#0b1320' : '#e6edf5'
-      c.fillRect(0, 0, 1024, 1024)
+      // Main porcelain slate base
+      c.fillStyle = isDark ? '#0b1424' : '#e6edf5'
+      c.fillRect(0, 0, 512, 512)
 
-      // Large format 128px tiles (8x8)
-      const ts = 128
-      for (let tx = 0; tx < 1024; tx += ts) {
-        for (let ty = 0; ty < 1024; ty += ts) {
+      // Large format tiles (256px = 2x2 per repeat, very clean and smooth)
+      const ts = 256
+      for (let tx = 0; tx < 512; tx += ts) {
+        for (let ty = 0; ty < 512; ty += ts) {
           const n = (Math.sin(tx * 0.05 + ty * 0.03) + 1) * 0.5
-          const baseV = isDark ? 14 + n * 8 : 238 + n * 6
+          const baseV = isDark ? 15 + n * 6 : 236 + n * 6
           c.fillStyle = `rgb(${baseV}, ${baseV + (isDark ? 4 : 2)}, ${baseV + (isDark ? 9 : 4)})`
-          c.fillRect(tx + 2, ty + 2, ts - 4, ts - 4)
+          c.fillRect(tx + 4, ty + 4, ts - 8, ts - 8)
 
-          // Soft diagonal sheen gradient
+          // Soft ambient corner gradient
           const g = c.createLinearGradient(tx, ty, tx + ts, ty + ts)
-          g.addColorStop(0, 'rgba(255,255,255,0.04)')
-          g.addColorStop(0.5, 'rgba(255,255,255,0.01)')
-          g.addColorStop(1, isDark ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.05)')
+          g.addColorStop(0, 'rgba(255,255,255,0.03)')
+          g.addColorStop(1, isDark ? 'rgba(0,0,0,0.12)' : 'rgba(0,0,0,0.03)')
           c.fillStyle = g
-          c.fillRect(tx + 2, ty + 2, ts - 4, ts - 4)
+          c.fillRect(tx + 4, ty + 4, ts - 8, ts - 8)
 
-          // Bevel grout border
-          c.strokeStyle = isDark ? 'rgba(30, 41, 59, 0.7)' : 'rgba(203, 213, 225, 0.7)'
-          c.lineWidth = 1
-          c.strokeRect(tx + 1.5, ty + 1.5, ts - 3, ts - 3)
-        }
-      }
-
-      // Polished micro-dots pattern on tile corners
-      c.fillStyle = isDark ? 'rgba(56, 189, 248, 0.25)' : 'rgba(100, 116, 139, 0.3)'
-      for (let tx = 0; tx <= 1024; tx += ts) {
-        for (let ty = 0; ty <= 1024; ty += ts) {
-          c.beginPath()
-          c.arc(tx, ty, 2, 0, Math.PI * 2)
-          c.fill()
+          // Soft bevel grout border (anti-aliased)
+          c.strokeStyle = isDark ? 'rgba(30, 41, 59, 0.5)' : 'rgba(203, 213, 225, 0.6)'
+          c.lineWidth = 2
+          c.strokeRect(tx + 3, ty + 3, ts - 6, ts - 6)
         }
       }
 
@@ -206,16 +196,22 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
     const floorTexture = new THREE.CanvasTexture(createFloorCanvas(darkMode))
     floorTexture.wrapS = THREE.RepeatWrapping
     floorTexture.wrapT = THREE.RepeatWrapping
-    floorTexture.repeat.set(3, 3)
+    floorTexture.repeat.set(4, 4)
+    floorTexture.generateMipmaps = true
+    floorTexture.minFilter = THREE.LinearMipmapLinearFilter
+    floorTexture.magFilter = THREE.LinearFilter
+    if (renderer.capabilities?.getMaxAnisotropy) {
+      floorTexture.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy())
+    }
 
-    const floorGeo = new THREE.BoxGeometry(19, 0.4, 17)
+    const floorGeo = new THREE.BoxGeometry(19, 0.2, 17)
     const floorMat = new THREE.MeshStandardMaterial({
       map: floorTexture,
-      roughness: 0.22,
-      metalness: 0.35,
+      roughness: 0.55,
+      metalness: 0.15,
     })
     const floor = new THREE.Mesh(floorGeo, floorMat)
-    floor.position.y = -0.2
+    floor.position.y = -0.1
     floor.receiveShadow = true
     scene.add(floor)
 
@@ -233,19 +229,12 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
       transparent: true,
       opacity: darkMode ? 0.35 : 0.5,
     })
-    const hHallwayLine = new THREE.Mesh(new THREE.BoxGeometry(18.2, 0.005, 0.08), corridorMat)
-    hHallwayLine.position.set(0, 0.015, 0)
+    const hHallwayLine = new THREE.Mesh(new THREE.BoxGeometry(18.2, 0.005, 0.1), corridorMat)
+    hHallwayLine.position.set(0, 0.006, 0)
     scene.add(hHallwayLine)
-    const vHallwayLine = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.005, 16.2), corridorMat)
-    vHallwayLine.position.set(0, 0.015, 0)
+    const vHallwayLine = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.005, 16.2), corridorMat)
+    vHallwayLine.position.set(0, 0.006, 0)
     scene.add(vHallwayLine)
-
-    // Floor Grid pattern with subtle opacity
-    const grid = new THREE.GridHelper(18, 18, darkMode ? 0x38bdf8 : 0x0284c7, darkMode ? 0x1e293b : 0xe2e8f0)
-    grid.position.y = 0.02
-    grid.material.opacity = darkMode ? 0.25 : 0.35
-    grid.material.transparent = true
-    scene.add(grid)
 
     // ── PERIMETER GLASS WALLS ──
     const glassMat = new THREE.MeshPhysicalMaterial({
@@ -366,19 +355,33 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
 
     const daisBorder = new THREE.Mesh(
       new THREE.RingGeometry(2.3, 2.45, 32),
-      new THREE.MeshBasicMaterial({ color: 0xff007f, side: THREE.DoubleSide })
+      new THREE.MeshBasicMaterial({
+        color: 0xff007f,
+        side: THREE.DoubleSide,
+        polygonOffset: true,
+        polygonOffsetFactor: -1,
+        polygonOffsetUnits: -1,
+      })
     )
     daisBorder.rotation.x = -Math.PI / 2
-    daisBorder.position.set(0, 0.19, 0)
+    daisBorder.position.set(0, 0.185, 0)
     scene.add(daisBorder)
 
     // Concentric glowing inner ring
     const daisInnerRing = new THREE.Mesh(
       new THREE.RingGeometry(1.6, 1.72, 32),
-      new THREE.MeshBasicMaterial({ color: 0x00e5ff, side: THREE.DoubleSide, transparent: true, opacity: 0.8 })
+      new THREE.MeshBasicMaterial({
+        color: 0x00e5ff,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.8,
+        polygonOffset: true,
+        polygonOffsetFactor: -2,
+        polygonOffsetUnits: -2,
+      })
     )
     daisInnerRing.rotation.x = -Math.PI / 2
-    daisInnerRing.position.set(0, 0.195, 0)
+    daisInnerRing.position.set(0, 0.188, 0)
     scene.add(daisInnerRing)
 
     // ── CHARACTER BUILDER (SITTING AGENTS WITH DIRECTOR TIE ACCENTS) ──
@@ -484,17 +487,33 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
     const addDecor = (st) => {
       if (st.id === 'cerebro') return
 
-      // 1. Executive Suite Designer Rug with contrasting stitched borders
+      // 1. Executive Suite Designer Rug with contrasting stitched borders (Zero Z-Fighting)
       const rugGroup = new THREE.Group()
       const rugBase = new THREE.Mesh(
-        new THREE.BoxGeometry(4.0, 0.02, 3.6),
+        new THREE.BoxGeometry(4.0, 0.03, 3.6),
         new THREE.MeshStandardMaterial({
           color: darkMode ? 0x111827 : 0xf1f5f9,
           roughness: 0.85,
         })
       )
-      rugBase.position.y = 0.01
+      rugBase.position.y = 0.015
       rugGroup.add(rugBase)
+
+      // Inner woven motif
+      const innerBorder = new THREE.Mesh(
+        new THREE.BoxGeometry(3.6, 0.005, 3.2),
+        new THREE.MeshStandardMaterial({
+          color: new THREE.Color(st.color),
+          transparent: true,
+          opacity: darkMode ? 0.25 : 0.35,
+          roughness: 0.9,
+          polygonOffset: true,
+          polygonOffsetFactor: -1,
+          polygonOffsetUnits: -1,
+        })
+      )
+      innerBorder.position.y = 0.032
+      rugGroup.add(innerBorder)
 
       // Outer accent border in director color
       const rugBorder = new THREE.Mesh(
@@ -503,27 +522,20 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
           color: new THREE.Color(st.color),
           side: THREE.DoubleSide,
           transparent: true,
-          opacity: 0.75,
+          opacity: 0.8,
+          polygonOffset: true,
+          polygonOffsetFactor: -2,
+          polygonOffsetUnits: -2,
         })
       )
       rugBorder.rotation.x = -Math.PI / 2
       rugBorder.rotation.z = Math.PI / 4
       rugBorder.scale.set(1.5, 1.4, 1)
-      rugBorder.position.y = 0.022
+      rugBorder.position.y = 0.034
       rugGroup.add(rugBorder)
 
-      // Inner woven motif
-      const innerBorder = new THREE.Mesh(
-        new THREE.BoxGeometry(3.6, 0.005, 3.2),
-        new THREE.MeshStandardMaterial({
-          color: new THREE.Color(st.color),
-          transparent: true,
-          opacity: darkMode ? 0.2 : 0.28,
-          roughness: 0.9,
-        })
-      )
-      innerBorder.position.y = 0.018
-      rugGroup.add(innerBorder)
+      rugGroup.position.set(st.x, 0, st.z)
+      scene.add(rugGroup)
 
       rugGroup.position.set(st.x, 0, st.z)
       scene.add(rugGroup)
