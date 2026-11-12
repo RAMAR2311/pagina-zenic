@@ -94,7 +94,7 @@ export function mountHud(actions: HudAction[], settings: Settings, save: () => v
 
   /** An action up on the top bar. */
   function dockButton(a: HudAction): HTMLElement {
-    const chip = pinned(a) ? '' : a.chip?.();
+    const chip = pinned(a) ? (a.id === 'roof' || a.id === 'down_office' ? labelOf(a) : '') : a.chip?.();
     const blocked = a.blocked?.();
     return h(
       'button.btn.dock-btn',

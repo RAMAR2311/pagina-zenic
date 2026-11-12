@@ -5,6 +5,7 @@
 import * as THREE from 'three';
 import { LADDER, POLE, POLES, WALL_HEIGHT } from '../../../shared/layout';
 import type { FloorInfo } from '../../../shared/protocol';
+import { ROOF, ROOF_NAME } from '../../../shared/rooftop';
 import { Climber, type Arrival, type Grip, type Way } from './controller';
 import type { Ctx } from '../../core/context';
 import { builtFloors } from '../../core/floors';
@@ -28,6 +29,8 @@ export interface ClimbingDeps {
   standUp(): void;
   /** Stops a walk over to someone, if you're on one. */
   stopWalking(): void;
+  /** Up to the rooftop bar */
+  roof?(): void;
 }
 
 export function installClimbing(ctx: Ctx, deps: ClimbingDeps) {
@@ -36,14 +39,25 @@ export function installClimbing(ctx: Ctx, deps: ClimbingDeps) {
   function floorThere(way: Way): FloorInfo | undefined {
     const floors = builtFloors();
     const i = floors.findIndex((f) => f.id === store.floor);
-    return i < 0 ? undefined : floors[i + way];
+    if (i < 0) return undefined;
+    if (way === 1 && (i === floors.length - 1 || floors.length <= 1)) {
+      return { id: ROOF, name: ROOF_NAME, repo: '', dir: '', palette: 0, addedBy: '', addedAt: 0, workers: 0, busy: 0, waiting: 0, people: 0, wing: 0 };
+    }
+    return floors[i + way];
   }
   const climber = new Climber(ctx.player, {
     floorThere: (way) => floorThere(way)?.name,
     travel: (way, how, at) => {
       const f = floorThere(way);
-      if (f) deps.travel(f.id, how, at);
-      else climber.abort();
+      if (f) {
+        if (f.id === ROOF) {
+          climber.abort();
+          if (deps.roof) deps.roof();
+          else deps.travel(ROOF, how, at);
+        } else {
+          deps.travel(f.id, how, at);
+        }
+      } else climber.abort();
     },
     sound: (kind, speed = 0) => {
       const sound = ctx.sound;
@@ -53,7 +67,7 @@ export function installClimbing(ctx: Ctx, deps: ClimbingDeps) {
       else if (kind === 'twirl') sound.twirl();
       else if (kind === 'bonk') {
         sound.bonk();
-        toast(`🔝 ${store.currentFloor()?.name ?? 'This'} is the top floor — the hatch won't budge`);
+        toast(`🔝 ${store.currentFloor()?.name ?? 'Este'} es el piso superior`);
       } else if (kind === 'land') {
         sound.poleLanding(speed);
         landed(speed);
@@ -161,8 +175,8 @@ export function installClimbing(ctx: Ctx, deps: ClimbingDeps) {
       const busy = l.waiting || l.auto;
       k = `ladder|${up}|${down}|${atFloor}|${busy}`;
       parts = busy
-        ? [title('🪜 Climbing…')]
-        : [title('🪜 On the ladder'), up ? key('W', `Up to ${up}`) : aside('top floor'), key('S', down ? `Down to ${down}` : atFloor ? 'Step off' : 'Down'), key('E', atFloor ? 'Step off' : 'Let go')];
+        ? [title('🪜 Subiendo…')]
+        : [title('🪜 En la escalera'), up ? key('W', `Subir a ${up}`) : aside('Piso superior'), key('S', down ? `Bajar a ${down}` : atFloor ? 'Bajar' : 'Bajar'), key('E', atFloor ? 'Bajar' : 'Soltarse')];
     } else {
       const how = climber.sliding;
       k = `pole|${how}`;
