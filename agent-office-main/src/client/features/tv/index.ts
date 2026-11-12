@@ -118,20 +118,20 @@ export function installTv(ctx: Ctx, deps: TvDeps) {
       g.strokeStyle = 'rgba(255, 255, 255, 0.1)';
       g.lineWidth = 1;
       g.beginPath();
-      g.roundRect(50, 320, 750, 350, 16);
+      g.roundRect(50, 320, 680, 350, 16);
       g.fill();
       g.stroke();
 
       g.fillStyle = '#FFFFFF';
       g.font = '800 20px Nunito, system-ui, sans-serif';
       g.textAlign = 'left';
-      g.fillText('📈 Curva de Transacciones por Hora (Puntos de Venta)', 80, 360);
+      g.fillText('📈 Curva de Transacciones por Hora (Puntos de Venta)', 75, 360);
 
       // Bars
       const hours = ['8am', '10am', '12pm', '2pm', '4pm', '6pm', '8pm', '10pm'];
       const heights = [90, 140, 230, 180, 210, 260, 240, 160];
       hours.forEach((hStr, i) => {
-        const bx = 110 + i * 80;
+        const bx = 95 + i * 72;
         const bh = heights[i] + Math.sin(animFrame * 0.05 + i) * 6;
         const by = 620 - bh;
 
@@ -140,40 +140,54 @@ export function installTv(ctx: Ctx, deps: TvDeps) {
         barGrad.addColorStop(1, '#6366F1');
         g.fillStyle = barGrad;
         g.beginPath();
-        g.roundRect(bx, by, 45, bh, 6);
+        g.roundRect(bx, by, 40, bh, 6);
         g.fill();
 
         g.fillStyle = '#94A3B8';
-        g.font = '600 15px Nunito';
+        g.font = '600 14px Nunito';
         g.textAlign = 'center';
-        g.fillText(hStr, bx + 22, 645);
+        g.fillText(hStr, bx + 20, 645);
       });
 
-      // Activity Feed Box
+      // Activity Feed Box (Generous width + clipping safeguard)
+      const feedX = 750;
+      const feedY = 320;
+      const feedW = 480;
+      const feedH = 350;
+
       g.fillStyle = 'rgba(30, 41, 59, 0.4)';
+      g.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+      g.lineWidth = 1;
       g.beginPath();
-      g.roundRect(830, 320, 400, 350, 16);
+      g.roundRect(feedX, feedY, feedW, feedH, 16);
       g.fill();
       g.stroke();
 
       g.fillStyle = '#FFFFFF';
       g.font = '800 20px Nunito, system-ui, sans-serif';
       g.textAlign = 'left';
-      g.fillText('⚡ Feed de Operaciones en Vivo', 855, 360);
+      g.fillText('⚡ Feed de Operaciones en Vivo', feedX + 24, 360);
+
+      g.save();
+      g.beginPath();
+      g.rect(feedX + 10, feedY + 50, feedW - 20, feedH - 60);
+      g.clip();
 
       const logs = [
-        '● 12:35:10 - Venta $180,000 en Tienda Bogotá Centro',
-        '● 12:34:52 - Factura Electrónica #4829 CUFE Validada',
-        '● 12:34:18 - Conteo +6 clientes en Pasillo Tecnología',
-        '● 12:33:40 - Nodo Medellín sincronizó 45 pedidos POS',
-        '● 12:32:05 - Pasarela Wompi aprobó transacción $420,000',
-        '● 12:31:12 - Alerta IA: Góndola Snacks con alta rotación',
+        '● 12:35:10 - Venta $180.000 (Tienda Bogotá Centro)',
+        '● 12:34:52 - Factura Electrónica #4829 CUFE OK',
+        '● 12:34:18 - Conteo +6 clientes (Pasillo Tech)',
+        '● 12:33:40 - Nodo Medellín: 45 pedidos POS sync',
+        '● 12:32:05 - Pasarela Wompi: Transacción $420.000 OK',
+        '● 12:31:12 - Alerta IA: Stock crítico en Snacks',
       ];
       logs.forEach((log, idx) => {
-        g.fillStyle = idx === 0 ? '#10B981' : '#CBD5E1';
-        g.font = '600 15px monospace';
-        g.fillText(log, 855, 410 + idx * 40);
+        g.fillStyle = idx === 0 ? '#10B981' : '#E2E8F0';
+        g.font = '700 15px Nunito, system-ui, sans-serif';
+        g.textAlign = 'left';
+        g.fillText(log, feedX + 24, 408 + idx * 40);
       });
+      g.restore();
 
     } else if (currentChannel === 'vision') {
       // 👁️ Channel 2: Zenic Computer Vision

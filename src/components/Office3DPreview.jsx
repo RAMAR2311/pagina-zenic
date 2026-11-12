@@ -814,6 +814,36 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
       group.add(ring)
       group.userData.ring = ring
 
+      // 🏷️ Elegant 3D Executive Office Plaque / Header Banner
+      const labelCanvas = document.createElement('canvas')
+      labelCanvas.width = 512
+      labelCanvas.height = 128
+      const lCtx = labelCanvas.getContext('2d')
+      lCtx.fillStyle = darkMode ? 'rgba(15, 23, 42, 0.92)' : 'rgba(255, 255, 255, 0.95)'
+      lCtx.strokeStyle = st.color
+      lCtx.lineWidth = 4
+      lCtx.beginPath()
+      lCtx.roundRect(8, 8, 496, 112, 20)
+      lCtx.fill()
+      lCtx.stroke()
+
+      lCtx.fillStyle = darkMode ? '#FFFFFF' : '#0F172A'
+      lCtx.font = '900 36px Nunito, system-ui, sans-serif'
+      lCtx.textAlign = 'center'
+      lCtx.fillText(`${st.icon} ${st.officeName}`, 256, 56)
+
+      lCtx.fillStyle = st.color
+      lCtx.font = '700 24px Nunito, system-ui, sans-serif'
+      lCtx.fillText(st.name, 256, 96)
+
+      const labelTex = new THREE.CanvasTexture(labelCanvas)
+      labelTex.colorSpace = THREE.SRGBColorSpace
+      const labelMat = new THREE.MeshBasicMaterial({ map: labelTex, transparent: true, side: THREE.DoubleSide })
+      const labelMesh = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 0.4), labelMat)
+      labelMesh.position.set(0, isCentral ? 3.0 : 2.85, 0)
+      group.add(labelMesh)
+      group.userData.labelMesh = labelMesh
+
       // Invisible Click/Hover Hitbox (Raycast target)
       const hitBox = new THREE.Mesh(
         new THREE.BoxGeometry(isCentral ? 3.4 : 2.8, 3.2, isCentral ? 3.4 : 2.5),
@@ -960,6 +990,13 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
       camera.position.lerp(targetCameraPos, 0.05)
       currentLookAt.lerp(targetLookAt, 0.05)
       camera.lookAt(currentLookAt)
+
+      // Billboard executive suite label meshes to face the camera
+      deskMeshMap.forEach((grp) => {
+        if (grp.userData.labelMesh) {
+          grp.userData.labelMesh.quaternion.copy(camera.quaternion)
+        }
+      })
 
       // Raycasting hover check
       raycaster.setFromCamera(mouse, camera)

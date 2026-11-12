@@ -195,12 +195,12 @@ export function buildLoft(group: THREE.Group, colliders: Collider[], interactabl
   group.add(lamp);
 
   // Signs: one on the back wall inside, one over the glass for everyone downstairs.
-  const inside = textPlane('👑 Oficina Gerencia', { bg: '#fffaf3', size: 64 });
-  inside.scale.multiplyScalar(0.8);
+  const inside = textPlane('👑 Despacho Marlon · CEO & Gerencia', { bg: '#fffaf3', size: 64 });
+  inside.scale.multiplyScalar(0.85);
   inside.position.set(maxX - 3, floorY + 1.9, maxZ - 0.04);
   inside.rotation.y = Math.PI;
   group.add(inside);
-  const outside = textPlane('👑 Oficina Gerencia', { bg: '#2b2d42', color: '#fffaf3', size: 64, border: '#fffaf3' });
+  const outside = textPlane('👑 Despacho Marlon · CEO & Gerencia', { bg: '#1e1b4b', color: '#ffd166', size: 64, border: '#ffd166' });
   outside.scale.multiplyScalar(1.4);
   // In front of the roof's trim (minZ - 0.04 to minZ), or the trim hides the sign's lower half.
   outside.position.set(cx, roofY + 0.2, minZ - 0.07);
