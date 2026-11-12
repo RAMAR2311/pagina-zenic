@@ -44,7 +44,9 @@ export function stepTo(b: Body, x: number, z: number) {
   }
   // A stair: step up onto it if there's room there.
   const up = hit.top - b.pos.y;
-  if (b.grounded && up <= STEP && !blockerAt(b, x, z, hit.top) && b.pos.y + HEIGHT + up <= ceilingAt(b.colliders, x, z, b.pos.y)) {
+  const headroom = blockerAt(b, x, z, hit.top);
+  const isBlocked = headroom && (headroom.top - hit.top > STEP);
+  if (b.grounded && up <= STEP && !isBlocked && b.pos.y + HEIGHT + up <= ceilingAt(b.colliders, x, z, b.pos.y)) {
     b.pos.set(x, hit.top, z);
     b.stepOffset -= up;
     return;

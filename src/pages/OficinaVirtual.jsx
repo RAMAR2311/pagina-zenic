@@ -561,7 +561,7 @@ export default function OficinaVirtual({ darkMode = true }) {
                     </span>
                   </div>
                   <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>
-                    Usa <strong>WASD</strong> para moverte · <strong>Mouse</strong> para mirar · Tecla <strong>E</strong> para interactuar
+                    Usa <strong>WASD</strong> para moverte · <strong>Mouse</strong> para mirar · Tecla <strong>E</strong> para interactuar · <strong>🍸 Subir a Terraza</strong> (barra superior o en el ascensor)
                   </span>
                 </div>
               </div>

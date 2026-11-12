@@ -77,10 +77,10 @@ export function toggleFloorMenu(anchor: HTMLElement, opts: FloorMenuOptions): vo
     const people = [...store.peers.values()].filter((p) => p.floor === ROOF).length;
     const roof = h(
       'button.floor-item',
-      { type: 'button', role: 'menuitem', class: onRoof ? 'here' : '', disabled: onRoof, title: onRoof ? "You're up on the roof" : 'Take the elevator up to the roof' },
+      { type: 'button', role: 'menuitem', class: onRoof ? 'here' : '', disabled: onRoof, title: onRoof ? 'Estás en la terraza' : 'Subir en ascensor a la terraza' },
       h('span.floor-no', { style: 'background:#2b2d42' }, '🍸'),
-      h('span.floor-text', {}, h('span.floor-name', {}, ROOF_NAME), h('span.floor-sub', {}, onRoof ? 'you are here' : 'A DJ, drinks and the city')),
-      h('span.floor-stats', {}, people ? h('span', { title: 'People up there' }, `🧑 ${people}`) : ''),
+      h('span.floor-text', {}, h('span.floor-name', {}, ROOF_NAME), h('span.floor-sub', {}, onRoof ? 'estás aquí' : 'DJ en vivo, bebidas y vista panorámica')),
+      h('span.floor-stats', {}, people ? h('span', { title: 'Personas en la terraza' }, `🧑 ${people}`) : ''),
     );
     roof.addEventListener('click', () => {
       if (onRoof) return;

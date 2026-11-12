@@ -69,7 +69,8 @@ export function installHud(ctx: Ctx, core: CoreState, parts: HudParts) {
       // The office has its bookshelf for them; a map of its own may not.
       { id: 'docs', icon: '📚', label: 'Documentación', section: 'Open', shown: () => !inOffice(), title: () => 'Leer la documentación del proyecto', run: parts.bookshelf.showBookshelf },
       { id: 'elevator', icon: '🛗', label: () => (inOffice() ? 'Ascensor' : 'Pisos'), section: 'Open', count: () => store.floors.reduce((n, f) => n + (f.id === store.floor ? 0 : f.waiting), 0), title: () => (inOffice() ? 'Ir a otro proyecto / piso' : 'Ir a otro proyecto o agregar uno'), run: travel.showElevator },
-      { id: 'roof', icon: '🍸', label: 'Terraza Bar', section: 'Open', shown: () => !core.upTop && inOffice() && builtFloors().length > 0, title: () => 'Subir en ascensor a la terraza: DJ, bar y vista panorámica', run: () => travel.ride(ROOF) },
+      { id: 'roof', icon: '🍸', label: 'Subir a Terraza', section: 'Open', shown: () => !core.upTop && inOffice() && builtFloors().length > 0, title: () => 'Subir en ascensor a la terraza: DJ, bar y vista panorámica', run: () => travel.ride(ROOF) },
+      { id: 'down_office', icon: '🏢', label: 'Bajar a Oficina', section: 'Open', shown: () => core.upTop && inOffice(), title: () => 'Bajar en ascensor a las oficinas de trabajo', run: () => travel.leaveRoofFor(builtFloors()[0]?.id ?? store.floor) },
       // In voice, V is push to talk, so leaving is only from here.
       { id: 'voice', icon: '🎙️', label: () => (voice.inVoice ? 'Salir de voz' : 'Unirse a voz'), section: 'Together', key: () => (voice.inVoice ? undefined : 'V'), on: () => voice.inVoice, blocked: noMedia, run: () => void talk.toggleVoice() },
       // While you're in voice, the top bar keeps the mute button handy. Muted is the usual with push to talk, so it doesn't stand out then.

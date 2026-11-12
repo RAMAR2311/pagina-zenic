@@ -181,10 +181,10 @@ export function openElevator(opts: ElevatorOptions): void {
     const people = [...store.peers.values()].filter((p) => p.floor === ROOF).length;
     const btn = h(
       'button.floor-btn',
-      { type: 'button', class: here ? 'here' : '', disabled: here, title: here ? "You're up on the roof" : `Ride up to the ${ROOF_NAME.toLowerCase()}` },
+      { type: 'button', class: here ? 'here' : '', disabled: here, title: here ? 'Estás en la terraza' : 'Subir a la Terraza & Bar en la Azotea' },
       h('span.floor-no', { style: 'background:#2b2d42' }, '🍸'),
-      h('span.floor-text', {}, h('span.floor-name', {}, ROOF_NAME, here ? h('span.here-tag', {}, 'you are here') : null), h('span.floor-sub', {}, 'The roof: a DJ playing drum and bass, a bar, and the city all around')),
-      h('span.floor-stats', {}, people ? h('span', { title: 'People up there' }, `🧑 ${people}`) : ''),
+      h('span.floor-text', {}, h('span.floor-name', {}, ROOF_NAME, here ? h('span.here-tag', {}, 'estás aquí') : null), h('span.floor-sub', {}, 'La terraza en la azotea: DJ en vivo, coctelería y vista panorámica a la ciudad')),
+      h('span.floor-stats', {}, people ? h('span', { title: 'Personas arriba' }, `🧑 ${people}`) : ''),
     );
     btn.addEventListener('click', () => {
       if (here) return;
@@ -198,12 +198,12 @@ export function openElevator(opts: ElevatorOptions): void {
   const garageButton = () => {
     const here = opts.downstairs();
     const bottom = store.floors.find((f) => !f.cloning);
-    const under = store.floor === ROOF ? `Under ${bottom?.name ?? 'the building'}, level with the street` : 'Under the building, level with the street: the cars, and the way out';
+    const under = store.floor === ROOF ? `Bajo ${bottom?.name ?? 'el edificio'}, a nivel de calle` : 'Bajo el edificio, a nivel de calle: parqueadero de autos y salida exterior';
     const btn = h(
       'button.floor-btn',
-      { type: 'button', class: here ? 'here' : '', disabled: here, title: here ? "You're down at the street" : 'Ride down to the garage' },
+      { type: 'button', class: here ? 'here' : '', disabled: here, title: here ? 'Estás en el nivel de calle' : 'Bajar al garaje' },
       h('span.floor-no', { style: 'background:#2b2d42' }, '🏎️'),
-      h('span.floor-text', {}, h('span.floor-name', {}, 'Garage', here ? h('span.here-tag', {}, 'you are here') : null), h('span.floor-sub', {}, under)),
+      h('span.floor-text', {}, h('span.floor-name', {}, 'Garaje & Parqueadero', here ? h('span.here-tag', {}, 'estás aquí') : null), h('span.floor-sub', {}, under)),
       h('span.floor-stats', {}),
     );
     btn.addEventListener('click', () => {
