@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Brain } from 'lucide-react'
+import { Brain, Building2 } from 'lucide-react'
 
 const NAV_LINKS = [
   { label: 'Inicio',         to: '/' },
@@ -250,6 +250,74 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
             </span>
           </Link>
 
+          {/* ── Botón "Oficina 3D" (Metaverso Retail) ── */}
+          <Link
+            to="/oficina"
+            aria-label="Oficina Virtual 3D de Zenic"
+            title="Metaverso Retail: Oficina Virtual 3D 🏢"
+            className="nav-oficina-btn"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '0.42rem 0.95rem',
+              borderRadius: 999,
+              background: location.pathname === '/oficina'
+                ? (darkMode ? 'rgba(0, 229, 255, 0.25)' : 'rgba(0, 229, 255, 0.15)')
+                : (darkMode ? 'rgba(0, 229, 255, 0.1)' : 'rgba(0, 229, 255, 0.08)'),
+              border: `1.5px solid ${location.pathname === '/oficina'
+                ? '#00E5FF'
+                : (darkMode ? 'rgba(0, 229, 255, 0.45)' : 'rgba(0, 229, 255, 0.35)')}`,
+              color: location.pathname === '/oficina'
+                ? '#00E5FF'
+                : (darkMode ? '#FFFFFF' : '#0F172A'),
+              fontSize: '0.85rem',
+              fontWeight: 800,
+              textDecoration: 'none',
+              whiteSpace: 'nowrap',
+              boxShadow: darkMode
+                ? '0 0 16px rgba(0, 229, 255, 0.25)'
+                : '0 2px 10px rgba(0, 229, 255, 0.1)',
+              transition: 'all 0.25s ease',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.borderColor = '#00E5FF'
+              e.currentTarget.style.color = '#00E5FF'
+              e.currentTarget.style.boxShadow = darkMode
+                ? '0 0 24px rgba(0, 229, 255, 0.55)'
+                : '0 4px 16px rgba(0, 229, 255, 0.3)'
+              e.currentTarget.style.transform = 'translateY(-1px)'
+            }}
+            onMouseLeave={e => {
+              const isAct = location.pathname === '/oficina'
+              e.currentTarget.style.borderColor = isAct
+                ? '#00E5FF'
+                : (darkMode ? 'rgba(0, 229, 255, 0.45)' : 'rgba(0, 229, 255, 0.35)')
+              e.currentTarget.style.color = isAct
+                ? '#00E5FF'
+                : (darkMode ? '#FFFFFF' : '#0F172A')
+              e.currentTarget.style.boxShadow = darkMode
+                ? '0 0 16px rgba(0, 229, 255, 0.25)'
+                : '0 2px 10px rgba(0, 229, 255, 0.1)'
+              e.currentTarget.style.transform = 'none'
+            }}
+          >
+            <Building2 size={16} color="#00E5FF" />
+            <span>Oficina 3D</span>
+            <span style={{
+              fontSize: '0.62rem',
+              padding: '1px 5px',
+              borderRadius: 6,
+              background: darkMode ? 'rgba(0, 229, 255, 0.3)' : 'rgba(0, 229, 255, 0.18)',
+              color: '#00E5FF',
+              fontWeight: 800,
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+            }}>
+              VIVO
+            </span>
+          </Link>
+
           {/* Dark / Light mode toggle */}
           <button
             onClick={toggleDarkMode}
@@ -376,6 +444,26 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
             <Brain size={17} color="#C084FC" />
             <span>Cerebro IA</span>
             <span style={{ fontSize: '0.65rem', background: 'rgba(156,77,204,0.25)', color: '#C084FC', padding: '1px 6px', borderRadius: 4, fontWeight: 800 }}>NUEVO</span>
+          </Link>
+
+          <Link
+            to="/oficina"
+            onClick={() => setMenuOpen(false)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '0.65rem 0.5rem',
+              fontSize: '0.95rem',
+              color: location.pathname === '/oficina' ? '#00E5FF' : darkMode ? '#FFFFFF' : '#0F172A',
+              textDecoration: 'none',
+              fontWeight: 800,
+              borderBottom: `1px solid ${darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(61,74,96,0.05)'}`,
+            }}
+          >
+            <Building2 size={17} color="#00E5FF" />
+            <span>Oficina 3D (Metaverso)</span>
+            <span style={{ fontSize: '0.65rem', background: 'rgba(0,229,255,0.2)', color: '#00E5FF', padding: '1px 6px', borderRadius: 4, fontWeight: 800 }}>3D VIVO</span>
           </Link>
 
           <div style={{

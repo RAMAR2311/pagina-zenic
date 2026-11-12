@@ -27,3 +27,6 @@ dist-ssr
 server/data.db
 server/data.db-*
 server/uploads/
+
+# Agent Office local runtime data
+agent-office-main/.office-data/
