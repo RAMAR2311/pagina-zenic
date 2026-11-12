@@ -13,6 +13,11 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
   const [autoRotate, setAutoRotate] = useState(true)
   const [zoomLevel, setZoomLevel] = useState(9)
 
+  const autoRotateRef = useRef(autoRotate)
+  useEffect(() => {
+    autoRotateRef.current = autoRotate
+  }, [autoRotate])
+
   const controlsRef = useRef({
     rotateTo: null,
     resetView: null,
@@ -22,6 +27,7 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
   useEffect(() => {
     const container = containerRef.current
     if (!container) return
+    container.innerHTML = ''
 
     const width = container.clientWidth
     const height = container.clientHeight
@@ -37,7 +43,7 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' })
     renderer.setSize(width, height)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    renderer.shadowMap.enabled = true
+    renderer.shadowMap.enabled = false // Disable shadow acne / shadow jitter completely
     renderer.outputColorSpace = THREE.SRGBColorSpace
     container.appendChild(renderer.domElement)
 
@@ -47,11 +53,7 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
 
     const dirLight = new THREE.DirectionalLight(0xffffff, darkMode ? 1.6 : 1.8)
     dirLight.position.set(16, 26, 12)
-    dirLight.castShadow = true
-    dirLight.shadow.bias = -0.0005
-    dirLight.shadow.normalBias = 0.04
-    dirLight.shadow.mapSize.width = 2048
-    dirLight.shadow.mapSize.height = 2048
+    dirLight.castShadow = false
     scene.add(dirLight)
 
     // CEO Marlon - Warm Radiant Gold Light
@@ -79,51 +81,30 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
     pinkCoreLight.position.set(0, 3.5, 0)
     scene.add(pinkCoreLight)
 
-    // ── MAIN OFFICE FLOOR (Luxury Satin Architectural Slate - Rock Solid, Zero Flickering) ──
+    // ── MAIN OFFICE FLOOR (Solid, Clean Luxury Slate - 100% Flicker-Free) ──
     const floorGeo = new THREE.BoxGeometry(19.4, 0.4, 17.4)
     const floorMat = new THREE.MeshStandardMaterial({
-      color: darkMode ? 0x090f1a : 0xe2e8f0,
-      roughness: 0.8,
-      metalness: 0.12,
+      color: darkMode ? 0x090f1a : 0xf1f5f9,
+      roughness: 0.65,
+      metalness: 0.1,
     })
     const floor = new THREE.Mesh(floorGeo, floorMat)
     floor.position.y = -0.2
-    floor.receiveShadow = false // Completely eradicate shadow acne on the floor plane
     scene.add(floor)
 
-    // Architectural Perimeter Skirting Rim (Dark bronze/gunmetal chamfered rim)
+    // Architectural Perimeter Skirting Rim (Dark bronze in dark mode, platinum silver in light mode)
     const perimeterTrim = new THREE.Mesh(
       new THREE.BoxGeometry(19.6, 0.12, 17.6),
-      new THREE.MeshStandardMaterial({ color: darkMode ? 0x1e293b : 0x94a3b8, metalness: 0.6, roughness: 0.35 })
+      new THREE.MeshStandardMaterial({ color: darkMode ? 0x1e293b : 0xcbd5e1, metalness: 0.5, roughness: 0.35 })
     )
     perimeterTrim.position.y = -0.06
     scene.add(perimeterTrim)
 
-    // Subtle Architectural Floor Panel Inlays (Sleek executive grid lines - Zero Z-fighting)
-    const floorGridMat = new THREE.MeshBasicMaterial({
-      color: darkMode ? 0x1e293b : 0xcbd5e1,
-      transparent: true,
-      opacity: darkMode ? 0.35 : 0.45,
-      depthWrite: false,
-    })
-    for (let gx = -7.5; gx <= 7.5; gx += 3.75) {
-      if (Math.abs(gx) < 0.5) continue
-      const line = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.002, 16.8), floorGridMat)
-      line.position.set(gx, 0.002, 0)
-      scene.add(line)
-    }
-    for (let gz = -6.0; gz <= 6.0; gz += 4.0) {
-      if (Math.abs(gz) < 0.5) continue
-      const line = new THREE.Mesh(new THREE.BoxGeometry(18.8, 0.002, 0.04), floorGridMat)
-      line.position.set(0, 0.002, gz)
-      scene.add(line)
-    }
-
-    // Circulation Hallway Runners (4 Disjoint branches from central dais to perimeter - ZERO overlap)
+    // Circulation Hallway Runners (Clean flush paths - NO thin lines)
     const runnerMat = new THREE.MeshStandardMaterial({
-      color: darkMode ? 0x111c2e : 0xdbeafe,
+      color: darkMode ? 0x111c2e : 0xe2e8f0,
       roughness: 0.85,
-      metalness: 0.1,
+      metalness: 0.05,
     })
     const corridorBranches = [
       { x: 0, z: -5.35, w: 1.4, d: 5.7 },  // North
@@ -132,24 +113,9 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
       { x: 5.85, z: 0, w: 6.7, d: 1.4 },   // East
     ]
     corridorBranches.forEach(({ x, z, w, d }) => {
-      const runner = new THREE.Mesh(new THREE.BoxGeometry(w, 0.02, d), runnerMat)
-      runner.position.set(x, 0.01, z)
+      const runner = new THREE.Mesh(new THREE.BoxGeometry(w, 0.008, d), runnerMat)
+      runner.position.set(x, 0.004, z)
       scene.add(runner)
-    })
-
-    // Center illuminated cyber guide lines (depthWrite: false - Zero Z-fighting)
-    const neonGuideMat = new THREE.MeshBasicMaterial({
-      color: darkMode ? 0x00e5ff : 0x0284c7,
-      transparent: true,
-      opacity: 0.65,
-      depthWrite: false,
-    })
-    corridorBranches.forEach(({ x, z, w, d }) => {
-      const lineW = w > d ? w : 0.06
-      const lineD = w > d ? 0.06 : d
-      const neonLine = new THREE.Mesh(new THREE.BoxGeometry(lineW, 0.004, lineD), neonGuideMat)
-      neonLine.position.set(x, 0.022, z)
-      scene.add(neonLine)
     })
 
     // ── PERIMETER GLASS WALLS ──
@@ -407,53 +373,40 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
 
       // Architectural plinth base (Elevated wood/slate floor island)
       const plinth = new THREE.Mesh(
-        new THREE.BoxGeometry(4.6, 0.04, 4.2),
+        new THREE.BoxGeometry(4.6, 0.05, 4.2),
         new THREE.MeshStandardMaterial({
-          color: darkMode ? 0x111c2d : 0xf1f5f9,
+          color: darkMode ? 0x141d2b : 0xffffff,
           roughness: 0.5,
-          metalness: 0.2,
+          metalness: 0.15,
         })
       )
-      plinth.position.y = 0.02
+      plinth.position.y = 0.025
       suitePlatform.add(plinth)
 
       // Ambient LED under-glow rim strip around the plinth base
       const rimGlow = new THREE.Mesh(
-        new THREE.BoxGeometry(4.65, 0.012, 4.25),
+        new THREE.BoxGeometry(4.66, 0.012, 4.26),
         new THREE.MeshBasicMaterial({
           color: new THREE.Color(st.color),
           transparent: true,
-          opacity: 0.8,
+          opacity: 0.85,
           depthWrite: false,
         })
       )
-      rimGlow.position.y = 0.02
+      rimGlow.position.y = 0.025
       suitePlatform.add(rimGlow)
 
       // Plush executive woven carpet inlay on top of the plinth
       const carpet = new THREE.Mesh(
-        new THREE.BoxGeometry(4.2, 0.018, 3.8),
+        new THREE.BoxGeometry(4.2, 0.02, 3.8),
         new THREE.MeshStandardMaterial({
           color: darkMode ? 0x0b1320 : 0xe2e8f0,
           roughness: 0.9,
           metalness: 0.05,
         })
       )
-      carpet.position.y = 0.045
+      carpet.position.y = 0.06
       suitePlatform.add(carpet)
-
-      // Stitched executive perimeter band with subtle director tint
-      const carpetBand = new THREE.Mesh(
-        new THREE.BoxGeometry(3.6, 0.004, 3.2),
-        new THREE.MeshBasicMaterial({
-          color: new THREE.Color(st.color),
-          transparent: true,
-          opacity: darkMode ? 0.25 : 0.35,
-          depthWrite: false,
-        })
-      )
-      carpetBand.position.y = 0.056
-      suitePlatform.add(carpetBand)
 
       suitePlatform.position.set(st.x, 0, st.z)
       scene.add(suitePlatform) // ADDED EXACTLY ONCE
@@ -942,27 +895,6 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
 
     scene.add(deskGroup)
 
-    // Ambient floating particles
-    const particleCount = 140
-    const particleGeo = new THREE.BufferGeometry()
-    const posArray = new Float32Array(particleCount * 3)
-
-    for (let i = 0; i < particleCount * 3; i += 3) {
-      posArray[i] = (Math.random() - 0.5) * 19
-      posArray[i + 1] = Math.random() * 5 + 0.5
-      posArray[i + 2] = (Math.random() - 0.5) * 17
-    }
-    particleGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3))
-
-    const particleMat = new THREE.PointsMaterial({
-      size: 0.13,
-      color: darkMode ? 0x00e5ff : 0x9c4dcc,
-      transparent: true,
-      opacity: 0.75,
-    })
-    const particleSystem = new THREE.Points(particleGeo, particleMat)
-    scene.add(particleSystem)
-
     // Raycasting & Interaction State
     const raycaster = new THREE.Raycaster()
     const mouse = new THREE.Vector2(-999, -999)
@@ -1079,7 +1011,7 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
       clock.last = now
 
       // Auto rotation when idle
-      if (autoRotate && !isDragging && !selectedStation) {
+      if (autoRotateRef.current && !isDragging && !selectedStation) {
         targetRotationY += 0.0018
       }
 
@@ -1155,9 +1087,6 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
         }
       })
 
-      // Particle slow drift
-      particleSystem.rotation.y += 0.0006
-
       renderer.render(scene, camera)
     }
 
@@ -1185,9 +1114,10 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
       if (container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement)
       }
+      container.innerHTML = ''
       renderer.dispose()
     }
-  }, [darkMode, autoRotate])
+  }, [darkMode])
 
   const handleStationClick = (st) => {
     setSelectedStation(st)
