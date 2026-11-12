@@ -7,7 +7,7 @@
     "dev": "concurrently -n server,vite,office -c magenta,cyan,yellow \"npm:server\" \"vite\" \"npm:office\"",
     "dev:web": "vite",
     "server": "node server/index.js",
-    "office": "node agent-office-main/dist/server/server/cli.js --home agent-office-main/.office-data --port 4600 --no-open --password zenic2026 --city \"Bogotá\"",
+    "office": "node agent-office-main/dist/server/server/cli.js . --home agent-office-main/.office-data --port 4600 --no-open --password zenic2026 --city \"Bogotá\"",
     "build": "vite build",
     "start": "node server/index.js",
     "lint": "eslint .",
