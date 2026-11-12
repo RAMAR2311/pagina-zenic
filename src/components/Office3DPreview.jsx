@@ -41,11 +41,11 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
     renderer.outputColorSpace = THREE.SRGBColorSpace
     container.appendChild(renderer.domElement)
 
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(darkMode ? 0x223355 : 0x8899aa, 1.4)
+    // Lighting (Warm, crisp balance optimized for both Dark Mode and Light Mode)
+    const ambientLight = new THREE.AmbientLight(darkMode ? 0x223355 : 0xffffff, darkMode ? 1.4 : 1.7)
     scene.add(ambientLight)
 
-    const dirLight = new THREE.DirectionalLight(0xffffff, darkMode ? 1.6 : 1.9)
+    const dirLight = new THREE.DirectionalLight(0xffffff, darkMode ? 1.6 : 1.8)
     dirLight.position.set(16, 26, 12)
     dirLight.castShadow = true
     dirLight.shadow.bias = -0.0005
