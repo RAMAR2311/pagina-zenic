@@ -14,6 +14,8 @@ export default defineConfig({
     },
   },
   server: {
+    host: '0.0.0.0',
+    port: 5173,
     proxy: {
       // Proxy API + uploaded images to the local backend (server/index.js)
       '/api':     { target: 'http://localhost:4000', changeOrigin: true },
