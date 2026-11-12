@@ -190,7 +190,10 @@ body.telescope-active #hud { visibility: hidden; }
 .caffeine .bar span { display: block; width: 0; height: 100%; background: #9c6644; transition: width 1s linear; }
 .caffeine .left { min-width: 24px; font-variant-numeric: tabular-nums; }
 .caffeine.jittery { animation: jitters .1s steps(2) infinite; }
-.golf { position: absolute; left: 50%; top: 14px; transform: translateX(-50%); width: min(300px, calc(100vw - 32px)); padding: 8px 12px 9px; display: grid; gap: 6px; font-size: 13px; font-weight: 900; text-align: center; pointer-events: none !important; }
+.golf { position: absolute; left: 50%; top: 14px; transform: translateX(-50%); width: min(320px, calc(100vw - 32px)); padding: 8px 12px 9px; display: grid; gap: 6px; font-size: 13px; font-weight: 900; text-align: center; pointer-events: auto; z-index: 100; }
+.golf-title { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.golf-close { pointer-events: auto; cursor: pointer; padding: 2px 8px; font-size: 11px; font-weight: 800; border-radius: 6px; background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); }
+.golf-close:hover { background: rgba(239, 68, 68, 0.4); }
 .golf-meter { position: relative; height: 16px; border: 3px solid var(--ink); border-radius: 999px; background: linear-gradient(90deg, #caffbf, #ffd166 70%, #ef476f); overflow: hidden; }
 /* Covers the part of the meter's colors that isn't filled, from the right. */
 .golf-rest { position: absolute; inset: 0 0 0 auto; width: 100%; background: #f1e4d3; }
@@ -198,7 +201,7 @@ body.telescope-active #hud { visibility: hidden; }
 .golf-info { font-weight: 800; font-variant-numeric: tabular-nums; }
 #hud:has(.golf:not(.hidden)) #toasts { translate: 0 48px; }
 /* At the rooftop bar's dart board or axe lane (see features/bargames/controller.ts): the meter with its green, and the round so far. */
-.throw { position: absolute; left: 50%; top: 14px; transform: translateX(-50%); width: min(320px, calc(100vw - 32px)); padding: 8px 12px 9px; display: grid; gap: 6px; font-size: 13px; font-weight: 900; text-align: center; pointer-events: none !important; }
+.throw { position: absolute; left: 50%; top: 14px; transform: translateX(-50%); width: min(320px, calc(100vw - 32px)); padding: 8px 12px 9px; display: grid; gap: 6px; font-size: 13px; font-weight: 900; text-align: center; pointer-events: auto; z-index: 100; }
 .throw-meter { position: relative; height: 16px; border: 3px solid var(--ink); border-radius: 999px; background: #f1e4d3; overflow: hidden; }
 .throw-sweet { position: absolute; top: 0; bottom: 0; background: var(--good); }
 .throw-fill { position: absolute; inset: 0 auto 0 0; background: linear-gradient(90deg, rgba(255,209,102,.3), rgba(255,138,91,.75)); border-right: 3px solid var(--ink); }

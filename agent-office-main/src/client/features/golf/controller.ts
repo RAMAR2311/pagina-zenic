@@ -94,7 +94,12 @@ export class Golfer {
     this.rest = h('span.golf-rest');
     this.mark = h('span.golf-last');
     this.info = h('div.golf-info');
-    this.panel = h('div.golf.panel.hidden', { id: 'golf', 'aria-label': 'Golf' }, h('div.golf-title', {}, `⛳ Hole 1 · ${Math.round(PIN_DISTANCE)} m · Par 1`), h('div.golf-meter', {}, this.rest, this.mark), this.info);
+    const closeBtn = h('button.btn.golf-close', {
+      type: 'button',
+      title: 'Salir del juego de golf (Esc o E)',
+      onclick: () => this.stop(),
+    }, '✕ Salir');
+    this.panel = h('div.golf.panel.hidden', { id: 'golf', 'aria-label': 'Golf' }, h('div.golf-title', {}, `⛳ Hoyo 1 · ${Math.round(PIN_DISTANCE)} m · Par 1`, closeBtn), h('div.golf-meter', {}, this.rest, this.mark), this.info);
     $('hud').append(this.panel);
     window.addEventListener('keydown', (e) => this.key(e, true));
     window.addEventListener('keyup', (e) => this.key(e, false));
@@ -193,7 +198,12 @@ export class Golfer {
   }
 
   private key(e: KeyboardEvent, down: boolean) {
-    if (!this.stage || e.code !== 'Space') return;
+    if (!this.stage) return;
+    if (down && (e.code === 'Escape' || e.code === 'KeyE' || e.code === 'KeyQ' || e.code === 'Backspace')) {
+      this.stop();
+      return;
+    }
+    if (e.code !== 'Space') return;
     if (down && (e.repeat || isTyping(e) || modalOpen() || e.metaKey || e.ctrlKey || e.altKey)) return;
     if (down && this.stage === 'aim') {
       if (performance.now() - this.hitAt < BETWEEN_SHOTS) return;

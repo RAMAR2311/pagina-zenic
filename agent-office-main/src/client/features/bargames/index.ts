@@ -70,10 +70,13 @@ export function installBarGames(ctx: Ctx, deps: BarGamesDeps) {
     stop: (why) => {
       if (why !== 'taken' && why !== 'map') thrower.stop();
     },
-    // At the dart board or the axe lane, E steps back (Space throws, see Thrower); nothing else is in reach, and no emotes mid-throw.
+    // At the dart board or the axe lane, Esc, E, Q or Backspace steps back (Space throws)
     key: (e) => {
+      if (e.code === 'KeyE' || e.code === 'Escape' || e.code === 'KeyQ' || e.code === 'Backspace') {
+        thrower.stop();
+        return true;
+      }
       if (e.code !== 'KeyF' && e.code !== 'KeyG' && !(e.code in DESK_KEYS) && !/^(?:Digit|Numpad)[1-6]$/.test(e.code)) return false;
-      if (e.code === 'KeyE') thrower.stop();
       return true;
     },
     hint: (el) => renderThrowHint(el),
@@ -206,7 +209,7 @@ export function installBarGames(ctx: Ctx, deps: BarGamesDeps) {
   /** At the dart board or the axe lane: how to aim and throw, and how to step back. */
   function renderThrowHint(el: HTMLElement) {
     const stage = thrower.doing;
-    ctx.hint.draw(el, `throw|${stage === 'wind'}`, () => (stage === 'wind' ? [h('span.title', {}, 'Let go in the green!')] : [key('Mouse', 'Aim'), key('Space', 'Hold to throw'), key('E', 'Step back')]));
+    ctx.hint.draw(el, `throw|${stage === 'wind'}`, () => (stage === 'wind' ? [h('span.title', {}, '¡Suelta en la zona verde!')] : [key('Mouse', 'Apuntar'), key('Espacio', 'Mantener para lanzar'), key('Esc / E', 'Salir')]));
   }
 
   // At the oche or the line, the view narrows onto the target.

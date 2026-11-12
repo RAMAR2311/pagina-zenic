@@ -75,10 +75,13 @@ export function installGolf(ctx: Ctx, deps: GolfDeps) {
     stop: (why) => {
       if (why !== 'taken') golf.stop();
     },
-    // At the golf tee, E puts the club back (Space swings, see Golfer); nothing else is in reach, and no emotes mid-swing.
+    // At the golf tee, Esc, E, Q or Backspace puts the club back (Space swings, see Golfer)
     key: (e) => {
+      if (e.code === 'KeyE' || e.code === 'Escape' || e.code === 'KeyQ' || e.code === 'Backspace') {
+        golf.stop();
+        return true;
+      }
       if (e.code !== 'KeyF' && e.code !== 'KeyG' && !(e.code in DESK_KEYS) && !/^(?:Digit|Numpad)[1-6]$/.test(e.code)) return false;
-      if (e.code === 'KeyE') golf.stop();
       return true;
     },
     hint: (el) => renderGolfHint(el),
@@ -176,10 +179,10 @@ export function installGolf(ctx: Ctx, deps: GolfDeps) {
     const stage = golf.doing;
     ctx.hint.draw(el, `golf|${stage}`, () =>
       stage === 'watch'
-        ? [title('⛳ Fore!'), key('Space', 'Back to the tee'), key('E', 'Done')]
+        ? [title('⛳ ¡Pelota en el aire!'), key('Espacio', 'Nuevo tiro'), key('Esc / E', 'Salir del Golf')]
         : stage === 'charge' || stage === 'swing'
-          ? [title('⛳ Let go to hit it'), aside('the fuller the meter, the further it goes')]
-          : [key('Space', 'Hold to swing'), key('A D', 'Aim'), key('W S', 'Loft'), key('E', 'Done')],
+          ? [title('⛳ Suelta para golpear'), aside('Entre más llena la barra, más lejos viaja')]
+          : [key('Espacio', 'Mantener para swing'), key('A / D', 'Apuntar'), key('W / S', 'Ángulo'), key('Esc / E', 'Salir del Golf')],
     );
   }
 
