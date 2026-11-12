@@ -37,6 +37,7 @@ import { installCabinet } from './features/cabinet';
 import { installCarrying } from './features/carrying';
 import { installCars } from './features/cars';
 import { installChat } from './features/chat';
+import { ROOF } from '../shared/rooftop';
 import { installClimbing } from './features/climbing';
 import { installCoffee } from './features/coffee';
 import { installDictation } from './features/dictation';

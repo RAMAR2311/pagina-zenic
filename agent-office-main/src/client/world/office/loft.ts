@@ -6,6 +6,7 @@ import type { Fixture } from './fixture';
 import { PALETTE, box, floorTexture, glassPane, type Looks } from './materials';
 import { floorPlant, pendant, plant } from './props';
 import { chair, seatable } from './seats';
+import type {} from '../../features/telescope';
 
 /**
  * The upstairs office: a loft on posts in the south-east corner, with glass on the two sides that

@@ -8,6 +8,9 @@ import { PALETTE, box, floorTexture, glassPane } from './materials';
 import { floorPlant, plant } from './props';
 import { seatable } from './seats';
 import { coffeeMug } from '../character';
+import type {} from '../../features/smoke';
+import type {} from '../../features/coffee';
+import type {} from './room';
 
 // Outside the office's walls: the smoking balcony off the south wall, the posts under the bottom
 // floor's, and the steps from the exit door down to the street.
