@@ -21,6 +21,8 @@ export interface DeskDef {
   room?: boolean;
   /** A desk in the back office (see WING): there once the floor is built out this many rows. */
   wing?: number;
+  /** Private executive suite desk (reserved for founders/directors, not for general AI workers) */
+  executive?: boolean;
 }
 
 const DESK_WIDTH = 2.2;
@@ -28,20 +30,17 @@ const DESK_DEPTH = 1.1;
 export const DESK_SIZE = { width: DESK_WIDTH, depth: DESK_DEPTH, height: 0.78 } as const;
 
 function buildDesks(): DeskDef[] {
-  // Despachos Ejecutivos Privados: 1 solo escritorio por oficina orientado hacia la puerta de entrada
-  // 1. Despacho Jhon (Finanzas & Administración) - Orientado al sur (hacia su puerta)
-  // 2. Despacho Miguel (Tecnología & IA) - Orientado al sur (hacia su puerta)
-  // 3. Despacho Santiago (Marketing & Retail) - Orientado al norte (hacia su puerta)
-  // 4-7. Mesa Colaborativa Central abierta para equipo y agentes
+  // 1-4. Mesas Colaborativas Centrales (las mesas de al lado, abiertas para que se sienten los agentes de IA y colaboradores)
+  // 5-7. Despachos Ejecutivos Privados (Jhon, Miguel, Santiago) - 1 solo escritorio por oficina, reservados para directores
   const desks: DeskDef[] = [
-    { id: 'desk-1', x: -10.5, z: -4.0, rotY: Math.PI, label: '💼 Despacho Jhon (Finanzas)' },
-    { id: 'desk-2', x: -1.5, z: -4.0, rotY: Math.PI, label: '⚡ Despacho Miguel (CTO & IA)' },
-    { id: 'desk-3', x: -10.5, z: 4.0, rotY: 0, label: '🎯 Despacho Santiago (Marketing)' },
-    // Cluster abierto central
-    { id: 'desk-4', x: -1.5 - DESK_WIDTH / 2, z: 3.45, rotY: Math.PI, label: 'Mesa Central 1' },
-    { id: 'desk-5', x: -1.5 + DESK_WIDTH / 2, z: 3.45, rotY: Math.PI, label: 'Mesa Central 2' },
-    { id: 'desk-6', x: -1.5 - DESK_WIDTH / 2, z: 4.55, rotY: 0, label: 'Mesa Central 3' },
-    { id: 'desk-7', x: -1.5 + DESK_WIDTH / 2, z: 4.55, rotY: 0, label: 'Mesa Central 4' },
+    { id: 'desk-1', x: -1.5 - DESK_WIDTH / 2, z: 3.45, rotY: Math.PI, label: 'Mesa Central 1 (IA & Equipo)' },
+    { id: 'desk-2', x: -1.5 + DESK_WIDTH / 2, z: 3.45, rotY: Math.PI, label: 'Mesa Central 2 (IA & Equipo)' },
+    { id: 'desk-3', x: -1.5 - DESK_WIDTH / 2, z: 4.55, rotY: 0, label: 'Mesa Central 3 (IA & Equipo)' },
+    { id: 'desk-4', x: -1.5 + DESK_WIDTH / 2, z: 4.55, rotY: 0, label: 'Mesa Central 4 (IA & Equipo)' },
+    // Despachos Ejecutivos Privados (1 solo escritorio por despacho):
+    { id: 'desk-5', x: -10.5, z: -4.0, rotY: Math.PI, label: '💼 Despacho Jhon (Finanzas)', executive: true },
+    { id: 'desk-6', x: -1.5, z: -4.0, rotY: Math.PI, label: '⚡ Despacho Miguel (CTO & IA)', executive: true },
+    { id: 'desk-7', x: -10.5, z: 4.0, rotY: 0, label: '🎯 Despacho Santiago (Marketing)', executive: true },
   ];
   return desks;
 }
@@ -194,10 +193,13 @@ export const MEETING_BOARD = { x: MEETING_TABLE.x, y: 1.95, z: FLOOR.maxZ - 0.08
 export const DESK_BY_ID = new Map([...SEATS, ...STATIONS, ...MEETING_SEATS].map((d) => [d.id, d]));
 
 /**
- * The seat a new worker takes when nobody picks one: the first free desk (in the back office too, as
- * far as the floor is built out: `wing` rows), else the first free bean bag.
+ * The seat a new worker takes when nobody picks one: first looks at the collaborative side tables
+ * ("las mesas de al lado"), reserving executive suites for directors.
  */
 export function nextFreeSeat(taken: (id: string) => boolean, wing = 0): DeskDef | undefined {
+  const openSeats = SEATS.filter((d) => !d.executive);
+  const foundOpen = openSeats.find((d) => !taken(d.id) && deskBuilt(d, wing));
+  if (foundOpen) return foundOpen;
   return SEATS.find((d) => !taken(d.id) && deskBuilt(d, wing));
 }
 

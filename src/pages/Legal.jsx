@@ -379,3 +379,4 @@ export default function Legal({ darkMode }) {
     </div>
   )
 }
+

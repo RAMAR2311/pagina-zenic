@@ -391,3 +391,4 @@ export default function LegalModal({ isOpen, onClose, initialDocId = 'terminos',
     </div>
   )
 }
+

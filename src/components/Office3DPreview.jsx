@@ -344,6 +344,179 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
       return { root: agentGroup, head, leftArm, rightArm }
     }
 
+    // ── 🧠 3D HOLOGRAPHIC AI BRAIN (CEREBRO CENTRAL ZENIC) ──
+    const createStylized3DBrain = () => {
+      const brainGroup = new THREE.Group()
+
+      // High-tech holographic brain materials (Magenta / Cyan Zenic palette)
+      const cortexMat = new THREE.MeshStandardMaterial({
+        color: 0x9c4dcc,
+        emissive: 0xff007f,
+        emissiveIntensity: 0.95,
+        roughness: 0.2,
+        metalness: 0.15,
+      })
+
+      const wireMat = new THREE.MeshBasicMaterial({
+        color: 0x00f0ff,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.55,
+      })
+
+      const synapseMat = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+      })
+
+      // Two distinct cerebral hemispheres (Left and Right) separated by the longitudinal fissure
+      for (const hemi of [-1, 1]) {
+        const hemiGroup = new THREE.Group()
+        hemiGroup.position.x = hemi * 0.22
+
+        // Main cerebral cortex sphere with sculpted gyri/sulci convolutions
+        const cortexGeo = new THREE.SphereGeometry(0.46, 32, 24)
+        const pos = cortexGeo.attributes.position
+
+        for (let i = 0; i < pos.count; i++) {
+          let x = pos.getX(i)
+          let y = pos.getY(i)
+          let z = pos.getZ(i)
+
+          // Medial flattening along the longitudinal fissure
+          if (hemi * x < 0) {
+            x *= 0.55
+          }
+          // Frontal lobe expansion (anterior)
+          if (z > 0) {
+            z *= 1.2
+            y *= 1.05
+          } else {
+            // Occipital lobe rounding (posterior)
+            z *= 1.05
+          }
+          // Temporal lobe lower lateral bulge
+          if (y < -0.05 && Math.abs(x) > 0.12) {
+            x *= 1.18
+            y *= 1.12
+          }
+
+          // Procedural anatomical folds (gyri and sulci)
+          const sulcus =
+            Math.sin(y * 14 + z * 12) * Math.cos(x * 12 + y * 10) * 0.048 +
+            Math.sin(z * 18 + x * 8) * 0.022
+          const len = Math.hypot(x, y, z)
+          if (len > 0.001) {
+            const factor = 1 + sulcus / len
+            x *= factor
+            y *= factor
+            z *= factor
+          }
+
+          pos.setXYZ(i, x, y, z)
+        }
+        cortexGeo.computeVertexNormals()
+
+        // Cortex mesh
+        const cortexMesh = new THREE.Mesh(cortexGeo, cortexMat)
+        hemiGroup.add(cortexMesh)
+
+        // Neural wireframe mesh overlay
+        const wireMesh = new THREE.Mesh(cortexGeo.clone(), wireMat)
+        wireMesh.scale.setScalar(1.025)
+        hemiGroup.add(wireMesh)
+
+        // Cerebellum (posterior lower lobe)
+        const cerebGeo = new THREE.SphereGeometry(0.2, 20, 14)
+        cerebGeo.scale(0.85, 0.65, 0.95)
+        const cerebPos = cerebGeo.attributes.position
+        for (let i = 0; i < cerebPos.count; i++) {
+          const cy = cerebPos.getY(i)
+          cerebPos.setY(i, cy + Math.sin(cy * 30) * 0.015)
+        }
+        cerebGeo.computeVertexNormals()
+        const cerebMesh = new THREE.Mesh(cerebGeo, cortexMat)
+        cerebMesh.position.set(0, -0.32, -0.22)
+        hemiGroup.add(cerebMesh)
+
+        const cerebWire = new THREE.Mesh(cerebGeo.clone(), wireMat)
+        cerebWire.position.set(0, -0.32, -0.22)
+        cerebWire.scale.setScalar(1.03)
+        hemiGroup.add(cerebWire)
+
+        // Glowing synaptic nodes
+        const nodeGeo = new THREE.SphereGeometry(0.024, 8, 8)
+        for (let s = 0; s < 12; s++) {
+          const sMesh = new THREE.Mesh(nodeGeo, synapseMat)
+          const angle = (s / 12) * Math.PI * 2
+          sMesh.position.set(
+            Math.cos(angle) * 0.38 + hemi * 0.04,
+            Math.sin(angle * 1.5) * 0.28,
+            Math.cos(angle * 2) * 0.38
+          )
+          hemiGroup.add(sMesh)
+        }
+
+        brainGroup.add(hemiGroup)
+      }
+
+      // Brainstem
+      const stemGeo = new THREE.CylinderGeometry(0.08, 0.05, 0.36, 14)
+      const stemMat = new THREE.MeshStandardMaterial({
+        color: 0x4a2574,
+        emissive: 0x9c4dcc,
+        emissiveIntensity: 0.85,
+        roughness: 0.3,
+      })
+      const stem = new THREE.Mesh(stemGeo, stemMat)
+      stem.position.set(0, -0.42, -0.06)
+      stem.rotation.x = -0.15
+      brainGroup.add(stem)
+
+      // Corpus Callosum neural bridges across the fissure
+      for (let b = 0; b < 6; b++) {
+        const bridgeGeo = new THREE.CylinderGeometry(0.018, 0.018, 0.42, 8)
+        bridgeGeo.rotateZ(Math.PI / 2)
+        const bridgeMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, transparent: true, opacity: 0.9 })
+        const bridge = new THREE.Mesh(bridgeGeo, bridgeMat)
+        bridge.position.set(0, -0.05 + b * 0.08, -0.18 + b * 0.08)
+        brainGroup.add(bridge)
+      }
+
+      // Rotating Neural Gyro Rings
+      const gyro1Geo = new THREE.TorusGeometry(1.08, 0.016, 8, 48)
+      const gyro1Mat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, transparent: true, opacity: 0.75 })
+      const gyro1 = new THREE.Mesh(gyro1Geo, gyro1Mat)
+      brainGroup.add(gyro1)
+
+      const gyro2Geo = new THREE.TorusGeometry(1.18, 0.014, 8, 48)
+      const gyro2Mat = new THREE.MeshBasicMaterial({ color: 0xff007f, transparent: true, opacity: 0.7 })
+      const gyro2 = new THREE.Mesh(gyro2Geo, gyro2Mat)
+      gyro2.rotation.x = Math.PI / 3
+      gyro2.rotation.y = Math.PI / 6
+      brainGroup.add(gyro2)
+
+      // Cybernetic Pedestal console underneath the brain
+      const pedestalGeo = new THREE.CylinderGeometry(0.72, 0.92, 0.75, 32)
+      const pedestalMat = new THREE.MeshStandardMaterial({
+        color: 0x0f172a,
+        metalness: 0.8,
+        roughness: 0.25,
+      })
+      const pedestal = new THREE.Mesh(pedestalGeo, pedestalMat)
+      pedestal.position.set(0, -1.15, 0)
+      brainGroup.add(pedestal)
+
+      // Glowing LED band around pedestal
+      const pedRingGeo = new THREE.CylinderGeometry(0.74, 0.74, 0.06, 32)
+      const pedRingMat = new THREE.MeshBasicMaterial({ color: 0xff007f })
+      const pedRing = new THREE.Mesh(pedRingGeo, pedRingMat)
+      pedRing.position.set(0, -0.82, 0)
+      brainGroup.add(pedRing)
+
+      brainGroup.position.y = 1.95
+      return { brainGroup, gyro1, gyro2 }
+    }
+
     // ── DECORATIVE ELEMENTS PER SUITE (Plants, Executive Credenzas, Art & Lounge) ──
     const addDecor = (st) => {
       if (st.id === 'cerebro') return
@@ -567,21 +740,22 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
       // Add furniture decor for suites
       addDecor(st)
 
-      // Desk Table
-      const tableGeo = new THREE.BoxGeometry(isCentral ? 2.6 : 2.3, 0.12, isCentral ? 2.6 : 1.35)
-      const tableMat = new THREE.MeshStandardMaterial({
-        color: isCentral ? (darkMode ? 0x1e1035 : 0xf3e8ff) : darkMode ? 0x0e1726 : 0xf8fafc,
-        roughness: 0.25,
-        metalness: 0.45,
-      })
-      const table = new THREE.Mesh(tableGeo, tableMat)
-      table.position.y = 1.0
-      table.castShadow = true
-      table.receiveShadow = true
-      group.add(table)
-
-      // Desk modesty panel & accessories
+      // ── WORKSTATIONS & SUITE AMENITIES ──
       if (!isCentral) {
+        // Desk Table for Director
+        const tableGeo = new THREE.BoxGeometry(2.3, 0.12, 1.35)
+        const tableMat = new THREE.MeshStandardMaterial({
+          color: darkMode ? 0x0e1726 : 0xf8fafc,
+          roughness: 0.25,
+          metalness: 0.45,
+        })
+        const table = new THREE.Mesh(tableGeo, tableMat)
+        table.position.y = 1.0
+        table.castShadow = true
+        table.receiveShadow = true
+        group.add(table)
+
+        // Desk modesty panel & accessories
         const modestyPanel = new THREE.Mesh(
           new THREE.BoxGeometry(2.1, 0.58, 0.04),
           new THREE.MeshStandardMaterial({ color: darkMode ? 0x1e293b : 0xcbd5e1, roughness: 0.4 })
@@ -625,34 +799,24 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
         )
         mug.position.set(0.75, 1.11, -0.1)
         group.add(mug)
-      }
 
-      // Desk Legs
-      const legGeo = new THREE.CylinderGeometry(0.045, 0.045, 1.0)
-      const legMat = new THREE.MeshStandardMaterial({ color: darkMode ? 0x334155 : 0x94a3b8, metalness: 0.6 })
-      const legOffsets = isCentral
-        ? [
-            [-1.1, -1.1],
-            [1.1, -1.1],
-            [-1.1, 1.1],
-            [1.1, 1.1],
-          ]
-        : [
-            [-0.98, -0.52],
-            [0.98, -0.52],
-            [-0.98, 0.52],
-            [0.98, 0.52],
-          ]
+        // Desk Legs
+        const legGeo = new THREE.CylinderGeometry(0.045, 0.045, 1.0)
+        const legMat = new THREE.MeshStandardMaterial({ color: darkMode ? 0x334155 : 0x94a3b8, metalness: 0.6 })
+        const legOffsets = [
+          [-0.98, -0.52],
+          [0.98, -0.52],
+          [-0.98, 0.52],
+          [0.98, 0.52],
+        ]
 
-      legOffsets.forEach(([lx, lz]) => {
-        const leg = new THREE.Mesh(legGeo, legMat)
-        leg.position.set(lx, 0.5, lz)
-        group.add(leg)
-      })
+        legOffsets.forEach(([lx, lz]) => {
+          const leg = new THREE.Mesh(legGeo, legMat)
+          leg.position.set(lx, 0.5, lz)
+          group.add(leg)
+        })
 
-      // Dual Widescreen Curved Monitors Setup
-      if (!isCentral) {
-        // Main Curved Widescreen Display
+        // Dual Widescreen Curved Monitors Setup
         const mainScreenFrame = new THREE.Mesh(
           new THREE.BoxGeometry(0.85, 0.44, 0.03),
           new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.7 })
@@ -717,77 +881,59 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
         )
         mouse.position.set(0.26, 1.07, 0.12)
         group.add(mouse)
-      }
 
-      // Ergonomic Executive Chair
-      const chairMat = new THREE.MeshStandardMaterial({
-        color: darkMode ? 0x0f172a : 0x334155,
-        roughness: 0.4,
-      })
-      const chairAccentMat = new THREE.MeshStandardMaterial({
-        color: new THREE.Color(st.color),
-        roughness: 0.4,
-      })
-      const chairGroup = new THREE.Group()
-      const chairBase = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.28, 8), chairMat)
-      chairBase.position.y = 0.16
-      chairGroup.add(chairBase)
-      for (let w = 0; w < 5; w++) {
-        const rad = (w / 5) * Math.PI * 2
-        const spoke = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.03, 0.34), chairMat)
-        spoke.position.set(Math.sin(rad) * 0.15, 0.06, Math.cos(rad) * 0.15)
-        spoke.rotation.y = rad
-        chairGroup.add(spoke)
-      }
-      const chairSeat = new THREE.Mesh(new THREE.BoxGeometry(0.64, 0.09, 0.62), chairMat)
-      chairSeat.position.set(0, 0.58, 0)
-      chairGroup.add(chairSeat)
-      const chairBack = new THREE.Mesh(new THREE.BoxGeometry(0.58, 0.68, 0.07), chairMat)
-      chairBack.position.set(0, 0.98, 0.28)
-      chairBack.rotation.x = 0.08
-      chairGroup.add(chairBack)
-      const headrest = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.18, 0.06), chairAccentMat)
-      headrest.position.set(0, 1.38, 0.32)
-      chairGroup.add(headrest)
-      for (const ax of [-0.34, 0.34]) {
-        const armPost = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.22, 6), chairMat)
-        armPost.position.set(ax, 0.68, 0)
-        chairGroup.add(armPost)
-        const armPad = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.03, 0.32), chairMat)
-        armPad.position.set(ax, 0.79, 0)
-        chairGroup.add(armPad)
-      }
-      chairGroup.position.set(0, 0, 0.75)
-      group.add(chairGroup)
+        // Ergonomic Executive Chair
+        const chairMat = new THREE.MeshStandardMaterial({
+          color: darkMode ? 0x0f172a : 0x334155,
+          roughness: 0.4,
+        })
+        const chairAccentMat = new THREE.MeshStandardMaterial({
+          color: new THREE.Color(st.color),
+          roughness: 0.4,
+        })
+        const chairGroup = new THREE.Group()
+        const chairBase = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.28, 8), chairMat)
+        chairBase.position.y = 0.16
+        chairGroup.add(chairBase)
+        for (let w = 0; w < 5; w++) {
+          const rad = (w / 5) * Math.PI * 2
+          const spoke = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.03, 0.34), chairMat)
+          spoke.position.set(Math.sin(rad) * 0.15, 0.06, Math.cos(rad) * 0.15)
+          spoke.rotation.y = rad
+          chairGroup.add(spoke)
+        }
+        const chairSeat = new THREE.Mesh(new THREE.BoxGeometry(0.64, 0.09, 0.62), chairMat)
+        chairSeat.position.set(0, 0.58, 0)
+        chairGroup.add(chairSeat)
+        const chairBack = new THREE.Mesh(new THREE.BoxGeometry(0.58, 0.68, 0.07), chairMat)
+        chairBack.position.set(0, 0.98, 0.28)
+        chairBack.rotation.x = 0.08
+        chairGroup.add(chairBack)
+        const headrest = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.18, 0.06), chairAccentMat)
+        headrest.position.set(0, 1.38, 0.32)
+        chairGroup.add(headrest)
+        for (const ax of [-0.34, 0.34]) {
+          const armPost = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.22, 6), chairMat)
+          armPost.position.set(ax, 0.68, 0)
+          chairGroup.add(armPost)
+          const armPad = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.03, 0.32), chairMat)
+          armPad.position.set(ax, 0.79, 0)
+          chairGroup.add(armPad)
+        }
+        chairGroup.position.set(0, 0, 0.75)
+        group.add(chairGroup)
 
-      // ── SITTING AGENT (Only for the 4 human directors; Central Core has Neural Orb) ──
-      if (!isCentral) {
+        // Sitting Director Agent
         const agent = createSittingAgent(st.color, st.skinTone, st.hairColor, st.id === 'ceo')
         group.add(agent.root)
         animatedAgents.push({ id: st.id, ...agent })
-      }
-
-      // Central Hologram / Brain Orb if central station
-      if (isCentral) {
-        const orbGeo = new THREE.IcosahedronGeometry(0.65, 2)
-        const orbMat = new THREE.MeshStandardMaterial({
-          color: 0x00e5ff,
-          emissive: 0xff007f,
-          emissiveIntensity: 0.9,
-          wireframe: true,
-        })
-        const orb = new THREE.Mesh(orbGeo, orbMat)
-        orb.position.y = 1.9
-        group.add(orb)
-        group.userData.orb = orb
-
-        // Additional rotating neural gyro rings
-        const gyroGeo = new THREE.TorusGeometry(0.9, 0.02, 8, 32)
-        const gyroMat = new THREE.MeshBasicMaterial({ color: 0x00e5ff, transparent: true, opacity: 0.7 })
-        const gyro = new THREE.Mesh(gyroGeo, gyroMat)
-        gyro.position.y = 1.9
-        group.add(gyro)
-        group.userData.gyro = gyro
+      } else {
+        // ── 🧠 3D HOLOGRAPHIC CEREBRO IA (CENTRAL STATION) ──
+        const { brainGroup, gyro1, gyro2 } = createStylized3DBrain()
+        group.add(brainGroup)
+        group.userData.brain = brainGroup
+        group.userData.gyro1 = gyro1
+        group.userData.gyro2 = gyro2
       }
 
       // Floating Marker Beacon
@@ -1050,14 +1196,21 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
           grp.userData.ring.scale.lerp(new THREE.Vector3(targetRingScale, targetRingScale, targetRingScale), 0.1)
         }
 
-        if (grp.userData.orb) {
-          grp.userData.orb.rotation.y += 0.02
-          grp.userData.orb.rotation.x += 0.01
+        // 🧠 Animate 3D Holographic AI Brain (organic neural pulse & rotation)
+        if (grp.userData.brain) {
+          const pulse = 1 + Math.sin(now * 0.0035) * 0.038
+          grp.userData.brain.scale.set(pulse, pulse, pulse)
+          grp.userData.brain.rotation.y += 0.007
         }
 
-        if (grp.userData.gyro) {
-          grp.userData.gyro.rotation.z += 0.015
-          grp.userData.gyro.rotation.y += 0.008
+        if (grp.userData.gyro1) {
+          grp.userData.gyro1.rotation.z += 0.015
+          grp.userData.gyro1.rotation.x += 0.006
+        }
+
+        if (grp.userData.gyro2) {
+          grp.userData.gyro2.rotation.y += 0.012
+          grp.userData.gyro2.rotation.z += 0.009
         }
       })
 
