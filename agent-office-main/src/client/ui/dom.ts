@@ -147,10 +147,10 @@ export function toast(text: string, level: 'info' | 'warn' | 'error' = 'info'): 
 export function timeAgo(iso: string | number): string {
   const t = typeof iso === 'number' ? iso : Date.parse(iso);
   const s = Math.max(0, (Date.now() - t) / 1000);
-  if (s < 60) return 'just now';
-  if (s < 3600) return `${Math.floor(s / 60)}m ago`;
-  if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
-  return `${Math.floor(s / 86400)}d ago`;
+  if (s < 60) return 'hace un momento';
+  if (s < 3600) return `hace ${Math.floor(s / 60)}m`;
+  if (s < 86400) return `hace ${Math.floor(s / 3600)}h`;
+  return `hace ${Math.floor(s / 86400)}d`;
 }
 
 /** `text` cut to at most `max` characters, with an ellipsis when it was longer. */
@@ -159,11 +159,11 @@ export function clip(text: string, max: number): string {
 }
 
 export const STATUS_LABEL: Record<string, string> = {
-  starting: 'starting',
-  idle: 'ready',
-  working: 'working',
-  needs_input: 'needs input',
-  done: 'done',
-  exited: 'exited',
-  offline: 'asleep',
+  starting: 'iniciando',
+  idle: 'disponible',
+  working: 'trabajando',
+  needs_input: 'requiere atención',
+  done: 'completado',
+  exited: 'finalizado',
+  offline: 'en reposo',
 };

@@ -42,41 +42,41 @@ export function worktreePref(): boolean {
 export function repoPicker(options: { id: string; name: string }[] | undefined, wtBox: HTMLInputElement): { element: HTMLElement | null; value(): string[] } {
   const picks = (options ?? []).map((r) => {
     const box = h('input', { type: 'checkbox', value: r.id, onchange: () => box.checked && (wtBox.checked = true) }) as HTMLInputElement;
-    return { id: r.id, box, el: h('label.repo-pick', { title: `A worktree of ${r.name} too, on the same branch, with a pull request of its own` }, box, r.name) };
+    return { id: r.id, box, el: h('label.repo-pick', { title: `Un worktree de ${r.name} en la misma rama con su propio pull request` }, box, r.name) };
   });
   if (!picks.length) return { element: null, value: () => [] };
   wtBox.addEventListener('change', () => {
     if (!wtBox.checked) for (const p of picks) p.box.checked = false;
   });
   return {
-    element: h('div.repo-picks', { role: 'group', 'aria-label': 'Other projects to work in' }, h('span', {}, '🗂️ Also work in'), ...picks.map((p) => p.el)),
+    element: h('div.repo-picks', { role: 'group', 'aria-label': 'Otros proyectos para trabajar' }, h('span', {}, '🗂️ Trabajar también en'), ...picks.map((p) => p.el)),
     value: () => picks.filter((p) => p.box.checked).map((p) => p.id),
   };
 }
 
 export function openPrompt(opts: PromptOptions) {
-  const ta = h('textarea', { rows: 7, placeholder: opts.placeholder ?? 'What should the worker work on?', 'aria-label': 'Prompt' }) as HTMLTextAreaElement;
+  const ta = h('textarea', { rows: 7, placeholder: opts.placeholder ?? '¿En qué debería trabajar el agente?', 'aria-label': 'Instrucción' }) as HTMLTextAreaElement;
   ta.value = opts.initial ?? '';
   const wtBox = h('input', { type: 'checkbox', id: 'wt-toggle' }) as HTMLInputElement;
   wtBox.checked = worktreePref();
   const wtRow = opts.worktreeOption
     ? h(
         'label',
-        { for: 'wt-toggle', style: 'display:flex;gap:8px;align-items:center;margin:10px 0 0;font-weight:700;cursor:pointer', title: 'Isolate this worker on its own branch so parallel workers never collide' },
+        { for: 'wt-toggle', style: 'display:flex;gap:8px;align-items:center;margin:10px 0 0;font-weight:700;cursor:pointer', title: 'Aísla este agente en su propia rama para que no interfiera con otros' },
         wtBox,
-        '🌿 Work in its own git worktree & branch',
+        '🌿 Trabajar en su propio worktree & rama de git',
     )
     : null;
   const repos = repoPicker(opts.worktreeOption ? opts.repoOptions : undefined, wtBox);
   const provider: ProviderPicker | null = opts.providerOption ? providerPicker(store.project, 'prompt-provider') : null;
-  const submit = h('button.btn.primary', { type: 'submit' }, opts.submitLabel ?? 'Send ✨');
-  const cancel = h('button.btn', { type: 'button' }, 'Cancel');
+  const submit = h('button.btn.primary', { type: 'submit' }, opts.submitLabel ?? 'Enviar ✨');
+  const cancel = h('button.btn', { type: 'button' }, 'Cancelar');
   const form = h(
     'form.modal',
     { role: 'dialog', 'aria-label': opts.title },
     h('header', {}, h('h2', {}, opts.title)),
     h('div.body', {}, opts.warning ? h('p.setting-note.bad', { style: 'margin:0 0 10px', role: 'alert' }, opts.warning) : null, opts.subtitle ? h('p', { style: 'margin:0 0 10px;font-weight:700;color:var(--muted)' }, opts.subtitle) : null, dictateField(ta), provider?.element ?? null, wtRow, repos.element),
-    h('footer', {}, h('span.grow', {}, 'Enter to send · Shift+Enter for a new line'), cancel, submit),
+    h('footer', {}, h('span.grow', {}, 'Enter para enviar · Shift+Enter para salto de línea'), cancel, submit),
   ) as HTMLFormElement;
   form.noValidate = true;
 
@@ -118,7 +118,7 @@ export function openPrompt(opts: PromptOptions) {
 
 export function confirmDialog(title: string, body: string, confirmLabel: string, onConfirm: () => void) {
   const yes = h('button.btn.danger', { type: 'button' }, confirmLabel);
-  const no = h('button.btn', { type: 'button' }, 'Never mind');
+  const no = h('button.btn', { type: 'button' }, 'Cancelar');
   const el = h('div.modal', { role: 'alertdialog', 'aria-label': title }, h('header', {}, h('h2', {}, title)), h('div.body', {}, h('p', { style: 'margin:0;font-weight:700' }, body)), h('footer', {}, no, yes));
   const modal = openModal(el);
   no.addEventListener('click', () => modal.close());
@@ -158,15 +158,15 @@ function inspectWorktree(workerId: string, ask: () => void): Promise<WorktreeSta
     setTimeout(() => {
       if (worktreeChecks.get(workerId) !== resolve) return;
       worktreeChecks.delete(workerId);
-      resolve({ exists: true, dirty: 0, ahead: 0, unpushed: 0, error: 'the office did not answer' });
+      resolve({ exists: true, dirty: 0, ahead: 0, unpushed: 0, error: 'la oficina no respondió' });
     }, 8000);
   });
 }
 
 const CLEANUP_LABEL: Record<WorktreeCleanup, string> = {
-  all: 'Send home & delete both',
-  worktree: 'Send home & delete worktree',
-  keep: 'Send home',
+  all: 'Enviar a descansar y eliminar ambos',
+  worktree: 'Enviar a descansar y borrar worktree',
+  keep: 'Enviar a descansar y conservar',
 };
 
 /**
@@ -178,14 +178,14 @@ export function sendHomeDialog(opts: SendHomeOptions) {
   const across = opts.repos && opts.repos.length > 1 ? opts.repos : undefined;
   const choices: [WorktreeCleanup, string, string][] = across
     ? [
-        ['all', 'Delete the worktrees and their branch', `Removes its worktrees of ${across.join(', ')}, and ${branch} in each.`],
-        ['worktree', 'Delete the worktrees, keep the branch', `${branch} stays in each for a pull request or a later checkout.`],
-        ['keep', 'Keep them all', 'Leaves everything as it is; agent-office prune in each project tidies up later.'],
+        ['all', 'Eliminar los worktrees y su rama', `Elimina sus worktrees de ${across.join(', ')}, y ${branch} en cada uno.`],
+        ['worktree', 'Eliminar los worktrees, conservar la rama', `${branch} se conserva en cada uno para un pull request o uso futuro.`],
+        ['keep', 'Conservar todo', 'Deja todo intacto; la limpieza de carpetas se puede hacer después.'],
       ]
     : [
-        ['all', 'Delete the worktree and its branch', `Removes ${path} and ${branch}.`],
-        ['worktree', 'Delete the worktree, keep the branch', `${branch} stays for a pull request or a later checkout.`],
-        ['keep', 'Keep both', 'Leaves everything as it is; agent-office prune tidies up later.'],
+        ['all', 'Eliminar el worktree y su rama', `Elimina ${path} y ${branch}.`],
+        ['worktree', 'Eliminar el worktree, conservar la rama', `${branch} se conserva para un pull request o uso posterior.`],
+        ['keep', 'Conservar ambos', 'Deja todo intacto; la limpieza de carpetas se puede hacer después.'],
       ];
   const radios = new Map<WorktreeCleanup, HTMLInputElement>();
   let touched = false;
@@ -212,16 +212,16 @@ export function sendHomeDialog(opts: SendHomeOptions) {
       return h('label.choice', {}, r, h('span', {}, title, h('small', {}, sub)));
     }),
   );
-  const status = h('p.wt-status', {}, `Checking what ${branch} holds…`);
-  const no = h('button.btn', { type: 'button' }, 'Never mind');
+  const status = h('p.wt-status', {}, `Verificando estado de ${branch}…`);
+  const no = h('button.btn', { type: 'button' }, 'Cancelar');
   const form = h(
     'form.modal',
-    { role: 'dialog', 'aria-label': `Send ${opts.name} home?` },
-    h('header', {}, h('h2', {}, `Send ${opts.name} home?`)),
+    { role: 'dialog', 'aria-label': `¿Enviar a ${opts.name} a descansar?` },
+    h('header', {}, h('h2', {}, `¿Enviar a ${opts.name} a descansar?`)),
     h(
       'div.body',
       {},
-      h('p', { style: 'margin:0 0 12px;font-weight:700' }, `This stops the session at ${opts.where} for everyone and frees the desk. ${opts.name} worked ${across ? `in worktrees of ${across.join(', ')}, each` : 'in its own worktree'} on 🌿 ${branch}:`),
+      h('p', { style: 'margin:0 0 12px;font-weight:700' }, `Esto detiene la sesión en ${opts.where} y libera el escritorio. ${opts.name} trabajó ${across ? `en los proyectos ${across.join(', ')}` : 'en su propio worktree'} en 🌿 ${branch}:`),
       list,
       status,
     ),
@@ -279,10 +279,10 @@ export function lostWorktreeDialog(opts: LostWorktreeOptions) {
     origin: `Its branch 🌿 ${branch} was deleted too, but it had been pushed: rebuilding checks origin's copy out again in the same place, and ${name} carries on its conversation.`,
     gone: `Its branch 🌿 ${branch} was deleted too and was never pushed, so the work on it is gone. Rebuilding makes the branch again from where it started, and ${name} carries on its conversation.`,
   }[opts.lost.branch];
-  const one = h('button.btn.primary', { type: 'button' }, 'Rebuild worktree');
-  const all = others.length ? h('button.btn', { type: 'button' }, `Rebuild all ${others.length + 1}`) : null;
-  const home = h('button.btn.danger', { type: 'button' }, 'Send home…');
-  const look = opts.openTerminal ? h('button.btn', { type: 'button' }, 'Open terminal') : null;
+  const one = h('button.btn.primary', { type: 'button' }, 'Reconstruir worktree');
+  const all = others.length ? h('button.btn', { type: 'button' }, `Reconstruir los ${others.length + 1}`) : null;
+  const home = h('button.btn.danger', { type: 'button' }, 'Enviar a descansar…');
+  const look = opts.openTerminal ? h('button.btn', { type: 'button' }, 'Abrir terminal') : null;
   const el = h(
     'div.modal.lost-worktree',
     { role: 'alertdialog', 'aria-label': title },

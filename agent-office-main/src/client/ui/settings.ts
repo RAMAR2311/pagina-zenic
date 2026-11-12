@@ -14,31 +14,31 @@ import { outsideSetting } from './settings-sky';
 import { choiceRow } from './settings-rows';
 
 const VIEWS: [ViewMode, string, string][] = [
-  ['first', '👀 First person', 'See through your own eyes. Click the office to look around with the mouse and click things to use them. Esc frees the mouse.'],
-  ['third', '🎥 Third person', 'Follow your character from behind. Drag to orbit the camera, scroll to zoom, and click things to use them.'],
+  ['first', '👀 Primera persona', 'Mira a través de tus propios ojos. Haz clic en la oficina para mirar con el ratón e interactuar con objetos. Esc libera el cursor.'],
+  ['third', '🎥 Tercera persona', 'Sigue a tu personaje desde atrás. Arrastra para rotar la cámara, usa la rueda para hacer zoom e interactúa haciendo clic.'],
 ];
 
-const THEME_LABEL: Record<ThemePick, string> = { auto: '📅 By the calendar', halloween: '🎃 Halloween', christmas: '🎄 Christmas', off: 'Off' };
+const THEME_LABEL: Record<ThemePick, string> = { auto: '📅 Por calendario', halloween: '🎃 Halloween', christmas: '🎄 Navidad', off: 'Desactivado' };
 
-const WEBHOOK_NAME: Record<WebhookKind, string> = { slack: 'Slack', discord: 'Discord', other: 'a webhook' };
+const WEBHOOK_NAME: Record<WebhookKind, string> = { slack: 'Slack', discord: 'Discord', other: 'un webhook' };
 
 /** The categories down the side of ⚙️ Settings. */
 export type SettingsPane = 'you' | 'sound' | 'notify' | 'building' | 'workers';
 
 const PANES: { id: SettingsPane; icon: string; label: string; blurb: string }[] = [
-  { id: 'you', icon: '🧍', label: 'You', blurb: 'How you look, how you see the office, and how you’re signed in.' },
-  { id: 'sound', icon: '🔊', label: 'Sound & voice', blurb: 'How loud the office is for you, and how voice chat works.' },
-  { id: 'notify', icon: '🔔', label: 'Notifications', blurb: 'Hear about a worker that needs someone, or finished, while you’re somewhere else.' },
-  { id: 'building', icon: '🏢', label: 'Building', blurb: 'The map, the decorations, the sky, the dog, and where new floors are cloned.' },
-  { id: 'workers', icon: '🤖', label: 'Workers', blurb: 'What workers start on, how many run at once, when they go home and what the office tells them.' },
+  { id: 'you', icon: '🧍', label: 'Tú', blurb: 'Tu aspecto físico, modo de cámara y sesión activa.' },
+  { id: 'sound', icon: '🔊', label: 'Sonido y voz', blurb: 'Volumen general de la oficina y configuración de chat por voz.' },
+  { id: 'notify', icon: '🔔', label: 'Notificaciones', blurb: 'Avisos cuando un agente requiera tu atención o termine una tarea.' },
+  { id: 'building', icon: '🏢', label: 'Edificio', blurb: 'Mapas, decoraciones temáticas, cielo exterior, perro de oficina y pisos.' },
+  { id: 'workers', icon: '🤖', label: 'Agentes', blurb: 'Agentes asignados, límites de concurrencia y comportamiento del equipo.' },
 ];
 
 /** Who a setting is for, shown by its name: some are yours alone, some the whole office's. */
 type Scope = 'you' | 'floor' | 'office';
 const SCOPE: Record<Scope, [label: string, title: string]> = {
-  you: ['Just you', 'Only for you, kept in this browser'],
-  floor: ['This floor', 'The same for everyone on this floor'],
-  office: ['Everyone', 'The same for everyone in the building'],
+  you: ['Solo tú', 'Configuración personal guardada en este navegador'],
+  floor: ['Este piso', 'Aplica a todos en el piso actual'],
+  office: ['Toda la oficina', 'Aplica a todo el edificio y usuarios'],
 };
 
 /** One setting: its name and who it's for, then whatever sets it. */
@@ -87,8 +87,8 @@ export function openSettings(net: Net, settings: Settings, onChange: (s: Setting
       const v = Math.round(settings[level] * 100);
       slider.value = String(v);
       slider.style.setProperty('--fill', `${v}%`);
-      pct.textContent = settings[muted] ? 'Muted' : `${v}%`;
-      mute.textContent = settings[muted] ? '🔊 Unmute' : '🔇 Mute';
+      pct.textContent = settings[muted] ? 'Silenciado' : `${v}%`;
+      mute.textContent = settings[muted] ? '🔊 Activar' : '🔇 Silenciar';
       mute.setAttribute('aria-pressed', String(settings[muted]));
       mute.classList.toggle('danger', settings[muted]);
       row.classList.toggle('muted', settings[muted]);
@@ -108,7 +108,7 @@ export function openSettings(net: Net, settings: Settings, onChange: (s: Setting
     });
     return row;
   };
-  const soundRow = volumeRow('Office sounds volume', 'volume', 'muted', () => sound.ding('done'));
+  const soundRow = volumeRow('Volumen de sonidos de oficina', 'volume', 'muted', () => sound.ding('done'));
 
   /** Changes some of your own settings, and has the office take them up. */
   const change = (some: Partial<Settings>) => {
@@ -116,13 +116,13 @@ export function openSettings(net: Net, settings: Settings, onChange: (s: Setting
     onChange(settings);
   };
   // Voice chat: an open mic, or muted until you hold V.
-  const talkRow = choiceRow('Voice chat', [[false, '🎙️ Open mic'], [true, '✋ Push to talk']], () => settings.pushToTalk, (pushToTalk) => change({ pushToTalk }));
-  const musicRow = volumeRow('Jukebox volume', 'music', 'musicMuted');
+  const talkRow = choiceRow('Chat de voz', [[false, '🎙️ Micrófono abierto'], [true, '✋ Pulsar para hablar (Push-to-Talk)']], () => settings.pushToTalk, (pushToTalk) => change({ pushToTalk }));
+  const musicRow = volumeRow('Volumen de la rocola', 'music', 'musicMuted');
 
   // The swish of the book's pages at the bookshelf, on or off.
-  const pagesRow = choiceRow('Page turns at the bookshelf', [[true, '📖 On'], [false, 'Off']], () => settings.pageTurns, (pageTurns) => change({ pageTurns }));
+  const pagesRow = choiceRow('Pasar páginas en estantería', [[true, '📖 Activado'], [false, 'Desactivado']], () => settings.pageTurns, (pageTurns) => change({ pageTurns }));
   // The alarm when a worker stops to ask you something; picking one plays it.
-  const alarmRow = choiceRow<NeedsYouSound>('When a worker needs you', [['once', '🔔 Ring once'], ['remind', '🔁 Keep reminding me'], ['off', '🔕 Off']], () => settings.needsYouSound, (needsYouSound) => {
+  const alarmRow = choiceRow<NeedsYouSound>('Cuando un agente te necesita', [['once', '🔔 Sonar una vez'], ['remind', '🔁 Recordar periódicamente'], ['off', '🔕 Silencio']], () => settings.needsYouSound, (needsYouSound) => {
     change({ needsYouSound });
     if (needsYouSound !== 'off') sound.needsYou();
   });
@@ -439,38 +439,38 @@ export function openSettings(net: Net, settings: Settings, onChange: (s: Setting
   // What the sky's doing, and which clock it keeps (see settings-sky.ts).
   const sky = outside && outsideSetting(net, outside, (body) => setting('Outside', 'office', ...body));
   const account = store.me.account;
-  const signOut = h('button.btn', { type: 'button' }, '🚪 Sign out');
+  const signOut = h('button.btn', { type: 'button' }, '🚪 Cerrar sesión');
   signOut.addEventListener('click', onSignOut);
-  const character = h('button.btn', { type: 'button' }, account ? '🧍 Change your look' : '🧍 Change your look & name');
+  const character = h('button.btn', { type: 'button' }, account ? '🧍 Cambiar apariencia' : '🧍 Cambiar apariencia y nombre');
   const panes: Record<SettingsPane, Node[]> = {
     you: [
-      setting('Your character', null, character),
-      setting('Camera view', 'you', seg, note),
-      setting('Signed in', null, h('div.volume', {}, signOut), h('p.setting-note', {}, account ? `As ${account.name}, with your own account (${account.role}).` : 'With the shared office password.')),
+      setting('Tu personaje', null, character),
+      setting('Vista de cámara', 'you', seg, note),
+      setting('Sesión activa', null, h('div.volume', {}, signOut), h('p.setting-note', {}, account ? `Como ${account.name} (${account.role}).` : 'Con la contraseña compartida de Zenic.')),
     ],
     sound: [
-      setting('Office sounds', 'you', soundRow, h('p.setting-note', {}, 'Workers typing, footsteps, the coffee machine, birds and rain outside, the dog, the ding when a worker is done and the alarm when one needs you. Voice chat isn’t affected.')),
-      setting('When a worker needs you', 'you', alarmRow, h('p.setting-note', {}, 'An alarm the moment a worker stops to ask you something or wants a permission. Keep reminding me rings it again, softly, every 30 seconds until someone opens that worker’s terminal. It’s as loud as the office sounds are.')),
-      setting('Page turns at the bookshelf', 'you', pagesRow, h('p.setting-note', {}, 'A soft swish each time the book in your hands turns a page, as you open a doc or scroll through one. The 🔈 at the top of the bookshelf turns it off too.')),
-      setting('Jukebox', 'you', musicRow, h('p.setting-note', {}, 'The jukebox in the lounge. Everyone on the floor hears the same song, louder the closer they are to it; this is how loud it is for you alone.')),
-      setting('Voice chat', 'you', talkRow, h('p.setting-note', {}, 'Either way, V joins voice, holding V talks and you’re muted once you let go, and M mutes or unmutes. With push to talk you join muted. Leave voice from the ☰ menu.')),
+      setting('Sonidos de oficina', 'you', soundRow, h('p.setting-note', {}, 'Tecleo de agentes, pasos, máquina de café, lluvia exterior, el perro y avisos sonoros.')),
+      setting('Cuando un agente te necesita', 'you', alarmRow, h('p.setting-note', {}, 'Alarma cuando un agente solicita información o permisos.')),
+      setting('Pasar páginas en estantería', 'you', pagesRow, h('p.setting-note', {}, 'Efecto de sonido al consultar documentación en la biblioteca.')),
+      setting('Rocola / Música', 'you', musicRow, h('p.setting-note', {}, 'Música ambiental en el lounge.')),
+      setting('Chat de voz', 'you', talkRow, h('p.setting-note', {}, 'Presiona V para unirte, mantén V para hablar en modo Push-to-Talk y M para silenciar.')),
     ],
     notify: [
-      setting('Desktop notifications', 'you', notifyRow, notifyNote),
-      setting('Team notifications (Slack / Discord)', 'office', h('div.webhook', {}, hookInput, hookSave), hookActions, hookStatus),
+      setting('Notificaciones de escritorio', 'you', notifyRow, notifyNote),
+      setting('Notificaciones para equipo (Slack / Discord)', 'office', h('div.webhook', {}, hookInput, hookSave), hookActions, hookStatus),
     ],
     building: [
-      setting('Map', 'office', mapRow, mapNote, mapBad),
-      setting('Holiday theme', 'office', themeRow, themeNote),
+      setting('Mapa', 'office', mapRow, mapNote, mapBad),
+      setting('Tema festivo', 'office', themeRow, themeNote),
       ...(sky ? [sky.section] : []),
       dogSection,
-      setting('Workspace folder', 'office', dirRow, dirActions, dirNote),
+      setting('Carpeta de trabajo', 'office', dirRow, dirActions, dirNote),
     ],
     workers: [
-      setting('Default worker', 'office', agentNow, agent.element, agentActions, agentNote),
-      setting('Worker limit', 'office', limitRow, limitNote),
-      setting('Workers whose pull request merged', 'office', leaveRow, leaveNote),
-      setting('Prompts', 'office', promptsOpen, promptsNote),
+      setting('Agente por defecto', 'office', agentNow, agent.element, agentActions, agentNote),
+      setting('Límite de agentes concurrentes', 'office', limitRow, limitNote),
+      setting('Agentes con pull request completado', 'office', leaveRow, leaveNote),
+      setting('Prompts del sistema', 'office', promptsOpen, promptsNote),
     ],
   };
 
@@ -506,8 +506,8 @@ export function openSettings(net: Net, settings: Settings, onChange: (s: Setting
     tabs.get(next)!.focus();
   });
 
-  const close = h('button.btn.close', { 'aria-label': 'Close' }, '✕');
-  const el = h('div.modal.settings', { role: 'dialog', 'aria-label': 'Settings' }, h('header', {}, h('h2', {}, '⚙️ Settings'), close), h('div.settings-body', {}, nav, ...bodies.values()));
+  const close = h('button.btn.close', { 'aria-label': 'Cerrar' }, '✕');
+  const el = h('div.modal.settings', { role: 'dialog', 'aria-label': 'Configuración' }, h('header', {}, h('h2', {}, '⚙️ Configuración'), close), h('div.settings-body', {}, nav, ...bodies.values()));
   const offNotify = store.on('notify', paintHook);
   const offDog = store.on('dog', paintDog);
   const offTheme = store.on('theme', paintTheme);

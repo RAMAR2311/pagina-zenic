@@ -76,17 +76,17 @@ export function openElevator(opts: ElevatorOptions): void {
 
   const floorsEl = h('div.floors');
   const addEl = h('div.add');
-  const input = h('input', { type: 'text', placeholder: 'Search your repositories, or type owner/name', 'aria-label': 'Repository', autocomplete: 'off', spellcheck: 'false' }) as HTMLInputElement;
-  const listEl = h('div.repo-list', { role: 'listbox', 'aria-label': 'Repositories' });
+  const input = h('input', { type: 'text', placeholder: 'Buscar repositorios o escribe usuario/proyecto', 'aria-label': 'Repositorio', autocomplete: 'off', spellcheck: 'false' }) as HTMLInputElement;
+  const listEl = h('div.repo-list', { role: 'listbox', 'aria-label': 'Repositorios' });
   const statusEl = h('div');
-  const addBtn = h('button.btn.primary', { type: 'button' }, '🛗 Add floor');
-  const refreshBtn = h('button.btn', { type: 'button', title: 'Ask GitHub for the list again' }, '↻');
-  const close = h('button.btn.close', { type: 'button', 'aria-label': 'Close', title: 'Close (Esc)' }, '✕');
+  const addBtn = h('button.btn.primary', { type: 'button' }, '🛗 Agregar piso');
+  const refreshBtn = h('button.btn', { type: 'button', title: 'Consultar GitHub nuevamente' }, '↻');
+  const close = h('button.btn.close', { type: 'button', 'aria-label': 'Cerrar', title: 'Cerrar (Esc)' }, '✕');
 
   // Where clones go. Admins can move it right here: the first project is when it matters.
-  const dirInput = h('input', { type: 'text', placeholder: '~/Workspace', 'aria-label': 'Workspace folder', spellcheck: 'false', autocomplete: 'off' }) as HTMLInputElement;
-  const dirSave = h('button.btn.primary', { type: 'button' }, 'Save');
-  const dirCancel = h('button.btn', { type: 'button' }, 'Cancel');
+  const dirInput = h('input', { type: 'text', placeholder: '~/Workspace', 'aria-label': 'Carpeta de trabajo', spellcheck: 'false', autocomplete: 'off' }) as HTMLInputElement;
+  const dirSave = h('button.btn.primary', { type: 'button' }, 'Guardar');
+  const dirCancel = h('button.btn', { type: 'button' }, 'Cancelar');
   const dirEl = h('div.webhook.dir-pick.hidden', {}, dirInput, dirSave, dirCancel);
   const editDir = (on: boolean) => {
     dirEl.classList.toggle('hidden', !on);
@@ -281,26 +281,26 @@ export function openElevator(opts: ElevatorOptions): void {
     listEl.replaceChildren(...rows);
     const pick = choice();
     const dest = pick ? `${store.projectsDir.dir}/${pick}` : `${store.projectsDir.dir}/<owner>/<repo>`;
-    const change = store.me.admin ? h('button.btn.dir-change', { type: 'button', title: 'Clone new projects into another folder on the office’s machine' }, '📁 Change folder') : null;
+    const change = store.me.admin ? h('button.btn.dir-change', { type: 'button', title: 'Clonar nuevos proyectos en otra carpeta' }, '📁 Cambiar carpeta') : null;
     change?.addEventListener('click', () => editDir(true));
     // While it clones: how far it's got (the office asks GitHub about it first).
     const on = addingFloor();
     const lines = adding
       ? [
-          h('p.note.busy', {}, on ? `⏳ Cloning ${on.repo ?? adding} into ${store.projectsDir.dir}/${on.repo ?? adding}` : `⏳ Asking GitHub about ${adding}…`),
+          h('p.note.busy', {}, on ? `⏳ Clonando ${on.repo ?? adding} en ${store.projectsDir.dir}/${on.repo ?? adding}` : `⏳ Consultando GitHub sobre ${adding}…`),
           on ? cloneBar(on.clone) : null,
           on ? h('p.note', {}, [cloneStep(on.clone), on.clone?.detail].filter(Boolean).join(' · ')) : null,
-          h('p.note', {}, 'You can close this and carry on: everyone hears when the new floor opens.'),
+          h('p.note', {}, 'Puedes cerrar esta ventana y continuar: la oficina avisará cuando abra el nuevo piso.'),
         ]
-      : [h('p.note', {}, `Cloned into ${dest} with this machine's gh login. Everything on the new floor works in that checkout.`, change)];
+      : [h('p.note', {}, `Clonado en ${dest}. Todo en el nuevo piso funcionará en esa carpeta.`, change)];
     statusEl.replaceChildren(...lines.filter((l): l is HTMLElement => !!l), ...[r.error, error].filter(Boolean).map((e) => h('p.err', {}, e)));
     addBtn.disabled = !!adding || !pick || store.floors.some((f) => sameRepo(f.repo, pick));
-    addBtn.textContent = adding ? '⏳ Cloning…' : pick ? `🛗 Add ${pick}` : '🛗 Add floor';
+    addBtn.textContent = adding ? '⏳ Clonando…' : pick ? `🛗 Agregar ${pick}` : '🛗 Agregar piso';
     input.disabled = !!adding;
     if (!built) {
       built = true;
       addEl.replaceChildren(
-        h('h3', {}, setup && !store.floors.length ? 'Pick your first project' : '➕ Add a project'),
+        h('h3', {}, setup && !store.floors.length ? 'Piso principal de trabajo' : '➕ Agregar un proyecto'),
         h('div.repo-search', {}, input, refreshBtn),
         listEl,
         statusEl,
@@ -389,16 +389,16 @@ export function openElevator(opts: ElevatorOptions): void {
         'p.intro',
         {},
         store.floors.length
-          ? 'Every project is a floor of this building. Pick a floor to ride to, or add another project.'
-          : "Every project is a floor of this building, and it doesn't have any yet. Pick one of your repositories: the office clones it and it becomes the first floor.",
+          ? 'Cada proyecto es un piso de este edificio. Elige un piso o agrega otro proyecto.'
+          : "Cada proyecto es un piso del edificio Zenic. Puedes elegir un proyecto o presionar Esc / la (X) para explorar la oficina.",
       )
     : null;
   const el = h(
     'div.modal.elevator',
-    { role: 'dialog', 'aria-label': 'Elevator' },
-    h('header', {}, h('h2', {}, setup ? '🏢 Welcome to Agent Office' : '🛗 Elevator'), close),
+    { role: 'dialog', 'aria-label': 'Ascensor' },
+    h('header', {}, h('h2', {}, setup ? '🏢 Bienvenido a la Oficina Virtual Zenic' : '🛗 Ascensor'), close),
     h('div.body', {}, intro, floorsEl, addEl),
-    h('footer', {}, h('span.grow', {}, setup ? 'Your office, one floor per project · Esc to look around first' : 'Pick a floor · Esc to stay here'), addBtn),
+    h('footer', {}, h('span.grow', {}, setup ? 'Oficina Zenic · Presiona Esc o la (X) para explorar primero' : 'Elige un piso · Esc para quedarte aquí'), addBtn),
   );
   const unsubs = [store.on('floors', () => (checkAdding(), renderFloors(), renderAdd())), store.on('repos', renderAdd), store.on('projectsDir', () => (editDir(false), renderAdd())), store.on('floor', renderFloors), store.on('peers', renderFloors), store.on('me', () => (renderFloors(), renderAdd()))];
   const modal = openModal(el, {

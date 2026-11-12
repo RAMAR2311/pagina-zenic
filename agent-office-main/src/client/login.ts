@@ -34,7 +34,7 @@ void fetch('/api/login', { cache: 'no-store' })
     nameRow.hidden = false;
     nameInput.required = !shared;
     nameNote.hidden = !shared;
-    sub.textContent = shared ? 'Knock knock. Who is it?' : 'Knock knock. Who is it? Sign in with your own account.';
+    sub.textContent = shared ? 'Bienvenido. ¿Quién eres?' : 'Inicia sesión con tu cuenta de Zenic.';
     try {
       nameInput.value = localStorage.getItem(NAME_KEY) ?? '';
     } catch {
@@ -65,10 +65,10 @@ form.addEventListener('submit', async (e) => {
       return;
     }
     const body = await res.json().catch(() => ({}));
-    error.textContent = body.error ?? 'Could not sign in';
+    error.textContent = body.error ?? 'Contraseña o credenciales incorrectas';
     input.select();
   } catch {
-    error.textContent = 'Server unreachable';
+    error.textContent = 'Servidor de la oficina no disponible';
   } finally {
     submit.disabled = false;
   }
