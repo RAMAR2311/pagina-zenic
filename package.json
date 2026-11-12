@@ -9,6 +9,8 @@
     "server": "node server/index.js",
     "office": "node agent-office-main/dist/server/server/cli.js . --home agent-office-main/.office-data --port 4600 --host 0.0.0.0 --no-open --password zenic2026 --city \"Bogotá\"",
     "build": "vite build",
+    "build:office": "cd agent-office-main && npm run build",
+    "build:all": "vite build && npm run build:office",
     "start": "node server/index.js",
     "lint": "eslint .",
     "preview": "vite preview"
