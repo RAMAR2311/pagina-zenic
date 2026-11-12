@@ -84,13 +84,15 @@ export function buildBalcony(group: THREE.Group, colliders: Collider[], interact
   const poleH = 2.7;
   const sw = new THREE.Vector3(minX + inset, poleH, maxZ - inset);
   const se = new THREE.Vector3(maxX - inset, poleH, maxZ - inset);
-  for (const p of [sw, se]) parts.add(mesh(new THREE.CylinderGeometry(0.035, 0.035, poleH - railH, 6), ink, p.x, (poleH + railH) / 2, p.z, false));
+  const sm = new THREE.Vector3(cx, poleH, maxZ - inset);
+  for (const p of [sw, sm, se]) parts.add(mesh(new THREE.CylinderGeometry(0.035, 0.035, poleH - railH, 6), ink, p.x, (poleH + railH) / 2, p.z, false));
   const bulbs = ['#ffd166', '#ff8fa3', '#8ecae6', '#caffbf'].map((c): [string, THREE.Material] => [c, bulb(night, c, 0.4)]);
-  parts.add(stringLights(sw, se, 0.35, bulbs, night));
+  parts.add(stringLights(sw, sm, 0.35, bulbs, night));
+  parts.add(stringLights(sm, se, 0.35, bulbs, night));
   parts.add(stringLights(sw, new THREE.Vector3(-6.5, 3.5, minZ + 0.02), 0.3, bulbs, night));
   parts.add(stringLights(new THREE.Vector3(-6.5, 3.5, minZ + 0.02), se, 0.35, bulbs, night));
-  // At night they light the deck, the table and whoever's out there.
-  for (const x of [cx - 3.2, cx + 3.2]) night.lamps.push({ x, y: 2.4, z: cz, reach: 5.5, color: '#ffc9a6', power: 2.4 });
+  // At night they light the deck, the lounge and whoever's out there.
+  for (const x of [cx - 6.5, cx, cx + 6.5]) night.lamps.push({ x, y: 2.6, z: cz, reach: 8.5, color: '#ffc9a6', power: 2.6 });
 
   // A bench under the window, a bistro table with two stools, and plants.
   const bench = new THREE.Group();
@@ -124,8 +126,10 @@ export function buildBalcony(group: THREE.Group, colliders: Collider[], interact
     seatable(stool, sx < 0 ? 'stool-1' : 'stool-2', 0.9, interactables);
   }
   for (const [i, [px, pz, sc]] of [
-    [maxX - 0.55, minZ + 0.5, 1.1],
-    [minX + 0.55, maxZ - 0.55, 0.9],
+    [maxX - 0.55, minZ + 0.5, 1.2],
+    [minX + 0.55, maxZ - 0.55, 1.1],
+    [maxX - 0.55, maxZ - 0.55, 1.1],
+    [cx - 5.5, minZ + 0.45, 1.0],
   ].entries()) {
     // Starting past the monstera, which spreads too wide for a spot this near the rail.
     const p = plant(floorPlant(i + 1), sc);
@@ -134,6 +138,31 @@ export function buildBalcony(group: THREE.Group, colliders: Collider[], interact
     const r = 0.3 * sc;
     colliders.push({ minX: px - r, maxX: px + r, minZ: pz - r, maxZ: pz + r, top: 0.5 * sc });
   }
+
+  // ---------------------------------------------------------
+  // Outdoor VIP Lounge (Sala de estar en la Terraza)
+  // ---------------------------------------------------------
+  const loungeX = 4.6;
+  const loungeZ = cz + 0.3;
+  const sofaMat = toon('#1e293b');
+  const cushionMat = toon('#f8fafc');
+  const acacia = toon('#78350f');
+
+  // L-shaped luxury outdoor lounge sofa
+  const sofaMain = mesh(roundedBox(2.8, 0.45, 0.85, 0.08), sofaMat, loungeX, 0.225, loungeZ);
+  parts.add(sofaMain);
+  const sofaBack = mesh(roundedBox(2.8, 0.5, 0.18, 0.06), sofaMat, loungeX, 0.65, loungeZ - 0.33);
+  parts.add(sofaBack);
+  for (let c = -1.0; c <= 1.0; c += 1.0) {
+    const cushion = mesh(roundedBox(0.85, 0.12, 0.65, 0.04), cushionMat, loungeX + c, 0.48, loungeZ + 0.04);
+    parts.add(cushion);
+  }
+  colliders.push({ minX: loungeX - 1.45, maxX: loungeX + 1.45, minZ: loungeZ - 0.45, maxZ: loungeZ + 0.45, top: 0.85 });
+
+  // Low acacia outdoor coffee table
+  const coffeeTable = mesh(roundedBox(1.3, 0.35, 0.7, 0.04), acacia, loungeX, 0.175, loungeZ + 1.15);
+  parts.add(coffeeTable);
+  colliders.push({ minX: loungeX - 0.7, maxX: loungeX + 0.7, minZ: loungeZ + 0.75, maxZ: loungeZ + 1.55, top: 0.38 });
 
   group.add(mergeByMaterial(parts));
 
@@ -349,7 +378,7 @@ export const balcony: Fixture = (site) => {
 export function buildBalconyPosts(group: THREE.Group, colliders: Collider[]) {
   const { minX, maxX, maxZ } = BALCONY;
   const postH = -SLAB - STREET_Y;
-  for (const x of [minX + 0.25, maxX - 0.25]) {
+  for (const x of [minX + 0.25, (minX + maxX) / 2, maxX - 0.25]) {
     group.add(mesh(new THREE.CylinderGeometry(0.12, 0.12, postH, 12), toon('#e6e8ee'), x, STREET_Y + postH / 2, maxZ - 0.25));
     colliders.push({ minX: x - 0.14, maxX: x + 0.14, minZ: maxZ - 0.39, maxZ: maxZ - 0.11, bottom: STREET_Y, top: -SLAB });
   }

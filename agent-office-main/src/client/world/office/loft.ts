@@ -126,11 +126,40 @@ export function buildLoft(group: THREE.Group, colliders: Collider[], interactabl
   const screen = mesh(new THREE.PlaneGeometry(0.8, 0.45), new THREE.MeshBasicMaterial({ color: '#4cc9f0' }), 0, 1.18, -0.165, false);
   desk.add(screen);
   desk.add(mesh(new THREE.CylinderGeometry(0.06, 0.05, 0.12, 10), toon('#ffd166'), 0.9, 0.89, 0.15));
-  const plate = textPlane('👑 GERENCIA', { bg: '#ffd166', size: 48 });
-  plate.scale.multiplyScalar(0.55);
-  plate.position.set(0, 0.5, -0.55);
-  plate.rotation.y = Math.PI;
-  desk.add(plate);
+  // Placa de escritorio presidencial de lujo para Marlon Ramírez
+  const plateW = 0.62;
+  const plateH = 0.13;
+  const plateD = 0.10;
+  const plateWedge = mesh(box(plateW, plateH, plateD), toon('#2d1b00'), 0, 0.78 + plateH / 2, -0.42);
+  desk.add(plateWedge);
+
+  const marlonCanvas = document.createElement('canvas');
+  marlonCanvas.width = 512;
+  marlonCanvas.height = 128;
+  const mctx = marlonCanvas.getContext('2d')!;
+  const mGold = mctx.createLinearGradient(0, 0, 512, 128);
+  mGold.addColorStop(0, '#fef08a');
+  mGold.addColorStop(0.5, '#eab308');
+  mGold.addColorStop(1, '#ca8a04');
+  mctx.fillStyle = mGold;
+  mctx.fillRect(0, 0, 512, 128);
+  mctx.strokeStyle = '#451a03';
+  mctx.lineWidth = 6;
+  mctx.strokeRect(4, 4, 504, 120);
+  mctx.fillStyle = '#451a03';
+  mctx.textAlign = 'center';
+  mctx.textBaseline = 'middle';
+  mctx.font = '900 36px Nunito, Montserrat, system-ui, sans-serif';
+  mctx.fillText('👑 MARLON RAMÍREZ', 256, 45);
+  mctx.font = '700 22px Nunito, Montserrat, system-ui, sans-serif';
+  mctx.fillText('CEO & FUNDADOR · PRESIDENCIA', 256, 88);
+
+  const mTex = new THREE.CanvasTexture(marlonCanvas);
+  mTex.colorSpace = THREE.SRGBColorSpace;
+  const mPlateMesh = new THREE.Mesh(new THREE.PlaneGeometry(plateW - 0.02, plateH - 0.02), new THREE.MeshBasicMaterial({ map: mTex }));
+  mPlateMesh.position.set(0, 0.78 + plateH / 2, -0.42 - plateD / 2 - 0.002);
+  mPlateMesh.rotation.y = Math.PI;
+  desk.add(mPlateMesh);
   const bossChair = chair('#2b2d42');
   bossChair.scale.setScalar(1.2);
   bossChair.position.set(0, 0, 1.0);

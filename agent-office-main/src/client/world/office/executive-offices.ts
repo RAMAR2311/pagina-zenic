@@ -6,18 +6,246 @@
  * (Complementing Marlon Ramírez's CEO Loft Suite upstairs)
  */
 import * as THREE from 'three';
-import { mesh, roundedBox, textPlane, toon } from '../toon';
+import { mesh, roundedBox, toon } from '../toon';
 import type { Collider } from '../types';
 import type { Fixture } from './fixture';
 import { box, glassPane } from './materials';
 import { floorPlant, plant } from './props';
+
+/** Architectural high-resolution executive plaque */
+function createExecutiveSignboard(opts: {
+  name: string;
+  role: string;
+  icon: string;
+  accent: string;
+}): THREE.Group {
+  const g = new THREE.Group();
+  const width = 1.35;
+  const height = 0.40;
+  const depth = 0.025;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = 1024;
+  canvas.height = 300;
+  const ctx = canvas.getContext('2d')!;
+
+  // Background: Deep dark executive acrylic
+  ctx.fillStyle = '#0b132b';
+  ctx.fillRect(0, 0, 1024, 300);
+
+  const grad = ctx.createLinearGradient(0, 0, 1024, 300);
+  grad.addColorStop(0, 'rgba(30, 41, 59, 0.85)');
+  grad.addColorStop(1, 'rgba(11, 19, 43, 0.98)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 1024, 300);
+
+  // Slim metallic accent border
+  ctx.strokeStyle = opts.accent;
+  ctx.lineWidth = 8;
+  ctx.strokeRect(6, 6, 1012, 288);
+
+  // Inner subtle white border
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(18, 18, 988, 264);
+
+  // Header category
+  ctx.fillStyle = opts.accent;
+  ctx.font = '800 24px Nunito, Montserrat, system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('ZENIC TECH · DESPACHO EJECUTIVO', 512, 58);
+
+  // Thin dividing line
+  ctx.strokeStyle = opts.accent;
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(260, 88);
+  ctx.lineTo(764, 88);
+  ctx.stroke();
+
+  // Name (Main)
+  ctx.fillStyle = '#FFFFFF';
+  ctx.font = '900 58px Nunito, Montserrat, system-ui, sans-serif';
+  ctx.fillText(`${opts.icon}  ${opts.name.toUpperCase()}`, 512, 148);
+
+  // Role subtitle
+  ctx.fillStyle = '#94A3B8';
+  ctx.font = '700 32px Nunito, Montserrat, system-ui, sans-serif';
+  ctx.fillText(opts.role, 512, 222);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.anisotropy = 4;
+
+  const mat = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
+  const face = new THREE.Mesh(new THREE.PlaneGeometry(width, height), mat);
+  g.add(face);
+
+  // Acrylic backing block
+  const acrylicMat = toon('#0f172a');
+  const backing = mesh(box(width + 0.04, height + 0.04, depth), acrylicMat, 0, 0, -depth / 2);
+  g.add(backing);
+
+  // 4 Corner Brass/Gold Standoff Bolts
+  const boltMat = toon('#ffd166');
+  const boltR = 0.022;
+  const boltL = 0.04;
+  const dx = width / 2 - 0.06;
+  const dy = height / 2 - 0.06;
+  for (const sx of [-dx, dx]) {
+    for (const sy of [-dy, dy]) {
+      const b = mesh(new THREE.CylinderGeometry(boltR, boltR, boltL, 12).rotateX(Math.PI / 2), boltMat, sx, sy, 0.005);
+      g.add(b);
+    }
+  }
+
+  return g;
+}
+
+/** Executive Workstation: PC Ultrawide Monitor with Live Screen & 3D Engraved Nameplate */
+function createExecutiveDeskWorkstation(opts: {
+  name: string;
+  role: string;
+  icon: string;
+  theme: 'admin' | 'tech' | 'retail';
+  accent: string;
+  deskRotY: number;
+}): THREE.Group {
+  const g = new THREE.Group();
+
+  // 1. Triangular Executive Desk Nameplate (Placa grabada en cuña de madera noble con oro)
+  const plateW = 0.58;
+  const plateH = 0.12;
+  const plateD = 0.10;
+
+  // Base wedge (Mahogany wood / dark acrylic)
+  const woodMat = toon('#3e2723');
+  const wedge = mesh(box(plateW, plateH, plateD), woodMat, 0, 0.78 + plateH / 2, 0.36);
+  g.add(wedge);
+
+  // Polished gold faceplate with high-res text
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 128;
+  const ctx = canvas.getContext('2d')!;
+
+  const goldGrad = ctx.createLinearGradient(0, 0, 512, 128);
+  goldGrad.addColorStop(0, '#fef08a');
+  goldGrad.addColorStop(0.5, '#eab308');
+  goldGrad.addColorStop(1, '#ca8a04');
+  ctx.fillStyle = goldGrad;
+  ctx.fillRect(0, 0, 512, 128);
+
+  ctx.strokeStyle = '#451a03';
+  ctx.lineWidth = 6;
+  ctx.strokeRect(4, 4, 504, 120);
+
+  ctx.fillStyle = '#451a03';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font = '900 36px Nunito, Montserrat, system-ui, sans-serif';
+  ctx.fillText(`${opts.icon} ${opts.name.toUpperCase()}`, 256, 45);
+
+  ctx.font = '700 22px Nunito, Montserrat, system-ui, sans-serif';
+  ctx.fillText(opts.role, 256, 88);
+
+  const nameTex = new THREE.CanvasTexture(canvas);
+  nameTex.colorSpace = THREE.SRGBColorSpace;
+  const faceMat = new THREE.MeshBasicMaterial({ map: nameTex });
+  const nameMesh = new THREE.Mesh(new THREE.PlaneGeometry(plateW - 0.02, plateH - 0.02), faceMat);
+  nameMesh.position.set(0, 0.78 + plateH / 2, 0.36 + plateD / 2 + 0.002);
+  g.add(nameMesh);
+
+  // 2. Executive Ultrawide Curved Monitor Workstation
+  const monGroup = new THREE.Group();
+  const chromeMat = toon('#cbd5e1');
+  const darkMonMat = toon('#0f172a');
+
+  monGroup.add(mesh(roundedBox(0.28, 0.02, 0.22, 0.01), chromeMat, 0, 0.79, -0.15));
+  monGroup.add(mesh(box(0.04, 0.38, 0.04), chromeMat, 0, 0.98, -0.18));
+  monGroup.add(mesh(roundedBox(0.88, 0.36, 0.03, 0.02), darkMonMat, 0, 1.08, -0.15));
+
+  const scCanvas = document.createElement('canvas');
+  scCanvas.width = 512;
+  scCanvas.height = 220;
+  const sctx = scCanvas.getContext('2d')!;
+  sctx.fillStyle = '#090d16';
+  sctx.fillRect(0, 0, 512, 220);
+
+  if (opts.theme === 'admin') {
+    sctx.fillStyle = '#00F0FF';
+    sctx.font = '800 20px monospace';
+    sctx.fillText('ZENIC ERP // FINANCIAL DASHBOARD', 20, 32);
+    sctx.fillStyle = '#10B981';
+    sctx.fillText('▲ EBITDA +28.4%   FLUJO: $482.5M COP', 20, 68);
+    [40, 75, 55, 90, 110, 85, 130, 150].forEach((v, idx) => {
+      sctx.fillStyle = '#00E5FF';
+      sctx.fillRect(30 + idx * 56, 200 - v, 42, v);
+    });
+  } else if (opts.theme === 'tech') {
+    sctx.fillStyle = '#C084FC';
+    sctx.font = '800 20px monospace';
+    sctx.fillText('NEURAL ARCHITECTURE // ZENIC AI', 20, 32);
+    sctx.fillStyle = '#38BDF8';
+    sctx.fillText('● NODES: 64/64 ACTIVE   LATENCY: 1.8ms', 20, 68);
+    sctx.fillStyle = '#A855F7';
+    sctx.fillText('> vision_model.optimize(quantization="int8")', 20, 110);
+    sctx.fillText('> tensor_engine.deploy(pos_fleet=True)', 20, 140);
+    sctx.fillStyle = '#10B981';
+    sctx.fillText('✓ ALL SERVICES NOMINAL [200 OK]', 20, 175);
+  } else {
+    sctx.fillStyle = '#34D399';
+    sctx.font = '800 20px monospace';
+    sctx.fillText('RETAIL TELEMETRY // STORES LIVE', 20, 32);
+    sctx.fillStyle = '#F59E0B';
+    sctx.fillText('● 12 TIENDAS CONECTADAS · POS ACTIVE', 20, 68);
+    sctx.fillStyle = '#10B981';
+    sctx.fillText('VENTAS HOY: $84,920,000 COP (+14%)', 20, 110);
+    sctx.fillStyle = '#38BDF8';
+    sctx.fillText('PASARELA WOMPI & DATA: 100% UP', 20, 145);
+  }
+
+  const scTex = new THREE.CanvasTexture(scCanvas);
+  scTex.colorSpace = THREE.SRGBColorSpace;
+  const screenMat = new THREE.MeshBasicMaterial({ map: scTex });
+  const screenMesh = new THREE.Mesh(new THREE.PlaneGeometry(0.84, 0.32), screenMat);
+  screenMesh.position.set(0, 1.08, -0.133);
+  monGroup.add(screenMesh);
+  g.add(monGroup);
+
+  // 3. Wireless Keyboard & Mouse on Leather Blotter
+  const blotter = mesh(roundedBox(0.9, 0.01, 0.44, 0.02), toon('#1e293b'), 0, 0.785, 0.12);
+  g.add(blotter);
+  const kb = mesh(box(0.42, 0.015, 0.14), toon('#334155'), -0.08, 0.795, 0.14);
+  g.add(kb);
+  const mouse = mesh(roundedBox(0.07, 0.02, 0.11, 0.01), toon('#475569'), 0.26, 0.798, 0.14);
+  g.add(mouse);
+
+  // 4. Compact Mini PC Studio Tower
+  const pc = mesh(roundedBox(0.12, 0.28, 0.28, 0.02), toon('#0b0f19'), 0.75, 0.92, -0.12);
+  g.add(pc);
+  const pcLed = mesh(box(0.005, 0.22, 0.01), toon(opts.accent), 0.75 + 0.062, 0.92, -0.12);
+  g.add(pcLed);
+
+  // 5. Designer Desk Lamp
+  const lamp = new THREE.Group();
+  lamp.add(mesh(new THREE.CylinderGeometry(0.08, 0.09, 0.02, 16), toon('#475569'), 0, 0.79, 0));
+  lamp.add(mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.38, 8), toon('#cbd5e1'), 0, 0.98, 0));
+  const shade = mesh(new THREE.ConeGeometry(0.11, 0.14, 16), toon(opts.accent), 0, 1.18, 0.04);
+  shade.rotation.x = 0.35;
+  lamp.add(shade);
+  lamp.position.set(-0.75, 0, -0.15);
+  g.add(lamp);
+
+  return g;
+}
 
 export const executiveOffices: Fixture = (site) => {
   const group = new THREE.Group();
   const H = 2.5; // Suite ceiling height
   const T = 0.08; // Wall thickness
   const frameMat = toon('#ffffff');
-  const trimMat = toon('#334155');
   const frostedGlass = new THREE.MeshBasicMaterial({
     color: '#e0f2fe',
     transparent: true,
@@ -88,17 +316,18 @@ export const executiveOffices: Fixture = (site) => {
 
   /** Builds an entire Director Executive Suite */
   const buildSuite = (opts: {
-    title: string;
-    sub: string;
+    name: string;
+    role: string;
     icon: string;
     accentColor: string;
-    bgBadge: string;
     cx: number;
     cz: number;
+    deskZ: number;
+    deskRotY: number;
     doorSide: 'south' | 'north';
     decorType: 'admin' | 'tech' | 'retail';
   }) => {
-    const { cx, cz, doorSide, title, sub, icon, accentColor, bgBadge, decorType } = opts;
+    const { cx, cz, deskZ, deskRotY, doorSide, name, role, icon, accentColor, decorType } = opts;
     const halfW = 2.9;
     const halfD = 2.2;
     const xLeft = cx - halfW;
@@ -122,33 +351,34 @@ export const executiveOffices: Fixture = (site) => {
     bar(doorW, 0.08, T + 0.04, cx, lintelY, zFront);
     bar(doorW, H - lintelY, T + 0.02, cx, (H + lintelY) / 2, zFront);
 
-    // 🏷️ Prominent Executive Signboard over the entrance (Double-sided)
-    const signOuter = textPlane(`${icon} ${title}`, {
-      bg: bgBadge,
-      color: '#FFFFFF',
-      size: 58,
-      border: accentColor,
+    // 🏷️ Elegant Architectural Plaque over Door Header
+    const plaque = createExecutiveSignboard({
+      name,
+      role,
+      icon,
+      accent: accentColor,
     });
-    signOuter.scale.multiplyScalar(0.78);
-    signOuter.position.set(cx, lintelY + 0.16, zFront + (doorSide === 'south' ? 0.06 : -0.06));
-    if (doorSide === 'north') signOuter.rotation.y = Math.PI;
-    group.add(signOuter);
+    plaque.position.set(cx, lintelY + 0.21, zFront + (doorSide === 'south' ? 0.04 : -0.04));
+    if (doorSide === 'north') plaque.rotation.y = Math.PI;
+    group.add(plaque);
 
-    const signInner = textPlane(`${icon} ${sub}`, {
-      bg: '#FFFFFF',
-      color: '#0F172A',
-      size: 52,
-      border: accentColor,
+    // 💻 Workstation & Engraved Desk Nameplate on Director's Desk
+    const workstation = createExecutiveDeskWorkstation({
+      name,
+      role,
+      icon,
+      theme: decorType,
+      accent: accentColor,
+      deskRotY,
     });
-    signInner.scale.multiplyScalar(0.68);
-    signInner.position.set(cx, lintelY + 0.16, zFront + (doorSide === 'south' ? -0.06 : 0.06));
-    if (doorSide === 'south') signInner.rotation.y = Math.PI;
-    group.add(signInner);
+    workstation.position.set(cx, 0, deskZ);
+    workstation.rotation.y = deskRotY;
+    group.add(workstation);
 
     // 🪴 Executive Botanical Plant in corner
     const plantCornerX = xLeft + 0.45;
     const plantCornerZ = zBack + (doorSide === 'south' ? 0.45 : -0.45);
-    const p = plant(floorPlant(decorType === 'admin' ? 1 : decorType === 'tech' ? 2 : 3), 0.9);
+    const p = plant(floorPlant(decorType === 'admin' ? 1 : decorType === 'tech' ? 2 : 3), 0.95);
     p.position.set(plantCornerX, 0, plantCornerZ);
     group.add(p);
 
@@ -160,7 +390,6 @@ export const executiveOffices: Fixture = (site) => {
       credenza.add(credBody);
       const credTop = mesh(box(1.84, 0.04, 0.44), toon('#00e5ff'), 0, 0.82, 0);
       credenza.add(credTop);
-      // Hardcover financial ledgers
       const colors = ['#00e5ff', '#3b82f6', '#10b981', '#f59e0b'];
       colors.forEach((col, i) => {
         const book = mesh(box(0.06, 0.22, 0.28), toon(col), -0.6 + i * 0.1, 0.95, 0);
@@ -175,7 +404,6 @@ export const executiveOffices: Fixture = (site) => {
       const rack = new THREE.Group();
       const rackBody = mesh(box(0.65, 1.8, 0.55), toon('#0f172a'), 0, 0.9, 0);
       rack.add(rackBody);
-      // Server blades and glowing LEDs
       for (let l = 0; l < 6; l++) {
         const blade = mesh(box(0.55, 0.08, 0.02), toon('#334155'), 0, 0.4 + l * 0.22, 0.28);
         rack.add(blade);
@@ -195,7 +423,6 @@ export const executiveOffices: Fixture = (site) => {
       stand.add(base);
       const top = mesh(box(1.44, 0.04, 0.48), toon('#10b981'), 0, 0.77, 0);
       stand.add(top);
-      // POS Terminal unit on display
       const pos = mesh(box(0.25, 0.16, 0.28), toon('#00f0ff'), -0.3, 0.87, 0);
       stand.add(pos);
       const dataphone = mesh(box(0.12, 0.08, 0.18), toon('#f59e0b'), 0.2, 0.83, 0);
@@ -208,39 +435,42 @@ export const executiveOffices: Fixture = (site) => {
 
   // 1. 💼 Despacho Jhon (Administración & Finanzas) - Suite Noroccidente
   buildSuite({
-    title: 'Despacho Jhon · Finanzas & Admin',
-    sub: 'Jhon Aparicio · Dir. Administrativo',
+    name: 'Jhon Aparicio',
+    role: 'Dirección Administrativa & Finanzas',
     icon: '💼',
     accentColor: '#00E5FF',
-    bgBadge: '#0369A1',
     cx: -10.5,
     cz: -4.0,
+    deskZ: -3.8,
+    deskRotY: 0,
     doorSide: 'south',
     decorType: 'admin',
   });
 
   // 2. ⚡ Despacho Miguel (Tecnología & Arquitectura IA) - Suite Norcentral
   buildSuite({
-    title: 'Despacho Miguel · CTO & IA Lab',
-    sub: 'Miguel Rodríguez · Dir. de Tecnología',
+    name: 'Miguel Rodríguez',
+    role: 'Dirección de Tecnología & Arquitectura IA',
     icon: '⚡',
     accentColor: '#C084FC',
-    bgBadge: '#581C87',
     cx: -1.5,
     cz: -4.0,
+    deskZ: -3.8,
+    deskRotY: 0,
     doorSide: 'south',
     decorType: 'tech',
   });
 
   // 3. 🎯 Despacho Santiago (Marketing & Operaciones Retail) - Suite Suroccidente
   buildSuite({
-    title: 'Despacho Santiago · Marketing & Retail',
-    sub: 'Santiago Peraza · Dir. de Marketing',
+    name: 'Santiago Peraza',
+    role: 'Dirección de Marketing & Operaciones Retail',
     icon: '🎯',
     accentColor: '#10B981',
-    bgBadge: '#065F46',
     cx: -10.5,
     cz: 4.0,
+    deskZ: 3.8,
+    deskRotY: Math.PI,
     doorSide: 'north',
     decorType: 'retail',
   });

@@ -28,27 +28,21 @@ const DESK_DEPTH = 1.1;
 export const DESK_SIZE = { width: DESK_WIDTH, depth: DESK_DEPTH, height: 0.78 } as const;
 
 function buildDesks(): DeskDef[] {
-  const desks: DeskDef[] = [];
-  const clusterX = [-10.5, -1.5];
-  // Each pod is two back-to-back rows; the far row faces +z (rotY = PI).
-  const pods = [
-    { back: -4.55, front: -3.45 },
-    { back: 3.45, front: 4.55 },
+  // Despachos Ejecutivos Privados: 1 solo escritorio por oficina
+  // 1. Despacho Jhon (Finanzas & Administración)
+  // 2. Despacho Miguel (Tecnología & IA)
+  // 3. Despacho Santiago (Marketing & Retail)
+  // 4-7. Mesa Colaborativa Central abierta para equipo y agentes
+  const desks: DeskDef[] = [
+    { id: 'desk-1', x: -10.5, z: -3.8, rotY: 0, label: '💼 Despacho Jhon (Finanzas)' },
+    { id: 'desk-2', x: -1.5, z: -3.8, rotY: 0, label: '⚡ Despacho Miguel (CTO & IA)' },
+    { id: 'desk-3', x: -10.5, z: 3.8, rotY: Math.PI, label: '🎯 Despacho Santiago (Marketing)' },
+    // Cluster abierto central
+    { id: 'desk-4', x: -1.5 - DESK_WIDTH / 2, z: 3.45, rotY: Math.PI, label: 'Mesa Central 1' },
+    { id: 'desk-5', x: -1.5 + DESK_WIDTH / 2, z: 3.45, rotY: Math.PI, label: 'Mesa Central 2' },
+    { id: 'desk-6', x: -1.5 - DESK_WIDTH / 2, z: 4.55, rotY: 0, label: 'Mesa Central 3' },
+    { id: 'desk-7', x: -1.5 + DESK_WIDTH / 2, z: 4.55, rotY: 0, label: 'Mesa Central 4' },
   ];
-  let n = 1;
-  for (const pod of pods) {
-    for (const cx of clusterX) {
-      for (const [z, rotY] of [
-        [pod.back, Math.PI],
-        [pod.front, 0],
-      ] as const) {
-        for (const dx of [-DESK_WIDTH / 2, DESK_WIDTH / 2]) {
-          desks.push({ id: `desk-${n}`, x: cx + dx, z, rotY, label: `Desk ${n}` });
-          n++;
-        }
-      }
-    }
-  }
   return desks;
 }
 
@@ -367,16 +361,16 @@ export const EXIT_STAIRS = {
 
 /** Glass doors out to the balcony, on the south wall. They slide apart into the wall on either side. */
 export const BALCONY_DOOR: Opening = { wall: 'south', u: -4, width: 3, y0: 0, y1: 2.5 };
-/** The smoking balcony, hanging over the garage entrance. */
-export const BALCONY = { minX: -10.5, maxX: 2.5, minZ: FLOOR.maxZ + WALL_T, maxZ: FLOOR.maxZ + WALL_T + 3.4 } as const;
+/** The smoking balcony & lounge terrace, hanging over the garage entrance. Grand luxury terrace. */
+export const BALCONY = { minX: -16.0, maxX: 8.5, minZ: FLOOR.maxZ + WALL_T, maxZ: FLOOR.maxZ + WALL_T + 6.6 } as const;
 /** The ashtray on the balcony, where a smoke break starts. */
-export const ASHTRAY = { x: -8.2, z: BALCONY.maxZ - 0.55 } as const;
+export const ASHTRAY = { x: -13.5, z: BALCONY.maxZ - 0.8 } as const;
 /**
  * The golf tee on the balcony, between the ashtray and the doors: a square of turf `size` across,
  * with the ball teed up at `ball`, hit out over the railing at the hole across the street
  * (GOLF_HOLE). The golf bag leans on the wall behind it at `bag`, just short of the doors.
  */
-export const GOLF_TEE = { x: -6.75, z: 14.75, size: 1.5, ball: { x: -6.95, z: 14.75 }, bag: { x: -5.8, z: BALCONY.minZ + 0.28 } } as const;
+export const GOLF_TEE = { x: -8.0, z: BALCONY.minZ + 2.5, size: 1.5, ball: { x: -8.2, z: BALCONY.minZ + 2.5 }, bag: { x: -7.0, z: BALCONY.minZ + 0.3 } } as const;
 /**
  * The hole across the street, out past the far sidewalk where the neighbours leave a gap: its pin,
  * the green round it (`green` its radius) and the fairway leading up to it (x `fairway` wide, from
