@@ -648,6 +648,7 @@ export default function OficinaVirtual({ darkMode = true }) {
               <iframe
                 src={modalMode === '3d' ? 'http://localhost:4600' : 'http://localhost:4600/lite'}
                 title="Oficina Virtual 3D Zenic"
+                allow="camera; microphone; display-capture; autoplay; clipboard-write; fullscreen"
                 style={{
                   width: '100%',
                   height: '100%',
