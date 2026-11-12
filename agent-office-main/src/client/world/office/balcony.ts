@@ -1,12 +1,13 @@
 import * as THREE from 'three';
 import { ASHTRAY, BALCONY, EXIT_STAIRS, SLAB, STREET_Y } from '../../../shared/layout';
 import { bulb, type NightParts } from '../outside';
-import { mergeByMaterial, mesh, roundedBox, textPlane, toon } from '../toon';
+import { mergeByMaterial, mesh, roundedBox, textPlane, toon, toonUnique } from '../toon';
 import type { Collider, Interactable } from '../types';
 import type { Fixture } from './fixture';
 import { PALETTE, box, floorTexture, glassPane } from './materials';
 import { floorPlant, plant } from './props';
 import { seatable } from './seats';
+import { coffeeMug } from '../character';
 
 // Outside the office's walls: the smoking balcony off the south wall, the posts under the bottom
 // floor's, and the steps from the exit door down to the street.
@@ -152,12 +153,185 @@ export function buildBalcony(group: THREE.Group, colliders: Collider[], interact
     butt.rotation.y = a;
     tray.add(butt);
   }
+
+  // Smoldering lit cigarette resting on the ashtray rim with glowing ember
+  const litCig = new THREE.Group();
+  litCig.add(mesh(new THREE.CylinderGeometry(0.011, 0.011, 0.085, 8).rotateZ(Math.PI / 2), toon('#fffaf3'), 0, 0, 0, false));
+  litCig.add(mesh(new THREE.CylinderGeometry(0.0115, 0.0115, 0.032, 8).rotateZ(Math.PI / 2), toon('#e9a03b'), -0.04, 0, 0, false));
+  const litEmber = toonUnique('#ff3b00');
+  litEmber.emissive = new THREE.Color('#ff3b00');
+  litEmber.emissiveIntensity = 0.8;
+  litCig.add(mesh(new THREE.CylinderGeometry(0.0115, 0.0115, 0.012, 8).rotateZ(Math.PI / 2), litEmber, 0.045, 0, 0, false));
+  // Wisps of smoke rising from the ember
+  const smokePuff = mesh(new THREE.CylinderGeometry(0.008, 0.05, 0.25, 8), toon('#e9ecef', { transparent: true, opacity: 0.35 }), 0.05, 0.14, 0, false);
+  litCig.add(smokePuff);
+  litCig.position.set(0.08, 0.99, -0.03);
+  litCig.rotation.y = -0.5;
+  litCig.rotation.z = -0.08;
+  tray.add(litCig);
+
   tray.position.set(ASHTRAY.x, 0, ASHTRAY.z);
   group.add(tray);
   colliders.push({ minX: ASHTRAY.x - 0.2, maxX: ASHTRAY.x + 0.2, minZ: ASHTRAY.z - 0.2, maxZ: ASHTRAY.z + 0.2, top: 1 });
-  const it: Interactable = { kind: 'smoke', x: ASHTRAY.x, z: ASHTRAY.z, radius: 1.8 };
+  const it: Interactable = { kind: 'smoke', label: '🚬 Cenicero y Cigarrillos', x: ASHTRAY.x, z: ASHTRAY.z, radius: 2.0 };
   interactables.push(it);
   tray.userData.interact = it;
+
+  // Cigarettes table next to ashtray: a patio side table with a full pack of cigarettes and lighter
+  const smokeTable = new THREE.Group();
+  const tableMetal = toon('#343a40');
+  const brass = toon('#d4af37');
+  smokeTable.add(mesh(new THREE.CylinderGeometry(0.18, 0.2, 0.03, 16), tableMetal, 0, 0.015, 0));
+  smokeTable.add(mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.72, 8), tableMetal, 0, 0.38, 0));
+  smokeTable.add(mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.03, 20), tableMetal, 0, 0.75, 0));
+  smokeTable.add(mesh(new THREE.CylinderGeometry(0.23, 0.23, 0.01, 20), brass, 0, 0.76, 0));
+
+  // Cigarette Pack (Cajetilla de Cigarrillos con tapa abierta y cigarrillos visibles)
+  const pack = new THREE.Group();
+  const packWhite = toon('#ffffff');
+  const packRed = toon('#d90429');
+  const packGold = toon('#ffd166');
+  const pw = 0.065;
+  const ph = 0.095;
+  const pd = 0.03;
+  pack.add(mesh(box(pw, ph * 0.7, pd), packWhite, 0, ph * 0.35, 0));
+  pack.add(mesh(box(pw * 0.85, ph * 0.35, 0.005), packRed, 0, ph * 0.35, pd / 2 + 0.003));
+  pack.add(mesh(box(pw - 0.008, 0.02, pd - 0.008), packGold, 0, ph * 0.71, 0));
+  const lid = new THREE.Group();
+  lid.add(mesh(box(pw + 0.002, ph * 0.3, pd + 0.002), packRed, 0, ph * 0.15, 0));
+  lid.position.set(0, ph * 0.7, -pd / 2);
+  lid.rotation.x = -Math.PI * 0.35;
+  pack.add(lid);
+  for (let row = -1; row <= 1; row++) {
+    for (let col = -1; col <= 1; col++) {
+      const isExtended = row === 0 && col === 0;
+      const cyH = isExtended ? 0.045 : 0.025;
+      const filter = mesh(new THREE.CylinderGeometry(0.006, 0.006, cyH, 8), toon('#e9a03b'), col * 0.018, ph * 0.7 + cyH / 2, row * 0.008, false);
+      pack.add(filter);
+    }
+  }
+  pack.position.set(-0.06, 0.765, 0.02);
+  pack.rotation.y = 0.35;
+  smokeTable.add(pack);
+
+  // Loose cigarettes on the side table
+  const looseCig1 = new THREE.Group();
+  looseCig1.add(mesh(new THREE.CylinderGeometry(0.007, 0.007, 0.08, 8).rotateZ(Math.PI / 2), toon('#fffaf3'), 0, 0.007, 0, false));
+  looseCig1.add(mesh(new THREE.CylinderGeometry(0.0075, 0.0075, 0.03, 8).rotateZ(Math.PI / 2), toon('#e9a03b'), -0.038, 0.007, 0, false));
+  looseCig1.position.set(0.06, 0.765, -0.05);
+  looseCig1.rotation.y = 0.8;
+  smokeTable.add(looseCig1);
+
+  const looseCig2 = new THREE.Group();
+  looseCig2.add(mesh(new THREE.CylinderGeometry(0.007, 0.007, 0.08, 8).rotateZ(Math.PI / 2), toon('#fffaf3'), 0, 0.007, 0, false));
+  looseCig2.add(mesh(new THREE.CylinderGeometry(0.0075, 0.0075, 0.03, 8).rotateZ(Math.PI / 2), toon('#e9a03b'), -0.038, 0.007, 0, false));
+  looseCig2.position.set(0.08, 0.765, 0.04);
+  looseCig2.rotation.y = -0.4;
+  smokeTable.add(looseCig2);
+
+  // Metallic lighter (Zippo style)
+  const lighter = new THREE.Group();
+  lighter.add(mesh(box(0.025, 0.038, 0.012), brass, 0, 0.019, 0));
+  const lCap = mesh(box(0.026, 0.018, 0.013), toon('#adb5bd'), -0.014, 0.042, 0);
+  lCap.rotation.z = 0.55;
+  lighter.add(lCap);
+  lighter.add(mesh(box(0.016, 0.014, 0.01), toon('#dee2e6'), 0, 0.042, 0));
+  lighter.position.set(0.02, 0.765, 0.1);
+  lighter.rotation.y = 0.5;
+  smokeTable.add(lighter);
+
+  smokeTable.position.set(ASHTRAY.x + 0.65, 0, ASHTRAY.z);
+  smokeTable.userData.interact = it;
+  group.add(smokeTable);
+  colliders.push({ minX: ASHTRAY.x + 0.45, maxX: ASHTRAY.x + 0.85, minZ: ASHTRAY.z - 0.22, maxZ: ASHTRAY.z + 0.22, top: 0.82 });
+
+  // ---------------------------------------------------------
+  // Outdoor Coffee Machine & Barista Station (Café en la Terraza)
+  // ---------------------------------------------------------
+  const coffeeX = -1.2;
+  const coffeeZ = minZ + 0.45;
+  const coffeeStation = new THREE.Group();
+  const barW = 1.3;
+  const barD = 0.55;
+  const barH = 0.95;
+  const iron = toon('#1f2421');
+  const counterWood = toon('#582f0e');
+  const counterTop = toon('#212529');
+
+  // Bar counter base and wooden slat front
+  coffeeStation.add(mesh(roundedBox(barW, barH - 0.05, barD - 0.04, 0.03), counterWood, 0, (barH - 0.05) / 2, 0));
+  for (let s = -0.55; s <= 0.55; s += 0.11) {
+    coffeeStation.add(mesh(box(0.035, barH - 0.08, 0.015), toon('#3d2314'), s, (barH - 0.05) / 2, barD / 2 - 0.01));
+  }
+  coffeeStation.add(mesh(roundedBox(barW + 0.08, 0.05, barD + 0.08, 0.02), counterTop, 0, barH - 0.025, 0));
+  for (const sx of [-barW / 2, barW / 2]) {
+    for (const sz of [-barD / 2, barD / 2]) {
+      coffeeStation.add(mesh(box(0.04, barH, 0.04), iron, sx, barH / 2, sz));
+    }
+  }
+
+  // Espresso Coffee Machine
+  const cm = new THREE.Group();
+  const machineW = 0.52;
+  const machineH = 0.42;
+  const machineD = 0.38;
+  const chrome = toon('#dee2e6');
+  const bodyRed = toon('#9d0208');
+  const bodyDark = toon('#1b1b1b');
+
+  cm.add(mesh(roundedBox(machineW, machineH, machineD, 0.04), bodyRed, 0, machineH / 2, 0));
+  cm.add(mesh(box(machineW - 0.06, machineH * 0.35, 0.02), chrome, 0, machineH * 0.72, machineD / 2 + 0.01));
+  for (const gx of [-0.14, 0.14]) {
+    cm.add(mesh(new THREE.CylinderGeometry(0.032, 0.032, 0.015, 16).rotateX(Math.PI / 2), toon('#f8f9fa'), gx, machineH * 0.72, machineD / 2 + 0.025, false));
+    cm.add(mesh(box(0.004, 0.03, 0.005), toon('#d90429'), gx, machineH * 0.72, machineD / 2 + 0.032));
+  }
+  for (const px of [-0.11, 0.11]) {
+    cm.add(mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.04, 16), chrome, px, machineH * 0.48, machineD / 2 + 0.03, false));
+    cm.add(mesh(new THREE.CylinderGeometry(0.015, 0.01, 0.04, 8), chrome, px, machineH * 0.43, machineD / 2 + 0.03, false));
+    const handle = mesh(new THREE.CylinderGeometry(0.014, 0.016, 0.13, 8).rotateX(Math.PI / 2), bodyDark, px, machineH * 0.48, machineD / 2 + 0.1, false);
+    cm.add(handle);
+  }
+  cm.add(mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.18, 8).rotateZ(0.35), chrome, 0.22, machineH * 0.5, machineD / 2 + 0.04, false));
+  cm.add(mesh(roundedBox(machineW - 0.04, 0.04, 0.2, 0.01), chrome, 0, 0.02, machineD / 2 + 0.06));
+  cm.add(mesh(box(machineW - 0.06, 0.015, machineD - 0.06), chrome, 0, machineH + 0.01, 0));
+  const mug1 = coffeeMug(0.7);
+  mug1.position.set(-0.12, machineH + 0.02, -0.04);
+  cm.add(mug1);
+  const mug2 = coffeeMug(0.7);
+  mug2.position.set(0.12, machineH + 0.02, 0.04);
+  cm.add(mug2);
+  const activeMug = coffeeMug(0.75);
+  activeMug.position.set(-0.11, 0.045, machineD / 2 + 0.03);
+  cm.add(activeMug);
+  const greenLed = toonUnique('#38b000');
+  greenLed.emissive = new THREE.Color('#38b000');
+  greenLed.emissiveIntensity = 0.8;
+  cm.add(mesh(new THREE.SphereGeometry(0.016, 8, 8), greenLed, 0, machineH * 0.72, machineD / 2 + 0.025, false));
+
+  cm.position.set(0, barH, 0);
+  coffeeStation.add(cm);
+
+  const coffeeSign = textPlane('☕ Café Zenic', { bg: '#2b2d42', color: '#ffb703', size: 52, border: '#ffb703' });
+  coffeeSign.scale.multiplyScalar(0.55);
+  coffeeSign.position.set(0, barH + machineH + 0.28, 0);
+  coffeeStation.add(coffeeSign);
+
+  coffeeStation.position.set(coffeeX, 0, coffeeZ);
+  group.add(coffeeStation);
+
+  night.lamps.push({ x: coffeeX, y: 2.3, z: coffeeZ + 0.3, reach: 4.5, color: '#ffe6a7', power: 2.2 });
+  colliders.push({ minX: coffeeX - barW / 2 - 0.05, maxX: coffeeX + barW / 2 + 0.05, minZ: coffeeZ - barD / 2 - 0.05, maxZ: coffeeZ + barD / 2 + 0.1, top: barH + machineH });
+
+  const coffeeIt: Interactable = {
+    kind: 'coffee',
+    label: '☕ Máquina de Café (Terraza)',
+    x: coffeeX,
+    z: coffeeZ + 0.4,
+    radius: 1.8,
+  };
+  interactables.push(coffeeIt);
+  coffeeStation.userData.interact = coffeeIt;
+  cm.userData.interact = coffeeIt;
 
   const sign = textPlane('🚬 Zona de descanso', { bg: '#2b2d42', color: '#fffaf3', size: 56, border: '#fffaf3' });
   sign.scale.multiplyScalar(0.8);

@@ -35,23 +35,23 @@ export function installSmoke(ctx: Ctx) {
     if (!smokeBreakUntil) return;
     if (!onBalcony()) {
       setSmoking(false);
-      toast('🚭 No smoking inside, so you put it out');
+      toast('🚭 Prohibido fumar adentro, así que lo apagaste');
     } else if (now > smokeBreakUntil) {
       setSmoking(false);
-      toast("That one's done. Back to work!");
+      toast('Se terminó el cigarrillo. ¡De vuelta a trabajar!');
     }
   }
   ctx.ticks.add('world', ({ now }) => checkSmokeBreak(now));
   ctx.interactions.define('smoke', {
     reach: 3,
-    hint: () => ({ k: String(smokeBreakUntil > 0), parts: [hintTitle('🚬 Ashtray'), key('E', smokeBreakUntil ? 'Stub it out' : 'Take a smoke break')] }),
+    hint: () => ({ k: String(smokeBreakUntil > 0), parts: [hintTitle('🚬 Cenicero y Cigarrillos'), key('E', smokeBreakUntil ? 'Apagar cigarrillo' : 'Tomar un descanso / Fumar')] }),
     use: onE(() => {
       if (smokeBreakUntil) {
         setSmoking(false);
-        toast('You stub it out in the ashtray');
+        toast('Apagaste el cigarrillo en el cenicero');
       } else {
         setSmoking(true);
-        toast('🚬 Smoke break');
+        toast('🚬 Pausa de descanso: fumando un cigarrillo');
       }
     }),
   });
