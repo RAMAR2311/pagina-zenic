@@ -13,10 +13,10 @@ export function friendlyGhError(raw: string): string {
   const text = lines.join(' ');
   const first = lines[0] ?? raw.trim();
   if (/^Unknown JSON field:/i.test(first)) return first;
-  if (/no git remotes found|none of the git remotes/i.test(text)) return 'This project has no GitHub remote yet. Push it to GitHub (git remote add origin <url>) to fill the boards.';
-  if (/not a git repository/i.test(text)) return "This folder isn't a git repository";
-  if (/auth login|not logged in|authentication/i.test(text)) return "gh isn't signed in to GitHub on the office's machine — run `gh auth login` there";
-  if (/could not resolve to a repository|not found/i.test(text)) return "gh can't find this repository on GitHub (check the remote and access)";
+  if (/no git remotes found|none of the git remotes/i.test(text)) return 'Este proyecto no tiene un repositorio remoto en GitHub aún. Agrega uno con git remote add origin <url>.';
+  if (/not a git repository/i.test(text)) return "Esta carpeta no es un repositorio git";
+  if (/auth login|not logged in|authentication/i.test(text)) return "gh no ha iniciado sesión en GitHub — ejecuta `gh auth login` en la máquina del servidor";
+  if (/could not resolve to a repository|not found/i.test(text)) return "gh no pudo encontrar este repositorio en GitHub (verifica permisos y el remote)";
   return lines.slice(-2).join(' ') || raw;
 }
 
@@ -27,7 +27,7 @@ export function gh(args: string[], cwd: string, timeout = 30_000, env?: Record<s
       if (err) {
         const msg = (stderr || err.message || '').trim();
         const signedOut = env && /auth login|not logged in|authentication/i.test(msg);
-        reject(new Error((err as NodeJS.ErrnoException).code === 'ENOENT' ? 'GitHub CLI (gh) is not installed on the server' : signedOut ? 'Your GitHub sign-in stopped working — sign in again (☰ → 🔐 Your sign-ins)' : friendlyGhError(msg)));
+        reject(new Error((err as NodeJS.ErrnoException).code === 'ENOENT' ? 'GitHub CLI (gh) no está instalado en el servidor. Instala `gh` para sincronizar issues y PRs en vivo.' : signedOut ? 'Tu sesión de GitHub expiró — vuelve a iniciar sesión (☰ → 🔐 Tus accesos)' : friendlyGhError(msg)));
       } else resolve(stdout);
     });
   });

@@ -314,7 +314,7 @@ export default function OficinaVirtual({ darkMode = true }) {
                 height: 440,
               }}
             >
-              <Office3DPreview darkMode={darkMode} />
+              <Office3DPreview darkMode={darkMode} onLaunchOffice={handleLaunchOffice} />
 
               <button
                 onClick={() => handleLaunchOffice('3d')}
