@@ -33,6 +33,7 @@ import {
 import { Link } from 'react-router-dom'
 import ZenicBrainGraph from '../components/ZenicBrainGraph'
 import GalaxyBackground from '../components/GalaxyBackground'
+import ZenicBrainChat from '../components/ZenicBrainChat'
 
 // Predefined retail cognitive scenarios
 const PRESET_SCENARIOS = [
@@ -356,8 +357,9 @@ const BRAIN_MEMORIES = [
 export default function Cerebro({ darkMode }) {
   const canvasRef = useRef(null)
 
-  // Active View Tab: 'grafo' | 'simulador' | 'entrenamiento' | 'todos'
+  // Active View Tab: 'grafo' | 'chat' | 'simulador' | 'entrenamiento' | 'todos'
   const [activeTab, setActiveTab] = useState('grafo')
+  const [isFloatingChatOpen, setIsFloatingChatOpen] = useState(false)
 
   // Brain Cognitive State
   const [brainStatus, setBrainStatus] = useState('vigilante') // 'vigilante' | 'pensando' | 'infiriendo' | 'aprendiendo'
@@ -758,6 +760,40 @@ export default function Cerebro({ darkMode }) {
             </button>
 
             <button
+              onClick={() => setActiveTab('chat')}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '0.65rem 1.25rem',
+                borderRadius: 12,
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '0.86rem',
+                fontWeight: 800,
+                background: activeTab === 'chat'
+                  ? 'linear-gradient(135deg, #00E5FF 0%, #9C4DCC 100%)'
+                  : 'transparent',
+                color: activeTab === 'chat' ? '#FFFFFF' : subColor,
+                boxShadow: activeTab === 'chat' ? '0 4px 18px rgba(0, 229, 255, 0.4)' : 'none',
+                transition: 'all 0.2s ease',
+              }}
+            >
+              <MessageSquare size={16} />
+              <span>Chat Cerebro IA (Claude)</span>
+              <span style={{
+                fontSize: '0.68rem',
+                padding: '0.15rem 0.55rem',
+                borderRadius: 999,
+                background: activeTab === 'chat' ? 'rgba(255,255,255,0.25)' : 'rgba(0, 229, 255, 0.2)',
+                color: activeTab === 'chat' ? '#FFFFFF' : '#00E5FF',
+                fontWeight: 800,
+              }}>
+                CLAUDE
+              </span>
+            </button>
+
+            <button
               onClick={() => setActiveTab('simulador')}
               style={{
                 display: 'inline-flex',
@@ -827,6 +863,13 @@ export default function Cerebro({ darkMode }) {
               <span>Ver Todo</span>
             </button>
           </div>
+
+          {/* ── CHAT CEREBRO IA (CLAUDE + ZENIC-CEREBRO) ── */}
+          {activeTab === 'chat' && (
+            <div style={{ marginTop: '0.5rem', marginBottom: '2.5rem' }}>
+              <ZenicBrainChat darkMode={darkMode} />
+            </div>
+          )}
 
           {/* ── GRAFO DE CONOCIMIENTO (EXACTO A LA IMAGEN) ── */}
           {(activeTab === 'grafo' || activeTab === 'todos') && (
@@ -1466,6 +1509,69 @@ export default function Cerebro({ darkMode }) {
 
         </div>
       </section>
+      )}
+
+      {/* ── BOTÓN FLOTANTE Y OVERLAY DEL CHAT CON CLAUDE ── */}
+      {activeTab !== 'chat' && (
+        <div style={{ position: 'fixed', bottom: 28, right: 28, zIndex: 9999 }}>
+          <AnimatePresence>
+            {isFloatingChatOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 20, scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+                style={{
+                  position: 'absolute',
+                  bottom: 60,
+                  right: 0,
+                  width: 'clamp(320px, 92vw, 440px)',
+                  boxShadow: '0 20px 60px rgba(0,0,0,0.6)',
+                  borderRadius: 24,
+                }}
+              >
+                <ZenicBrainChat
+                  darkMode={darkMode}
+                  isFloating={true}
+                  onClose={() => setIsFloatingChatOpen(false)}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <button
+            onClick={() => setIsFloatingChatOpen(!isFloatingChatOpen)}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 10,
+              padding: '0.8rem 1.35rem',
+              borderRadius: 999,
+              border: 'none',
+              background: 'linear-gradient(135deg, #00E5FF 0%, #9C4DCC 100%)',
+              color: '#FFFFFF',
+              fontWeight: 800,
+              fontSize: '0.88rem',
+              cursor: 'pointer',
+              boxShadow: '0 8px 30px rgba(0, 229, 255, 0.45)',
+              transition: 'transform 0.2s ease',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
+            onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+          >
+            <MessageSquare size={17} />
+            <span>Chat Cerebro IA</span>
+            <span
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: '50%',
+                background: '#00FF87',
+                boxShadow: '0 0 8px #00FF87',
+              }}
+            />
+          </button>
+        </div>
       )}
 
     </div>

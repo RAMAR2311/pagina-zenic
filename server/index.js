@@ -5,6 +5,7 @@ import Database from 'better-sqlite3'
 import path from 'path'
 import fs from 'fs'
 import { fileURLToPath } from 'url'
+import { loadZenicCerebroKnowledge, buildClaudeSystemPrompt, queryLocalCerebro } from './cerebroKnowledge.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.resolve(__dirname, '..')
@@ -92,6 +93,117 @@ const upload = multer({
 app.post('/api/upload', upload.single('file'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'no file' })
   res.json({ url: `/uploads/${req.file.filename}` })
+})
+
+// ── Cerebro IA & Claude API ──
+
+// Obtener estado e índice de la base de conocimiento zenic-cerebro/
+app.get('/api/cerebro/knowledge', (req, res) => {
+  try {
+    const docs = loadZenicCerebroKnowledge()
+    const totalBytes = docs.reduce((acc, d) => acc + (d.size || 0), 0)
+    res.json({
+      status: 'ready',
+      count: docs.length,
+      totalBytes,
+      files: docs.map(d => ({ path: d.path, name: d.name, size: d.size })),
+      hasApiKey: Boolean(process.env.ANTHROPIC_API_KEY),
+    })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
+// Endpoint de Chat con Claude alimentado por la carpeta zenic-cerebro/
+app.post('/api/cerebro/chat', async (req, res) => {
+  const { messages = [], apiKey: clientApiKey } = req.body
+
+  if (!Array.isArray(messages) || messages.length === 0) {
+    return res.status(400).json({ error: 'messages array is required' })
+  }
+
+  const docs = loadZenicCerebroKnowledge()
+  const lastUserMessage = [...messages].reverse().find(m => m.role === 'user')?.content || ''
+
+  const apiKey = (clientApiKey || process.env.ANTHROPIC_API_KEY || '').trim()
+
+  // Si hay API key disponible, intentamos consultar directamente la API oficial de Claude (Anthropic)
+  if (apiKey) {
+    try {
+      const systemPrompt = buildClaudeSystemPrompt(docs)
+
+      // Filtrar mensajes para Claude (formato { role, content })
+      const claudeMessages = messages
+        .filter(m => m.role === 'user' || m.role === 'assistant')
+        .map(m => ({ role: m.role, content: m.content }))
+
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+        },
+        body: JSON.stringify({
+          model: 'claude-3-5-sonnet-20241022',
+          max_tokens: 1024,
+          system: systemPrompt,
+          messages: claudeMessages,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        const errorMsg = errorData.error?.message || `Anthropic API status ${response.status}`
+        console.warn(`[Cerebro] Claude API falló: ${errorMsg}. Usando motor local de respaldo.`)
+        
+        // Fallback al motor local estricto
+        const local = queryLocalCerebro(lastUserMessage, docs)
+        return res.json({
+          role: 'assistant',
+          content: local.content,
+          sources: local.sources,
+          model: 'zenic-cerebro-engine (fallback)',
+          isClaudeApi: false,
+          warning: `Nota: Claude API devolvió (${errorMsg}). Mostrando respuesta desde la base de conocimiento local zenic-cerebro/.`,
+        })
+      }
+
+      const data = await response.json()
+      const text = data.content?.[0]?.text || 'Sin respuesta generada.'
+
+      return res.json({
+        role: 'assistant',
+        content: text,
+        model: data.model || 'claude-3-5-sonnet-20241022',
+        isClaudeApi: true,
+        usage: data.usage,
+      })
+    } catch (err) {
+      console.error('[Cerebro] Error al invocar Claude API:', err.message)
+      // Fallback
+      const local = queryLocalCerebro(lastUserMessage, docs)
+      return res.json({
+        role: 'assistant',
+        content: local.content,
+        sources: local.sources,
+        model: 'zenic-cerebro-engine (fallback)',
+        isClaudeApi: false,
+        warning: `Error de conexión con Claude API (${err.message}). Respondiendo con el motor local estricto de zenic-cerebro/.`,
+      })
+    }
+  }
+
+  // Si no se proporcionó API key, responde con el motor local estricto de zenic-cerebro/
+  const local = queryLocalCerebro(lastUserMessage, docs)
+  return res.json({
+    role: 'assistant',
+    content: local.content,
+    sources: local.sources,
+    model: 'zenic-cerebro-engine',
+    isClaudeApi: false,
+    note: 'Respuesta generada directamente desde los 28 archivos Markdown de zenic-cerebro/. Para activar Claude 3.5 Sonnet en vivo, configura tu Anthropic API Key en el botón ⚙️.',
+  })
 })
 
 app.use((err, req, res, next) => {
