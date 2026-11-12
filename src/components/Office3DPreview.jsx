@@ -2,90 +2,9 @@ import { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Users, Compass, RotateCw, ZoomIn, ZoomOut, CheckCircle2, ArrowRight, Maximize2 } from 'lucide-react'
+import { DESK_STATIONS } from '../data/deskStations'
 
-// Datos de los puestos directivos y agentes de Zenic
-export const DESK_STATIONS = [
-  {
-    id: 'ceo',
-    name: 'Marlon Ramírez',
-    role: 'CEO & Fundador',
-    desk: 'Oficina Ejecutiva',
-    officeName: 'Despacho CEO',
-    description: 'Estrategia corporativa, alianzas de retail y visión del ecosistema Zenic en Colombia.',
-    x: -4.4,
-    z: -3.8,
-    color: '#F59E0B',
-    badge: 'Estrategia',
-    icon: '👑',
-    skinTone: '#ffd7b5',
-    hairColor: '#2b2d42',
-    accentColor: '#F59E0B',
-  },
-  {
-    id: 'admin',
-    name: 'Jhon Aparicio',
-    role: 'Dir. Administrativo',
-    desk: 'Oficina Financiera',
-    officeName: 'Finanzas & Admin',
-    description: 'Gestión contable, operaciones financieras, nómina y facturación electrónica POS.',
-    x: 4.4,
-    z: -3.8,
-    color: '#00E5FF',
-    badge: 'Operaciones',
-    icon: '💼',
-    skinTone: '#f1c27d',
-    hairColor: '#4a3222',
-    accentColor: '#00E5FF',
-  },
-  {
-    id: 'cto',
-    name: 'Miguel Rodriguez',
-    role: 'Dir. de Tecnología',
-    desk: 'Laboratorio Tech & IA',
-    officeName: 'Lab Tech & POS',
-    description: 'Arquitectura de software cloud, sincronización offline y modelos de IA en punto de venta.',
-    x: -4.4,
-    z: 3.8,
-    color: '#C084FC',
-    badge: 'Arquitectura',
-    icon: '⚡',
-    skinTone: '#ffd7b5',
-    hairColor: '#6f4e37',
-    accentColor: '#C084FC',
-  },
-  {
-    id: 'cmo',
-    name: 'Santiago Peraza',
-    role: 'Dir. de Marketing',
-    desk: 'Sala Retail & Demos',
-    officeName: 'Marketing & Retail',
-    description: 'Crecimiento de comercios, campañas de retail popular y demostraciones en vivo a tenderos.',
-    x: 4.4,
-    z: 3.8,
-    color: '#00FF87',
-    badge: 'Ventas',
-    icon: '🎯',
-    skinTone: '#e0ac69',
-    hairColor: '#2b2d42',
-    accentColor: '#00FF87',
-  },
-  {
-    id: 'cerebro',
-    name: 'Cerebro Zenic IA',
-    role: 'Núcleo Cognitivo',
-    desk: 'Cámara Central',
-    officeName: 'Núcleo Neural',
-    description: 'Agente autónomo con 28 documentos neuronales y grafo sináptico empresarial en tiempo real.',
-    x: 0,
-    z: 0,
-    color: '#FF007F',
-    badge: '28 Docs',
-    icon: '🧠',
-    skinTone: '#00E5FF',
-    hairColor: '#FF007F',
-    accentColor: '#FF007F',
-  },
-]
+export { DESK_STATIONS }
 
 export default function Office3DPreview({ darkMode = true, onSelectStation = null, onLaunchOffice = null }) {
   const containerRef = useRef(null)
@@ -111,7 +30,7 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
     const scene = new THREE.Scene()
     const aspect = width / height
     let d = 9
-    const camera = new THREE.OrthographicCamera(-d * aspect, d * aspect, d, -d, 0.5, 120)
+    const camera = new THREE.OrthographicCamera(-d * aspect, d * aspect, d, -d, 1, 80)
     camera.position.set(22, 22, 22)
     camera.lookAt(0, 0, 0)
 
@@ -129,6 +48,10 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
     const dirLight = new THREE.DirectionalLight(0xffffff, darkMode ? 1.6 : 1.9)
     dirLight.position.set(16, 26, 12)
     dirLight.castShadow = true
+    dirLight.shadow.bias = -0.0005
+    dirLight.shadow.normalBias = 0.04
+    dirLight.shadow.mapSize.width = 2048
+    dirLight.shadow.mapSize.height = 2048
     scene.add(dirLight)
 
     // CEO Marlon - Warm Radiant Gold Light
@@ -156,85 +79,78 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
     pinkCoreLight.position.set(0, 3.5, 0)
     scene.add(pinkCoreLight)
 
-    // ── LUXURY ARCHITECTURAL FLOOR (Solid, Anti-Aliased Porcelain Tiles - Zero Flickering) ──
-    const createFloorCanvas = (isDark) => {
-      const canvas = document.createElement('canvas')
-      canvas.width = 512
-      canvas.height = 512
-      const c = canvas.getContext('2d')
-
-      // Main porcelain slate base
-      c.fillStyle = isDark ? '#0b1424' : '#e6edf5'
-      c.fillRect(0, 0, 512, 512)
-
-      // Large format tiles (256px = 2x2 per repeat, very clean and smooth)
-      const ts = 256
-      for (let tx = 0; tx < 512; tx += ts) {
-        for (let ty = 0; ty < 512; ty += ts) {
-          const n = (Math.sin(tx * 0.05 + ty * 0.03) + 1) * 0.5
-          const baseV = isDark ? 15 + n * 6 : 236 + n * 6
-          c.fillStyle = `rgb(${baseV}, ${baseV + (isDark ? 4 : 2)}, ${baseV + (isDark ? 9 : 4)})`
-          c.fillRect(tx + 4, ty + 4, ts - 8, ts - 8)
-
-          // Soft ambient corner gradient
-          const g = c.createLinearGradient(tx, ty, tx + ts, ty + ts)
-          g.addColorStop(0, 'rgba(255,255,255,0.03)')
-          g.addColorStop(1, isDark ? 'rgba(0,0,0,0.12)' : 'rgba(0,0,0,0.03)')
-          c.fillStyle = g
-          c.fillRect(tx + 4, ty + 4, ts - 8, ts - 8)
-
-          // Soft bevel grout border (anti-aliased)
-          c.strokeStyle = isDark ? 'rgba(30, 41, 59, 0.5)' : 'rgba(203, 213, 225, 0.6)'
-          c.lineWidth = 2
-          c.strokeRect(tx + 3, ty + 3, ts - 6, ts - 6)
-        }
-      }
-
-      return canvas
-    }
-
-    const floorTexture = new THREE.CanvasTexture(createFloorCanvas(darkMode))
-    floorTexture.wrapS = THREE.RepeatWrapping
-    floorTexture.wrapT = THREE.RepeatWrapping
-    floorTexture.repeat.set(4, 4)
-    floorTexture.generateMipmaps = true
-    floorTexture.minFilter = THREE.LinearMipmapLinearFilter
-    floorTexture.magFilter = THREE.LinearFilter
-    if (renderer.capabilities?.getMaxAnisotropy) {
-      floorTexture.anisotropy = Math.min(4, renderer.capabilities.getMaxAnisotropy())
-    }
-
-    const floorGeo = new THREE.BoxGeometry(19, 0.2, 17)
+    // ── MAIN OFFICE FLOOR (Luxury Satin Architectural Slate - Rock Solid, Zero Flickering) ──
+    const floorGeo = new THREE.BoxGeometry(19.4, 0.4, 17.4)
     const floorMat = new THREE.MeshStandardMaterial({
-      map: floorTexture,
-      roughness: 0.55,
-      metalness: 0.15,
+      color: darkMode ? 0x090f1a : 0xe2e8f0,
+      roughness: 0.8,
+      metalness: 0.12,
     })
     const floor = new THREE.Mesh(floorGeo, floorMat)
-    floor.position.y = -0.1
-    floor.receiveShadow = true
+    floor.position.y = -0.2
+    floor.receiveShadow = false // Completely eradicate shadow acne on the floor plane
     scene.add(floor)
 
-    // Architectural Perimeter Edge Trim (Dark bronze/gunmetal chamfered rim)
+    // Architectural Perimeter Skirting Rim (Dark bronze/gunmetal chamfered rim)
     const perimeterTrim = new THREE.Mesh(
-      new THREE.BoxGeometry(19.25, 0.1, 17.25),
-      new THREE.MeshStandardMaterial({ color: darkMode ? 0x0f172a : 0x94a3b8, metalness: 0.7, roughness: 0.3 })
+      new THREE.BoxGeometry(19.6, 0.12, 17.6),
+      new THREE.MeshStandardMaterial({ color: darkMode ? 0x1e293b : 0x94a3b8, metalness: 0.6, roughness: 0.35 })
     )
-    perimeterTrim.position.y = -0.05
+    perimeterTrim.position.y = -0.06
     scene.add(perimeterTrim)
 
-    // Glowing Neon Floor Guide Trim (Cross corridors)
-    const corridorMat = new THREE.MeshBasicMaterial({
-      color: darkMode ? 0x00e5ff : 0x38bdf8,
+    // Subtle Architectural Floor Panel Inlays (Sleek executive grid lines - Zero Z-fighting)
+    const floorGridMat = new THREE.MeshBasicMaterial({
+      color: darkMode ? 0x1e293b : 0xcbd5e1,
       transparent: true,
-      opacity: darkMode ? 0.35 : 0.5,
+      opacity: darkMode ? 0.35 : 0.45,
+      depthWrite: false,
     })
-    const hHallwayLine = new THREE.Mesh(new THREE.BoxGeometry(18.2, 0.005, 0.1), corridorMat)
-    hHallwayLine.position.set(0, 0.006, 0)
-    scene.add(hHallwayLine)
-    const vHallwayLine = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.005, 16.2), corridorMat)
-    vHallwayLine.position.set(0, 0.006, 0)
-    scene.add(vHallwayLine)
+    for (let gx = -7.5; gx <= 7.5; gx += 3.75) {
+      if (Math.abs(gx) < 0.5) continue
+      const line = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.002, 16.8), floorGridMat)
+      line.position.set(gx, 0.002, 0)
+      scene.add(line)
+    }
+    for (let gz = -6.0; gz <= 6.0; gz += 4.0) {
+      if (Math.abs(gz) < 0.5) continue
+      const line = new THREE.Mesh(new THREE.BoxGeometry(18.8, 0.002, 0.04), floorGridMat)
+      line.position.set(0, 0.002, gz)
+      scene.add(line)
+    }
+
+    // Circulation Hallway Runners (4 Disjoint branches from central dais to perimeter - ZERO overlap)
+    const runnerMat = new THREE.MeshStandardMaterial({
+      color: darkMode ? 0x111c2e : 0xdbeafe,
+      roughness: 0.85,
+      metalness: 0.1,
+    })
+    const corridorBranches = [
+      { x: 0, z: -5.35, w: 1.4, d: 5.7 },  // North
+      { x: 0, z: 5.35, w: 1.4, d: 5.7 },   // South
+      { x: -5.85, z: 0, w: 6.7, d: 1.4 },  // West
+      { x: 5.85, z: 0, w: 6.7, d: 1.4 },   // East
+    ]
+    corridorBranches.forEach(({ x, z, w, d }) => {
+      const runner = new THREE.Mesh(new THREE.BoxGeometry(w, 0.02, d), runnerMat)
+      runner.position.set(x, 0.01, z)
+      scene.add(runner)
+    })
+
+    // Center illuminated cyber guide lines (depthWrite: false - Zero Z-fighting)
+    const neonGuideMat = new THREE.MeshBasicMaterial({
+      color: darkMode ? 0x00e5ff : 0x0284c7,
+      transparent: true,
+      opacity: 0.65,
+      depthWrite: false,
+    })
+    corridorBranches.forEach(({ x, z, w, d }) => {
+      const lineW = w > d ? w : 0.06
+      const lineD = w > d ? 0.06 : d
+      const neonLine = new THREE.Mesh(new THREE.BoxGeometry(lineW, 0.004, lineD), neonGuideMat)
+      neonLine.position.set(x, 0.022, z)
+      scene.add(neonLine)
+    })
 
     // ── PERIMETER GLASS WALLS ──
     const glassMat = new THREE.MeshPhysicalMaterial({
@@ -327,15 +243,16 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
     // ── SYNAPSE LIGHT PATHS (Floor circuits leading from Brain Core to each Office) ──
     DESK_STATIONS.filter((s) => s.id !== 'cerebro').forEach((st) => {
       const lineGeo = new THREE.BufferGeometry().setFromPoints([
-        new THREE.Vector3(0, 0.04, 0),
-        new THREE.Vector3(st.x * 0.45, 0.04, st.z * 0.45),
-        new THREE.Vector3(st.x, 0.04, st.z),
+        new THREE.Vector3(0, 0.19, 0),
+        new THREE.Vector3(st.x * 0.45, 0.08, st.z * 0.45),
+        new THREE.Vector3(st.x, 0.07, st.z),
       ])
       const lineMat = new THREE.LineBasicMaterial({
         color: new THREE.Color(st.color),
         transparent: true,
-        opacity: darkMode ? 0.7 : 0.85,
+        opacity: darkMode ? 0.75 : 0.9,
         linewidth: 2,
+        depthWrite: false,
       })
       const pathLine = new THREE.Line(lineGeo, lineMat)
       scene.add(pathLine)
@@ -358,9 +275,9 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
       new THREE.MeshBasicMaterial({
         color: 0xff007f,
         side: THREE.DoubleSide,
-        polygonOffset: true,
-        polygonOffsetFactor: -1,
-        polygonOffsetUnits: -1,
+        transparent: true,
+        opacity: 0.9,
+        depthWrite: false,
       })
     )
     daisBorder.rotation.x = -Math.PI / 2
@@ -374,10 +291,8 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
         color: 0x00e5ff,
         side: THREE.DoubleSide,
         transparent: true,
-        opacity: 0.8,
-        polygonOffset: true,
-        polygonOffsetFactor: -2,
-        polygonOffsetUnits: -2,
+        opacity: 0.85,
+        depthWrite: false,
       })
     )
     daisInnerRing.rotation.x = -Math.PI / 2
@@ -487,58 +402,61 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
     const addDecor = (st) => {
       if (st.id === 'cerebro') return
 
-      // 1. Executive Suite Designer Rug with contrasting stitched borders (Zero Z-Fighting)
-      const rugGroup = new THREE.Group()
-      const rugBase = new THREE.Mesh(
-        new THREE.BoxGeometry(4.0, 0.03, 3.6),
+      // 1. Executive Suite Platform & Designer Rug (Elevated 3D Island - Zero Z-Fighting)
+      const suitePlatform = new THREE.Group()
+
+      // Architectural plinth base (Elevated wood/slate floor island)
+      const plinth = new THREE.Mesh(
+        new THREE.BoxGeometry(4.6, 0.04, 4.2),
         new THREE.MeshStandardMaterial({
-          color: darkMode ? 0x111827 : 0xf1f5f9,
-          roughness: 0.85,
+          color: darkMode ? 0x111c2d : 0xf1f5f9,
+          roughness: 0.5,
+          metalness: 0.2,
         })
       )
-      rugBase.position.y = 0.015
-      rugGroup.add(rugBase)
+      plinth.position.y = 0.02
+      suitePlatform.add(plinth)
 
-      // Inner woven motif
-      const innerBorder = new THREE.Mesh(
-        new THREE.BoxGeometry(3.6, 0.005, 3.2),
+      // Ambient LED under-glow rim strip around the plinth base
+      const rimGlow = new THREE.Mesh(
+        new THREE.BoxGeometry(4.65, 0.012, 4.25),
+        new THREE.MeshBasicMaterial({
+          color: new THREE.Color(st.color),
+          transparent: true,
+          opacity: 0.8,
+          depthWrite: false,
+        })
+      )
+      rimGlow.position.y = 0.02
+      suitePlatform.add(rimGlow)
+
+      // Plush executive woven carpet inlay on top of the plinth
+      const carpet = new THREE.Mesh(
+        new THREE.BoxGeometry(4.2, 0.018, 3.8),
         new THREE.MeshStandardMaterial({
+          color: darkMode ? 0x0b1320 : 0xe2e8f0,
+          roughness: 0.9,
+          metalness: 0.05,
+        })
+      )
+      carpet.position.y = 0.045
+      suitePlatform.add(carpet)
+
+      // Stitched executive perimeter band with subtle director tint
+      const carpetBand = new THREE.Mesh(
+        new THREE.BoxGeometry(3.6, 0.004, 3.2),
+        new THREE.MeshBasicMaterial({
           color: new THREE.Color(st.color),
           transparent: true,
           opacity: darkMode ? 0.25 : 0.35,
-          roughness: 0.9,
-          polygonOffset: true,
-          polygonOffsetFactor: -1,
-          polygonOffsetUnits: -1,
+          depthWrite: false,
         })
       )
-      innerBorder.position.y = 0.032
-      rugGroup.add(innerBorder)
+      carpetBand.position.y = 0.056
+      suitePlatform.add(carpetBand)
 
-      // Outer accent border in director color
-      const rugBorder = new THREE.Mesh(
-        new THREE.RingGeometry(1.6, 1.75, 4),
-        new THREE.MeshBasicMaterial({
-          color: new THREE.Color(st.color),
-          side: THREE.DoubleSide,
-          transparent: true,
-          opacity: 0.8,
-          polygonOffset: true,
-          polygonOffsetFactor: -2,
-          polygonOffsetUnits: -2,
-        })
-      )
-      rugBorder.rotation.x = -Math.PI / 2
-      rugBorder.rotation.z = Math.PI / 4
-      rugBorder.scale.set(1.5, 1.4, 1)
-      rugBorder.position.y = 0.034
-      rugGroup.add(rugBorder)
-
-      rugGroup.position.set(st.x, 0, st.z)
-      scene.add(rugGroup)
-
-      rugGroup.position.set(st.x, 0, st.z)
-      scene.add(rugGroup)
+      suitePlatform.position.set(st.x, 0, st.z)
+      scene.add(suitePlatform) // ADDED EXACTLY ONCE
 
       // 2. High-End Executive Credenza & Bookshelf against rear partition wall
       const credenzaZ = st.z > 0 ? st.z + 1.6 : st.z - 1.6
@@ -991,7 +909,7 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
       group.add(beacon)
       group.userData.beacon = beacon
 
-      // Glowing Base Ring (Pulsing ground ring)
+      // Glowing Base Ring (Pulsing ground ring - depthWrite: false, zero Z-fighting)
       const ringGeo = new THREE.RingGeometry(isCentral ? 1.6 : 1.25, isCentral ? 1.75 : 1.38, 32)
       ringGeo.rotateX(-Math.PI / 2)
       const ringMat = new THREE.MeshBasicMaterial({
@@ -999,9 +917,10 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
         side: THREE.DoubleSide,
         transparent: true,
         opacity: 0.45,
+        depthWrite: false,
       })
       const ring = new THREE.Mesh(ringGeo, ringMat)
-      ring.position.y = 0.04
+      ring.position.y = isCentral ? 0.195 : 0.065
       group.add(ring)
       group.userData.ring = ring
 
