@@ -12,67 +12,72 @@ import type { Fixture } from './fixture';
 import { box, glassPane } from './materials';
 import { floorPlant, plant } from './props';
 
-/** Architectural high-resolution executive plaque */
-function createExecutiveSignboard(opts: {
+/** Architectural high-resolution executive wall directory plaque (mounted beside the door at eye-level) */
+function createExecutiveDoorPlaque(opts: {
   name: string;
   role: string;
   icon: string;
   accent: string;
 }): THREE.Group {
   const g = new THREE.Group();
-  const width = 1.35;
-  const height = 0.40;
-  const depth = 0.025;
+  const width = 0.88;
+  const height = 0.46;
+  const depth = 0.024;
 
   const canvas = document.createElement('canvas');
   canvas.width = 1024;
-  canvas.height = 300;
+  canvas.height = 512;
   const ctx = canvas.getContext('2d')!;
 
-  // Background: Deep dark executive acrylic
-  ctx.fillStyle = '#0b132b';
-  ctx.fillRect(0, 0, 1024, 300);
+  // Background: Deep dark executive acrylic / glass
+  ctx.fillStyle = '#080e1e';
+  ctx.fillRect(0, 0, 1024, 512);
 
-  const grad = ctx.createLinearGradient(0, 0, 1024, 300);
-  grad.addColorStop(0, 'rgba(30, 41, 59, 0.85)');
-  grad.addColorStop(1, 'rgba(11, 19, 43, 0.98)');
+  const grad = ctx.createLinearGradient(0, 0, 1024, 512);
+  grad.addColorStop(0, 'rgba(30, 41, 59, 0.92)');
+  grad.addColorStop(1, 'rgba(8, 14, 30, 0.98)');
   ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, 1024, 300);
+  ctx.fillRect(0, 0, 1024, 512);
 
   // Slim metallic accent border
   ctx.strokeStyle = opts.accent;
-  ctx.lineWidth = 8;
-  ctx.strokeRect(6, 6, 1012, 288);
+  ctx.lineWidth = 10;
+  ctx.strokeRect(8, 8, 1008, 496);
 
-  // Inner subtle white border
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-  ctx.lineWidth = 2;
-  ctx.strokeRect(18, 18, 988, 264);
+  // Inner subtle border
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+  ctx.lineWidth = 2.5;
+  ctx.strokeRect(22, 22, 980, 468);
 
-  // Header category
+  // Header category pill
   ctx.fillStyle = opts.accent;
-  ctx.font = '800 24px Nunito, Montserrat, system-ui, sans-serif';
+  ctx.font = '800 28px Nunito, Montserrat, system-ui, sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('ZENIC TECH · DESPACHO EJECUTIVO', 512, 58);
+  ctx.fillText('ZENIC · DIRECCIÓN EJECUTIVA', 512, 75);
 
   // Thin dividing line
   ctx.strokeStyle = opts.accent;
-  ctx.lineWidth = 3;
+  ctx.lineWidth = 3.5;
   ctx.beginPath();
-  ctx.moveTo(260, 88);
-  ctx.lineTo(764, 88);
+  ctx.moveTo(280, 115);
+  ctx.lineTo(744, 115);
   ctx.stroke();
 
   // Name (Main)
   ctx.fillStyle = '#FFFFFF';
-  ctx.font = '900 58px Nunito, Montserrat, system-ui, sans-serif';
-  ctx.fillText(`${opts.icon}  ${opts.name.toUpperCase()}`, 512, 148);
+  ctx.font = '900 68px Nunito, Montserrat, system-ui, sans-serif';
+  ctx.fillText(`${opts.icon}  ${opts.name.toUpperCase()}`, 512, 225);
 
   // Role subtitle
   ctx.fillStyle = '#94A3B8';
-  ctx.font = '700 32px Nunito, Montserrat, system-ui, sans-serif';
-  ctx.fillText(opts.role, 512, 222);
+  ctx.font = '700 36px Nunito, Montserrat, system-ui, sans-serif';
+  ctx.fillText(opts.role, 512, 340);
+
+  // Status indicator
+  ctx.fillStyle = '#10B981';
+  ctx.font = '700 24px Nunito, monospace';
+  ctx.fillText('● DESPACHO PRIVADO · EN LÍNEA', 512, 430);
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
@@ -84,15 +89,15 @@ function createExecutiveSignboard(opts: {
 
   // Acrylic backing block
   const acrylicMat = toon('#0f172a');
-  const backing = mesh(box(width + 0.04, height + 0.04, depth), acrylicMat, 0, 0, -depth / 2);
+  const backing = mesh(box(width + 0.03, height + 0.03, depth), acrylicMat, 0, 0, -depth / 2);
   g.add(backing);
 
   // 4 Corner Brass/Gold Standoff Bolts
   const boltMat = toon('#ffd166');
   const boltR = 0.022;
-  const boltL = 0.04;
-  const dx = width / 2 - 0.06;
-  const dy = height / 2 - 0.06;
+  const boltL = 0.045;
+  const dx = width / 2 - 0.055;
+  const dy = height / 2 - 0.055;
   for (const sx of [-dx, dx]) {
     for (const sy of [-dy, dy]) {
       const b = mesh(new THREE.CylinderGeometry(boltR, boltR, boltL, 12).rotateX(Math.PI / 2), boltMat, sx, sy, 0.005);
@@ -103,28 +108,28 @@ function createExecutiveSignboard(opts: {
   return g;
 }
 
-/** Executive Workstation: PC Ultrawide Monitor with Live Screen & 3D Engraved Nameplate */
+/** Executive Workstation: PC Ultrawide Monitor with Live Screen & Angled Side Desk Nameplate */
 function createExecutiveDeskWorkstation(opts: {
   name: string;
   role: string;
   icon: string;
   theme: 'admin' | 'tech' | 'retail';
   accent: string;
-  deskRotY: number;
 }): THREE.Group {
   const g = new THREE.Group();
 
-  // 1. Triangular Executive Desk Nameplate (Placa grabada en cuña de madera noble con oro)
-  const plateW = 0.58;
-  const plateH = 0.12;
-  const plateD = 0.10;
+  // 1. Triangular Executive Desk Nameplate (Placed neatly on front-right corner of desk, angled toward visitor)
+  const plateW = 0.46;
+  const plateH = 0.09;
+  const plateD = 0.08;
+  const plateX = 0.62;
+  const plateZ = -0.38;
 
-  // Base wedge (Mahogany wood / dark acrylic)
-  const woodMat = toon('#3e2723');
-  const wedge = mesh(box(plateW, plateH, plateD), woodMat, 0, 0.78 + plateH / 2, 0.36);
-  g.add(wedge);
+  const nameplateGroup = new THREE.Group();
+  const woodMat = toon('#2d1b00');
+  const wedge = mesh(box(plateW, plateH, plateD), woodMat, 0, plateH / 2, 0);
+  nameplateGroup.add(wedge);
 
-  // Polished gold faceplate with high-res text
   const canvas = document.createElement('canvas');
   canvas.width = 512;
   canvas.height = 128;
@@ -138,7 +143,7 @@ function createExecutiveDeskWorkstation(opts: {
   ctx.fillRect(0, 0, 512, 128);
 
   ctx.strokeStyle = '#451a03';
-  ctx.lineWidth = 6;
+  ctx.lineWidth = 5;
   ctx.strokeRect(4, 4, 504, 120);
 
   ctx.fillStyle = '#451a03';
@@ -153,11 +158,16 @@ function createExecutiveDeskWorkstation(opts: {
   const nameTex = new THREE.CanvasTexture(canvas);
   nameTex.colorSpace = THREE.SRGBColorSpace;
   const faceMat = new THREE.MeshBasicMaterial({ map: nameTex });
-  const nameMesh = new THREE.Mesh(new THREE.PlaneGeometry(plateW - 0.02, plateH - 0.02), faceMat);
-  nameMesh.position.set(0, 0.78 + plateH / 2, 0.36 + plateD / 2 + 0.002);
-  g.add(nameMesh);
+  const nameMesh = new THREE.Mesh(new THREE.PlaneGeometry(plateW - 0.015, plateH - 0.015), faceMat);
+  nameMesh.position.set(0, plateH / 2, -plateD / 2 - 0.002);
+  nameMesh.rotation.y = Math.PI; // Faces the visitor approaching from -z
+  nameplateGroup.add(nameMesh);
 
-  // 2. Executive Ultrawide Curved Monitor Workstation
+  nameplateGroup.position.set(plateX, 0.78, plateZ);
+  nameplateGroup.rotation.y = -0.18; // Subtly angled toward visitor
+  g.add(nameplateGroup);
+
+  // 2. Executive Ultrawide Curved Monitor Workstation (Centered in front of the Director)
   const monGroup = new THREE.Group();
   const chromeMat = toon('#cbd5e1');
   const darkMonMat = toon('#0f172a');
@@ -209,33 +219,34 @@ function createExecutiveDeskWorkstation(opts: {
   const scTex = new THREE.CanvasTexture(scCanvas);
   scTex.colorSpace = THREE.SRGBColorSpace;
   const screenMat = new THREE.MeshBasicMaterial({ map: scTex });
+  // Screen faces +z toward the Director sitting behind the desk
   const screenMesh = new THREE.Mesh(new THREE.PlaneGeometry(0.84, 0.32), screenMat);
   screenMesh.position.set(0, 1.08, -0.133);
   monGroup.add(screenMesh);
   g.add(monGroup);
 
-  // 3. Wireless Keyboard & Mouse on Leather Blotter
-  const blotter = mesh(roundedBox(0.9, 0.01, 0.44, 0.02), toon('#1e293b'), 0, 0.785, 0.12);
+  // 3. Wireless Keyboard & Mouse on Leather Blotter (In front of Director)
+  const blotter = mesh(roundedBox(0.88, 0.01, 0.44, 0.02), toon('#1e293b'), 0, 0.785, 0.14);
   g.add(blotter);
-  const kb = mesh(box(0.42, 0.015, 0.14), toon('#334155'), -0.08, 0.795, 0.14);
+  const kb = mesh(box(0.42, 0.015, 0.14), toon('#334155'), -0.06, 0.795, 0.16);
   g.add(kb);
-  const mouse = mesh(roundedBox(0.07, 0.02, 0.11, 0.01), toon('#475569'), 0.26, 0.798, 0.14);
+  const mouse = mesh(roundedBox(0.07, 0.02, 0.11, 0.01), toon('#475569'), 0.26, 0.798, 0.16);
   g.add(mouse);
 
-  // 4. Compact Mini PC Studio Tower
-  const pc = mesh(roundedBox(0.12, 0.28, 0.28, 0.02), toon('#0b0f19'), 0.75, 0.92, -0.12);
+  // 4. Compact Mini PC Studio Tower on the side
+  const pc = mesh(roundedBox(0.12, 0.28, 0.28, 0.02), toon('#0b0f19'), 0.78, 0.92, -0.12);
   g.add(pc);
-  const pcLed = mesh(box(0.005, 0.22, 0.01), toon(opts.accent), 0.75 + 0.062, 0.92, -0.12);
+  const pcLed = mesh(box(0.005, 0.22, 0.01), toon(opts.accent), 0.78 + 0.062, 0.92, -0.12);
   g.add(pcLed);
 
-  // 5. Designer Desk Lamp
+  // 5. Designer Desk Lamp on opposite corner
   const lamp = new THREE.Group();
   lamp.add(mesh(new THREE.CylinderGeometry(0.08, 0.09, 0.02, 16), toon('#475569'), 0, 0.79, 0));
   lamp.add(mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.38, 8), toon('#cbd5e1'), 0, 0.98, 0));
   const shade = mesh(new THREE.ConeGeometry(0.11, 0.14, 16), toon(opts.accent), 0, 1.18, 0.04);
   shade.rotation.x = 0.35;
   lamp.add(shade);
-  lamp.position.set(-0.75, 0, -0.15);
+  lamp.position.set(-0.72, 0, -0.12);
   g.add(lamp);
 
   return g;
@@ -346,19 +357,23 @@ export const executiveOffices: Fixture = (site) => {
     glassWall('x', xLeft, doorX0, zFront);
     glassWall('x', doorX1, xRight, zFront);
 
-    // Doorway Header Lintel
+    // Doorway Header Lintel (clean transom glass over door, no ugly ribbons)
     const lintelY = 2.15;
     bar(doorW, 0.08, T + 0.04, cx, lintelY, zFront);
-    bar(doorW, H - lintelY, T + 0.02, cx, (H + lintelY) / 2, zFront);
+    const transom = glassPane(doorW, H - lintelY);
+    transom.position.set(cx, (H + lintelY) / 2, zFront);
+    group.add(transom);
 
-    // 🏷️ Elegant Architectural Plaque over Door Header
-    const plaque = createExecutiveSignboard({
+    // 🏷️ Elegant Architectural Plaque MOUNTED BESIDE THE DOOR AT EYE LEVEL (1.52m)
+    // Left on one side of the entrance so the doorway is completely clear and the office makes logical sense
+    const plaqueSideX = cx + doorW / 2 + 0.54;
+    const plaque = createExecutiveDoorPlaque({
       name,
       role,
       icon,
       accent: accentColor,
     });
-    plaque.position.set(cx, lintelY + 0.21, zFront + (doorSide === 'south' ? 0.04 : -0.04));
+    plaque.position.set(plaqueSideX, 1.52, zFront + (doorSide === 'south' ? 0.045 : -0.045));
     if (doorSide === 'north') plaque.rotation.y = Math.PI;
     group.add(plaque);
 
@@ -369,22 +384,21 @@ export const executiveOffices: Fixture = (site) => {
       icon,
       theme: decorType,
       accent: accentColor,
-      deskRotY,
     });
     workstation.position.set(cx, 0, deskZ);
     workstation.rotation.y = deskRotY;
     group.add(workstation);
 
-    // 🪴 Executive Botanical Plant in corner
+    // 🪴 Executive Botanical Plant in back corner
     const plantCornerX = xLeft + 0.45;
     const plantCornerZ = zBack + (doorSide === 'south' ? 0.45 : -0.45);
     const p = plant(floorPlant(decorType === 'admin' ? 1 : decorType === 'tech' ? 2 : 3), 0.95);
     p.position.set(plantCornerX, 0, plantCornerZ);
     group.add(p);
 
-    // 🗄️ Distinctive Executive Furniture / Decor
+    // 🗄️ Distinctive Executive Furniture / Decor (Organized along back wall/corner)
     if (decorType === 'admin') {
-      // 💼 Jhon: Executive Financial Credenza & File Archive
+      // 💼 Jhon: Executive Financial Credenza & File Archive against back wall
       const credenza = new THREE.Group();
       const credBody = mesh(box(1.8, 0.8, 0.4), toon('#1e293b'), 0, 0.4, 0);
       credenza.add(credBody);
@@ -395,12 +409,12 @@ export const executiveOffices: Fixture = (site) => {
         const book = mesh(box(0.06, 0.22, 0.28), toon(col), -0.6 + i * 0.1, 0.95, 0);
         credenza.add(book);
       });
-      credenza.position.set(cx + 1.4, 0, zBack + 0.4);
+      credenza.position.set(cx + 1.2, 0, zBack + 0.35);
       group.add(credenza);
-      site.colliders.push({ minX: cx + 0.4, maxX: cx + 2.4, minZ: zBack + 0.15, maxZ: zBack + 0.65, top: 0.85 });
+      site.colliders.push({ minX: cx + 0.3, maxX: cx + 2.1, minZ: zBack + 0.12, maxZ: zBack + 0.58, top: 0.85 });
 
     } else if (decorType === 'tech') {
-      // ⚡ Miguel: Server Rack with pulsing status LEDs
+      // ⚡ Miguel: Server Rack in back corner with pulsing status LEDs
       const rack = new THREE.Group();
       const rackBody = mesh(box(0.65, 1.8, 0.55), toon('#0f172a'), 0, 0.9, 0);
       rack.add(rackBody);
@@ -412,12 +426,12 @@ export const executiveOffices: Fixture = (site) => {
         rack.add(led1);
         rack.add(led2);
       }
-      rack.position.set(cx + 1.8, 0, zBack + 0.5);
+      rack.position.set(xRight - 0.55, 0, zBack + 0.45);
       group.add(rack);
-      site.colliders.push({ minX: cx + 1.4, maxX: cx + 2.2, minZ: zBack + 0.2, maxZ: zBack + 0.8, top: 1.8 });
+      site.colliders.push({ minX: xRight - 0.9, maxX: xRight - 0.2, minZ: zBack + 0.15, maxZ: zBack + 0.75, top: 1.8 });
 
     } else if (decorType === 'retail') {
-      // 🎯 Santiago: Retail Demo Display Unit & Marketing Stand
+      // 🎯 Santiago: Retail Demo Display Unit in back corner
       const stand = new THREE.Group();
       const base = mesh(box(1.4, 0.75, 0.45), toon('#064e3b'), 0, 0.375, 0);
       stand.add(base);
@@ -427,9 +441,9 @@ export const executiveOffices: Fixture = (site) => {
       stand.add(pos);
       const dataphone = mesh(box(0.12, 0.08, 0.18), toon('#f59e0b'), 0.2, 0.83, 0);
       stand.add(dataphone);
-      stand.position.set(cx + 1.4, 0, zBack - 0.4);
+      stand.position.set(xRight - 0.8, 0, zBack - 0.4);
       group.add(stand);
-      site.colliders.push({ minX: cx + 0.6, maxX: cx + 2.2, minZ: zBack - 0.65, maxZ: zBack - 0.15, top: 0.8 });
+      site.colliders.push({ minX: xRight - 1.55, maxX: xRight - 0.05, minZ: zBack - 0.65, maxZ: zBack - 0.15, top: 0.8 });
     }
   };
 
@@ -441,8 +455,8 @@ export const executiveOffices: Fixture = (site) => {
     accentColor: '#00E5FF',
     cx: -10.5,
     cz: -4.0,
-    deskZ: -3.8,
-    deskRotY: 0,
+    deskZ: -4.0,
+    deskRotY: Math.PI,
     doorSide: 'south',
     decorType: 'admin',
   });
@@ -455,8 +469,8 @@ export const executiveOffices: Fixture = (site) => {
     accentColor: '#C084FC',
     cx: -1.5,
     cz: -4.0,
-    deskZ: -3.8,
-    deskRotY: 0,
+    deskZ: -4.0,
+    deskRotY: Math.PI,
     doorSide: 'south',
     decorType: 'tech',
   });
@@ -469,8 +483,8 @@ export const executiveOffices: Fixture = (site) => {
     accentColor: '#10B981',
     cx: -10.5,
     cz: 4.0,
-    deskZ: 3.8,
-    deskRotY: Math.PI,
+    deskZ: 4.0,
+    deskRotY: 0,
     doorSide: 'north',
     decorType: 'retail',
   });

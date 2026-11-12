@@ -127,11 +127,12 @@ export function buildLoft(group: THREE.Group, colliders: Collider[], interactabl
   const screen = mesh(new THREE.PlaneGeometry(0.8, 0.45), new THREE.MeshBasicMaterial({ color: '#4cc9f0' }), 0, 1.18, -0.165, false);
   desk.add(screen);
   desk.add(mesh(new THREE.CylinderGeometry(0.06, 0.05, 0.12, 10), toon('#ffd166'), 0.9, 0.89, 0.15));
-  // Placa de escritorio presidencial de lujo para Marlon Ramírez
-  const plateW = 0.62;
-  const plateH = 0.13;
-  const plateD = 0.10;
-  const plateWedge = mesh(box(plateW, plateH, plateD), toon('#2d1b00'), 0, 0.78 + plateH / 2, -0.42);
+  // Placa de escritorio presidencial de lujo para Marlon Ramírez (a un lado del escritorio, perfectamente organizada)
+  const plateW = 0.52;
+  const plateH = 0.11;
+  const plateD = 0.09;
+  const plateX = 0.82;
+  const plateWedge = mesh(box(plateW, plateH, plateD), toon('#2d1b00'), plateX, 0.78 + plateH / 2, -0.42);
   desk.add(plateWedge);
 
   const marlonCanvas = document.createElement('canvas');
@@ -158,7 +159,7 @@ export function buildLoft(group: THREE.Group, colliders: Collider[], interactabl
   const mTex = new THREE.CanvasTexture(marlonCanvas);
   mTex.colorSpace = THREE.SRGBColorSpace;
   const mPlateMesh = new THREE.Mesh(new THREE.PlaneGeometry(plateW - 0.02, plateH - 0.02), new THREE.MeshBasicMaterial({ map: mTex }));
-  mPlateMesh.position.set(0, 0.78 + plateH / 2, -0.42 - plateD / 2 - 0.002);
+  mPlateMesh.position.set(plateX, 0.78 + plateH / 2, -0.42 - plateD / 2 - 0.002);
   mPlateMesh.rotation.y = Math.PI;
   desk.add(mPlateMesh);
   const bossChair = chair('#2b2d42');

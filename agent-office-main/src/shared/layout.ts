@@ -28,15 +28,15 @@ const DESK_DEPTH = 1.1;
 export const DESK_SIZE = { width: DESK_WIDTH, depth: DESK_DEPTH, height: 0.78 } as const;
 
 function buildDesks(): DeskDef[] {
-  // Despachos Ejecutivos Privados: 1 solo escritorio por oficina
-  // 1. Despacho Jhon (Finanzas & Administración)
-  // 2. Despacho Miguel (Tecnología & IA)
-  // 3. Despacho Santiago (Marketing & Retail)
+  // Despachos Ejecutivos Privados: 1 solo escritorio por oficina orientado hacia la puerta de entrada
+  // 1. Despacho Jhon (Finanzas & Administración) - Orientado al sur (hacia su puerta)
+  // 2. Despacho Miguel (Tecnología & IA) - Orientado al sur (hacia su puerta)
+  // 3. Despacho Santiago (Marketing & Retail) - Orientado al norte (hacia su puerta)
   // 4-7. Mesa Colaborativa Central abierta para equipo y agentes
   const desks: DeskDef[] = [
-    { id: 'desk-1', x: -10.5, z: -3.8, rotY: 0, label: '💼 Despacho Jhon (Finanzas)' },
-    { id: 'desk-2', x: -1.5, z: -3.8, rotY: 0, label: '⚡ Despacho Miguel (CTO & IA)' },
-    { id: 'desk-3', x: -10.5, z: 3.8, rotY: Math.PI, label: '🎯 Despacho Santiago (Marketing)' },
+    { id: 'desk-1', x: -10.5, z: -4.0, rotY: Math.PI, label: '💼 Despacho Jhon (Finanzas)' },
+    { id: 'desk-2', x: -1.5, z: -4.0, rotY: Math.PI, label: '⚡ Despacho Miguel (CTO & IA)' },
+    { id: 'desk-3', x: -10.5, z: 4.0, rotY: 0, label: '🎯 Despacho Santiago (Marketing)' },
     // Cluster abierto central
     { id: 'desk-4', x: -1.5 - DESK_WIDTH / 2, z: 3.45, rotY: Math.PI, label: 'Mesa Central 1' },
     { id: 'desk-5', x: -1.5 + DESK_WIDTH / 2, z: 3.45, rotY: Math.PI, label: 'Mesa Central 2' },

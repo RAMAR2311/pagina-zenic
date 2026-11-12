@@ -4,9 +4,10 @@ import { MoveRight, PhoneCall } from "lucide-react";
 
 interface HeroProps {
   darkMode?: boolean;
+  onBookClick?: () => void;
 }
 
-function Hero({ darkMode }: HeroProps) {
+function Hero({ darkMode, onBookClick }: HeroProps) {
   const [titleNumber, setTitleNumber] = useState(0);
   const titles = useMemo(
     () => ["inteligente", "veloz", "conectado", "visual", "poderoso"],
@@ -130,13 +131,16 @@ function Hero({ darkMode }: HeroProps) {
         {/* CTAs */}
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.85rem", justifyContent: "center" }}>
           <a
-            href="#contacto"
+            href="https://wa.me/573115643557?text=Hola%20ZENIC,%20quisiera%20hablar%20con%20un%20asesor%20sobre%20sus%20servicios%20de%20tecnolog%C3%ADa%20y%20retail"
+            target="_blank"
+            rel="noopener noreferrer"
             style={{
               display: "inline-flex", alignItems: "center", gap: 8,
               padding: "0.8rem 1.75rem", borderRadius: 12,
               border: "1.5px solid rgba(156,77,204,0.3)",
               color: textColor, background: "transparent",
               fontSize: "0.95rem", fontWeight: 600, textDecoration: "none",
+              cursor: "pointer",
               transition: "border-color 0.25s, color 0.25s, background 0.25s",
             }}
             onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#9C4DCC"; e.currentTarget.style.color = "#9C4DCC"; e.currentTarget.style.background = "rgba(156,77,204,0.06)"; }}
@@ -147,13 +151,24 @@ function Hero({ darkMode }: HeroProps) {
           </a>
 
           <a
-            href="#contacto"
+            href="#agendar-demo"
+            onClick={(e) => {
+              e.preventDefault();
+              if (onBookClick) {
+                onBookClick();
+              } else {
+                const el = document.getElementById("agendar-demo");
+                if (el) el.scrollIntoView({ behavior: "smooth" });
+                else window.location.href = "/#agendar-demo";
+              }
+            }}
             style={{
               display: "inline-flex", alignItems: "center", gap: 8,
               padding: "0.8rem 1.75rem", borderRadius: 12,
               background: "linear-gradient(135deg, #4A2574, #9C4DCC)",
               color: "#fff", fontSize: "0.95rem", fontWeight: 700,
               textDecoration: "none", boxShadow: "0 4px 20px rgba(156,77,204,0.35)",
+              cursor: "pointer",
               transition: "box-shadow 0.25s, transform 0.2s",
             }}
             onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 6px 32px rgba(156,77,204,0.55)"; e.currentTarget.style.transform = "translateY(-2px)"; }}

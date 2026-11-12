@@ -29,7 +29,7 @@ export default function Home({ darkMode }) {
           <Hero darkMode={darkMode} />
         </div>
         <div className="hero-split-right">
-          <AnimatedHero darkMode={darkMode} />
+          <AnimatedHero darkMode={darkMode} onBookClick={scrollToBooking} />
         </div>
       </div>
 

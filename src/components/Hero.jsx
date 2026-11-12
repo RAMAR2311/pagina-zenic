@@ -1,9 +1,11 @@
 import { useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { gsap } from 'gsap'
 import BrainScene from './BrainScene'
 
 
 export default function Hero({ darkMode }) {
+  const navigate = useNavigate()
   const heroRef = useRef(null)
   const ctaRef = useRef(null)
 
@@ -87,7 +89,16 @@ export default function Hero({ darkMode }) {
         <div className="hero-actions" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: '1rem', marginBottom: '1.75rem' }}>
           <a
             ref={ctaRef}
-            href="#modulos"
+            href="/servicios#modulos"
+            onClick={(e) => {
+              e.preventDefault()
+              const el = document.getElementById('modulos')
+              if (el) {
+                el.scrollIntoView({ behavior: 'smooth' })
+              } else {
+                navigate('/servicios')
+              }
+            }}
             style={{
               padding: '0.9rem 2rem', borderRadius: '1rem',
               fontSize: 'clamp(0.85rem,2vw,1rem)', fontWeight: 600,
@@ -95,6 +106,7 @@ export default function Hero({ darkMode }) {
               background: darkMode ? 'rgba(255,255,255,0.06)' : 'rgba(61,74,96,0.06)',
               border: `1px solid ${darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(61,74,96,0.12)'}`,
               textDecoration: 'none',
+              cursor: 'pointer',
               transition: 'border-color 0.3s, color 0.3s',
             }}
             onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(156,77,204,0.4)'; e.currentTarget.style.color = '#9C4DCC' }}
