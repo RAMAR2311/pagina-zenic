@@ -315,32 +315,6 @@ export default function OficinaVirtual({ darkMode = true }) {
               }}
             >
               <Office3DPreview darkMode={darkMode} onLaunchOffice={handleLaunchOffice} />
-
-              <button
-                onClick={() => handleLaunchOffice('3d')}
-                title="Maximizar a pantalla completa"
-                style={{
-                  position: 'absolute',
-                  top: 14,
-                  right: 14,
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  padding: '0.45rem 0.85rem',
-                  borderRadius: 10,
-                  border: 'none',
-                  background: 'rgba(0, 229, 255, 0.25)',
-                  color: '#00E5FF',
-                  fontSize: '0.78rem',
-                  fontWeight: 800,
-                  cursor: 'pointer',
-                  backdropFilter: 'blur(8px)',
-                  boxShadow: '0 0 14px rgba(0, 229, 255, 0.3)',
-                }}
-              >
-                <Maximize2 size={14} />
-                <span>Explorar en 3D</span>
-              </button>
             </div>
           </div>
         </div>
