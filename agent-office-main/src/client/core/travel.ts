@@ -88,8 +88,8 @@ export function installTravel(ctx: Ctx, core: CoreState, parts: TravelParts) {
     hint: (it) => {
       const f = store.currentFloor();
       const n = store.floors.length;
-      if (it === office.garageLift.interactable) return { k: `garage|${f?.name}|${n}`, parts: [hintTitle('🛗 Elevator'), aside(f ? `Garage · up to ${clip(f.name, 24)}` : 'Garage'), key('E', 'Choose a floor')] };
-      return { k: `${f?.name}|${n}`, parts: [hintTitle('🛗 Elevator'), f ? aside(`${f.name} · ${n} floor${n === 1 ? '' : 's'}`) : '', key('E', n > 1 ? 'Choose a floor' : 'Floors & projects')] };
+      if (it === office.garageLift.interactable) return { k: `garage|${f?.name}|${n}`, parts: [hintTitle('🛗 Ascensor'), aside(f ? `Garaje · subir a ${clip(f.name, 24)}` : 'Garaje'), key('E', 'Elegir piso')] };
+      return { k: `${f?.name}|${n}`, parts: [hintTitle('🛗 Ascensor'), f ? aside(`${f.name} · ${n} piso${n === 1 ? '' : 's'}`) : '', key('E', n > 1 ? 'Elegir piso' : 'Pisos y proyectos')] };
     },
     use: onE(() => showElevator()),
   });

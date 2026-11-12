@@ -256,21 +256,21 @@ export class Dog {
     const s = this.state;
     if (!s) return '';
     const moving = performance.now() < this.arriveAt;
-    const w = s.workerId ? (workerName(s.workerId) ?? 'a worker') : 'a worker';
-    if (s.following) return `following ${personName(s.following) ?? 'someone'}`;
+    const w = s.workerId ? (workerName(s.workerId) ?? 'un agente') : 'un agente';
+    if (s.following) return `siguiendo a ${personName(s.following) ?? 'alguien'}`;
     switch (s.act) {
       case 'bark':
-        return moving ? `running to ${w}, who needs input` : `barking at ${w}: needs input`;
+        return moving ? `corriendo hacia ${w}, que necesita ayuda` : `ladrando a ${w}: necesita atención`;
       case 'nap':
-        return moving ? 'off for a nap' : `napping under ${w}'s desk`;
+        return moving ? 'yendo a tomar una siesta' : `durmiendo bajo el escritorio de ${w}`;
       case 'wag':
-        return s.petBy ? `wagging at ${s.petBy}` : 'wagging';
+        return s.petBy ? `moviendo la cola con ${s.petBy}` : 'moviendo la cola feliz';
       case 'lie':
-        return moving ? 'trotting to the lounge' : 'lounging';
+        return moving ? 'yendo al sofá' : 'descansando en el lounge';
       case 'sniff':
-        return moving ? 'trotting about' : 'sniffing around';
+        return moving ? 'caminando por la oficina' : 'olfateando alrededor';
       case 'sit':
-        return 'sitting';
+        return 'sentado';
       default:
         return '';
     }

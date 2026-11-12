@@ -41,9 +41,9 @@ export function installTv(ctx: Ctx, deps: TvDeps) {
     g.fillStyle = '#fff';
     g.textAlign = 'center';
     g.font = '900 88px Nunito, ui-rounded, system-ui, sans-serif';
-    g.fillText('📺 Office TV', 640, 330);
+    g.fillText('📺 TV de la Oficina', 640, 330);
     g.font = '700 44px Nunito, ui-rounded, system-ui, sans-serif';
-    g.fillText('Click “Share screen” to put something up here', 640, 420);
+    g.fillText('Haz clic en "Compartir pantalla" para proyectar aquí', 640, 420);
     const t = new THREE.CanvasTexture(c);
     t.colorSpace = THREE.SRGBColorSpace;
     return t;
@@ -56,7 +56,7 @@ export function installTv(ctx: Ctx, deps: TvDeps) {
     reach: 10,
     hint: () => {
       const any = deps.shares().length > 0;
-      return { k: String(any), parts: [hintTitle('📺 Office TV'), key('E', any ? 'Watch full screen' : 'Share your screen')] };
+      return { k: String(any), parts: [hintTitle('📺 TV de la Oficina'), key('E', any ? 'Ver en pantalla completa' : 'Compartir pantalla')] };
     },
     use: onE(() => deps.watch()),
   });

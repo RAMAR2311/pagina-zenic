@@ -31,13 +31,13 @@ export interface DogState {
 export const DOG_NAME_MAX = 24;
 
 /** A new floor's dog is called one of these until someone names it in ⚙️ Settings (none is a worker's name). */
-export const DOG_NAMES = ['Biscuit', 'Pancake', 'Peanut', 'Pepper', 'Cookie', 'Bagel', 'Ziggy', 'Pretzel', 'Maple', 'Scout'];
+export const DOG_NAMES = ['Zenic Dog', 'Toby', 'Manchas', 'Choco', 'Canelo', 'Firulais', 'Coco', 'Bruno', 'Simón', 'Rocky'];
 
 /** A floor's dog is one of these, each its own model (dog-<breed>.glb) with the same rig and clips. */
 export const DOG_BREEDS = ['pup', 'corgi', 'dachshund', 'pug', 'shiba', 'pomeranian'] as const;
 export type DogBreed = (typeof DOG_BREEDS)[number];
 /** What ⚙️ Settings calls each breed. */
-export const DOG_BREED_NAMES: Record<DogBreed, string> = { pup: '🐶 Pup', corgi: '🦊 Corgi', dachshund: '🌭 Dachshund', pug: '🐾 Pug', shiba: '🍂 Shiba', pomeranian: '🧸 Pomeranian' };
+export const DOG_BREED_NAMES: Record<DogBreed, string> = { pup: '🐶 Cachorro', corgi: '🦊 Corgi', dachshund: '🌭 Teckel / Salchicha', pug: '🐾 Pug', shiba: '🍂 Shiba', pomeranian: '🧸 Pomerania' };
 
 /**
  * The breeds a floor's dog is dealt from its id (see dogDefaults): the ones there were when floors first
