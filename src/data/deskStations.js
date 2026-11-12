@@ -73,12 +73,12 @@ export const DESK_STATIONS = [
     description: 'Agente autónomo con 28 documentos neuronales y grafo sináptico empresarial en tiempo real.',
     x: 0,
     z: 0,
-    color: '#FF007F',
+    color: '#9C4DCC',
     badge: '28 Docs',
     icon: '🧠',
-    skinTone: '#00E5FF',
-    hairColor: '#FF007F',
-    accentColor: '#FF007F',
+    skinTone: '#80DEEA',
+    hairColor: '#9C4DCC',
+    accentColor: '#C084FC',
   },
 ]
 

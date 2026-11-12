@@ -76,7 +76,7 @@ const STATIONS = [
     role: 'Agente Autónomo Central',
     area: 'Base de Conocimiento · 28 Documentos',
     desc: 'Terminal viva conectada a Claude 3.5 Sonnet y zenic-cerebro/, disponible 24/7 para responder sobre Zenic.',
-    color: '#FF007F',
+    color: '#9C4DCC',
     icon: '🤖',
     status: 'Cognición Activa',
   },

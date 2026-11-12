@@ -76,10 +76,10 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
     greenLight.position.set(4.4, 5, 3.8)
     scene.add(greenLight)
 
-    // Central Cerebro Core - Glowing Magenta Light
-    const pinkCoreLight = new THREE.PointLight(0xff007f, 4.5, 18)
-    pinkCoreLight.position.set(0, 3.5, 0)
-    scene.add(pinkCoreLight)
+    // Central Cerebro Core - Glowing Purple Light (Zenic signature)
+    const purpleCoreLight = new THREE.PointLight(0xa855f7, 4.8, 20)
+    purpleCoreLight.position.set(0, 3.5, 0)
+    scene.add(purpleCoreLight)
 
     // ── MAIN OFFICE FLOOR (Modern Solid Plate - 100% Stable & Quiet) ──
     const floorGeo = new THREE.BoxGeometry(19, 0.4, 17)
@@ -219,7 +219,7 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
     const daisBorder = new THREE.Mesh(
       new THREE.RingGeometry(2.3, 2.45, 32),
       new THREE.MeshBasicMaterial({
-        color: 0xff007f,
+        color: 0x9c4dcc,
         side: THREE.DoubleSide,
         transparent: true,
         opacity: 0.9,
@@ -348,24 +348,24 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
     const createStylized3DBrain = () => {
       const brainGroup = new THREE.Group()
 
-      // High-tech holographic brain materials (Magenta / Cyan Zenic palette)
+      // High-tech holographic brain materials (Zenic Signature Purple #9C4DCC)
       const cortexMat = new THREE.MeshStandardMaterial({
-        color: 0x9c4dcc,
-        emissive: 0xff007f,
+        color: 0x581c87,
+        emissive: 0x9c4dcc,
         emissiveIntensity: 0.95,
         roughness: 0.2,
         metalness: 0.15,
       })
 
       const wireMat = new THREE.MeshBasicMaterial({
-        color: 0x00f0ff,
+        color: 0xc084fc,
         wireframe: true,
         transparent: true,
-        opacity: 0.55,
+        opacity: 0.65,
       })
 
       const synapseMat = new THREE.MeshBasicMaterial({
-        color: 0xffffff,
+        color: 0xe9d5ff,
       })
 
       // Two distinct cerebral hemispheres (Left and Right) separated by the longitudinal fissure
@@ -484,12 +484,12 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
 
       // Rotating Neural Gyro Rings
       const gyro1Geo = new THREE.TorusGeometry(1.08, 0.016, 8, 48)
-      const gyro1Mat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, transparent: true, opacity: 0.75 })
+      const gyro1Mat = new THREE.MeshBasicMaterial({ color: 0x80deea, transparent: true, opacity: 0.85 })
       const gyro1 = new THREE.Mesh(gyro1Geo, gyro1Mat)
       brainGroup.add(gyro1)
 
       const gyro2Geo = new THREE.TorusGeometry(1.18, 0.014, 8, 48)
-      const gyro2Mat = new THREE.MeshBasicMaterial({ color: 0xff007f, transparent: true, opacity: 0.7 })
+      const gyro2Mat = new THREE.MeshBasicMaterial({ color: 0x9c4dcc, transparent: true, opacity: 0.85 })
       const gyro2 = new THREE.Mesh(gyro2Geo, gyro2Mat)
       gyro2.rotation.x = Math.PI / 3
       gyro2.rotation.y = Math.PI / 6
@@ -506,9 +506,9 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
       pedestal.position.set(0, -1.15, 0)
       brainGroup.add(pedestal)
 
-      // Glowing LED band around pedestal
+      // Glowing LED band around pedestal (Zenic Purple)
       const pedRingGeo = new THREE.CylinderGeometry(0.74, 0.74, 0.06, 32)
-      const pedRingMat = new THREE.MeshBasicMaterial({ color: 0xff007f })
+      const pedRingMat = new THREE.MeshBasicMaterial({ color: 0x9c4dcc })
       const pedRing = new THREE.Mesh(pedRingGeo, pedRingMat)
       pedRing.position.set(0, -0.82, 0)
       brainGroup.add(pedRing)
