@@ -14,12 +14,12 @@ export const DESK_STATIONS = [
     description: 'Estrategia corporativa, alianzas de retail y visión del ecosistema Zenic en Colombia.',
     x: -4.4,
     z: -3.8,
-    color: '#9C4DCC',
+    color: '#F59E0B',
     badge: 'Estrategia',
     icon: '👑',
     skinTone: '#ffd7b5',
     hairColor: '#2b2d42',
-    accentColor: '#9C4DCC',
+    accentColor: '#F59E0B',
   },
   {
     id: 'admin',
@@ -130,48 +130,136 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
     dirLight.castShadow = true
     scene.add(dirLight)
 
-    const purpleLight = new THREE.PointLight(0x9c4dcc, 3.5, 25)
-    purpleLight.position.set(-4, 5, -4)
-    scene.add(purpleLight)
+    // CEO Marlon - Warm Radiant Gold Light
+    const goldLight = new THREE.PointLight(0xffb703, 3.8, 25)
+    goldLight.position.set(-4.4, 5, -3.8)
+    scene.add(goldLight)
 
+    // Admin Jhon - Crisp Cyan Light
     const cyanLight = new THREE.PointLight(0x00e5ff, 2.8, 25)
-    cyanLight.position.set(4, 5, -4)
+    cyanLight.position.set(4.4, 5, -3.8)
     scene.add(cyanLight)
 
-    const pinkCoreLight = new THREE.PointLight(0xff007f, 4, 15)
+    // CTO Miguel - Electric Tech Purple Light
+    const purpleLight = new THREE.PointLight(0xc084fc, 3.2, 25)
+    purpleLight.position.set(-4.4, 5, 3.8)
+    scene.add(purpleLight)
+
+    // CMO Santiago - Emerald Retail Light
+    const greenLight = new THREE.PointLight(0x00ff87, 2.8, 25)
+    greenLight.position.set(4.4, 5, 3.8)
+    scene.add(greenLight)
+
+    // Central Cerebro Core - Glowing Magenta Light
+    const pinkCoreLight = new THREE.PointLight(0xff007f, 4.5, 18)
     pinkCoreLight.position.set(0, 3.5, 0)
     scene.add(pinkCoreLight)
 
-    // ── MAIN OFFICE FLOOR (Modern Tiles) ──
+    // ── LUXURY ARCHITECTURAL FLOOR (Procedural Designer Porcelain Tiles) ──
+    const createFloorCanvas = (isDark) => {
+      const canvas = document.createElement('canvas')
+      canvas.width = 1024
+      canvas.height = 1024
+      const c = canvas.getContext('2d')
+
+      // Main dark porcelain / slate background
+      c.fillStyle = isDark ? '#0b1320' : '#e6edf5'
+      c.fillRect(0, 0, 1024, 1024)
+
+      // Large format 128px tiles (8x8)
+      const ts = 128
+      for (let tx = 0; tx < 1024; tx += ts) {
+        for (let ty = 0; ty < 1024; ty += ts) {
+          const n = (Math.sin(tx * 0.05 + ty * 0.03) + 1) * 0.5
+          const baseV = isDark ? 14 + n * 8 : 238 + n * 6
+          c.fillStyle = `rgb(${baseV}, ${baseV + (isDark ? 4 : 2)}, ${baseV + (isDark ? 9 : 4)})`
+          c.fillRect(tx + 2, ty + 2, ts - 4, ts - 4)
+
+          // Soft diagonal sheen gradient
+          const g = c.createLinearGradient(tx, ty, tx + ts, ty + ts)
+          g.addColorStop(0, 'rgba(255,255,255,0.04)')
+          g.addColorStop(0.5, 'rgba(255,255,255,0.01)')
+          g.addColorStop(1, isDark ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.05)')
+          c.fillStyle = g
+          c.fillRect(tx + 2, ty + 2, ts - 4, ts - 4)
+
+          // Bevel grout border
+          c.strokeStyle = isDark ? 'rgba(30, 41, 59, 0.7)' : 'rgba(203, 213, 225, 0.7)'
+          c.lineWidth = 1
+          c.strokeRect(tx + 1.5, ty + 1.5, ts - 3, ts - 3)
+        }
+      }
+
+      // Polished micro-dots pattern on tile corners
+      c.fillStyle = isDark ? 'rgba(56, 189, 248, 0.25)' : 'rgba(100, 116, 139, 0.3)'
+      for (let tx = 0; tx <= 1024; tx += ts) {
+        for (let ty = 0; ty <= 1024; ty += ts) {
+          c.beginPath()
+          c.arc(tx, ty, 2, 0, Math.PI * 2)
+          c.fill()
+        }
+      }
+
+      return canvas
+    }
+
+    const floorTexture = new THREE.CanvasTexture(createFloorCanvas(darkMode))
+    floorTexture.wrapS = THREE.RepeatWrapping
+    floorTexture.wrapT = THREE.RepeatWrapping
+    floorTexture.repeat.set(3, 3)
+
     const floorGeo = new THREE.BoxGeometry(19, 0.4, 17)
     const floorMat = new THREE.MeshStandardMaterial({
-      color: darkMode ? 0x07111d : 0xebf0f7,
-      roughness: 0.35,
-      metalness: 0.2,
+      map: floorTexture,
+      roughness: 0.22,
+      metalness: 0.35,
     })
     const floor = new THREE.Mesh(floorGeo, floorMat)
     floor.position.y = -0.2
     floor.receiveShadow = true
     scene.add(floor)
 
-    // Floor Grid pattern
-    const grid = new THREE.GridHelper(18, 18, darkMode ? 0x9c4dcc : 0x7928ca, darkMode ? 0x142030 : 0xd1d5db)
+    // Architectural Perimeter Edge Trim (Dark bronze/gunmetal chamfered rim)
+    const perimeterTrim = new THREE.Mesh(
+      new THREE.BoxGeometry(19.25, 0.1, 17.25),
+      new THREE.MeshStandardMaterial({ color: darkMode ? 0x0f172a : 0x94a3b8, metalness: 0.7, roughness: 0.3 })
+    )
+    perimeterTrim.position.y = -0.05
+    scene.add(perimeterTrim)
+
+    // Glowing Neon Floor Guide Trim (Cross corridors)
+    const corridorMat = new THREE.MeshBasicMaterial({
+      color: darkMode ? 0x00e5ff : 0x38bdf8,
+      transparent: true,
+      opacity: darkMode ? 0.35 : 0.5,
+    })
+    const hHallwayLine = new THREE.Mesh(new THREE.BoxGeometry(18.2, 0.005, 0.08), corridorMat)
+    hHallwayLine.position.set(0, 0.015, 0)
+    scene.add(hHallwayLine)
+    const vHallwayLine = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.005, 16.2), corridorMat)
+    vHallwayLine.position.set(0, 0.015, 0)
+    scene.add(vHallwayLine)
+
+    // Floor Grid pattern with subtle opacity
+    const grid = new THREE.GridHelper(18, 18, darkMode ? 0x38bdf8 : 0x0284c7, darkMode ? 0x1e293b : 0xe2e8f0)
     grid.position.y = 0.02
+    grid.material.opacity = darkMode ? 0.25 : 0.35
+    grid.material.transparent = true
     scene.add(grid)
 
     // ── PERIMETER GLASS WALLS ──
     const glassMat = new THREE.MeshPhysicalMaterial({
       color: darkMode ? 0x00e5ff : 0x9c4dcc,
       transparent: true,
-      opacity: 0.22,
+      opacity: 0.2,
       roughness: 0.1,
-      transmission: 0.7,
+      transmission: 0.75,
     })
 
     const wallFrameMat = new THREE.MeshStandardMaterial({
       color: darkMode ? 0x1e293b : 0x64748b,
-      metalness: 0.6,
-      roughness: 0.4,
+      metalness: 0.7,
+      roughness: 0.35,
     })
 
     const backWall = new THREE.Mesh(new THREE.BoxGeometry(19, 2.8, 0.2), glassMat)
@@ -182,20 +270,31 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
     leftWall.position.set(-9.5, 1.4, 0)
     scene.add(leftWall)
 
-    // ── ARCHITECTURAL OFFICE DIVISIONS (Modular Suites) ──
-    // Divide into 4 private glass suites with doorways + 1 Central Brain Plaza
+    // ── ARCHITECTURAL OFFICE DIVISIONS (Modular Suites with Frosted Modesty Strips) ──
     const interiorGlassMat = new THREE.MeshPhysicalMaterial({
       color: darkMode ? 0x38bdf8 : 0xc084fc,
       transparent: true,
-      opacity: 0.35,
+      opacity: 0.3,
       roughness: 0.15,
-      transmission: 0.6,
+      transmission: 0.65,
+    })
+
+    const frostedMat = new THREE.MeshPhysicalMaterial({
+      color: darkMode ? 0xa5f3fc : 0xe0e7ff,
+      transparent: true,
+      opacity: darkMode ? 0.45 : 0.6,
+      roughness: 0.6,
     })
 
     const buildWall = (w, h, d, x, y, z) => {
       const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), interiorGlassMat)
       mesh.position.set(x, y, z)
       scene.add(mesh)
+
+      // Frosted privacy strip at waist/eye level
+      const frostedBand = new THREE.Mesh(new THREE.BoxGeometry(w, 0.55, d + 0.015), frostedMat)
+      frostedBand.position.set(x, 1.05, z)
+      scene.add(frostedBand)
 
       // Baseboard trim
       const trim = new THREE.Mesh(new THREE.BoxGeometry(w, 0.08, d + 0.02), wallFrameMat)
@@ -207,25 +306,34 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
       scene.add(topTrim)
     }
 
-    // Horizontal Office Separators (North and South Suites) leaving center hallway open
-    // Northwest suite (CEO) partition south wall (leaving doorway near center)
+    // Horizontal Office Separators leaving center open
     buildWall(4.2, 2.2, 0.12, -5.5, 1.1, -1.2)
-    // Northeast suite (Admin) partition south wall
     buildWall(4.2, 2.2, 0.12, 5.5, 1.1, -1.2)
-    // Southwest suite (CTO) partition north wall
     buildWall(4.2, 2.2, 0.12, -5.5, 1.1, 1.2)
-    // Southeast suite (CMO) partition north wall
     buildWall(4.2, 2.2, 0.12, 5.5, 1.1, 1.2)
 
-    // Vertical Office Separators (separating offices from outer borders & center)
-    // Northwest inner wall (facing hallway)
+    // Vertical Office Separators
     buildWall(0.12, 2.2, 4.4, -2.2, 1.1, -5.0)
-    // Northeast inner wall (facing hallway)
     buildWall(0.12, 2.2, 4.4, 2.2, 1.1, -5.0)
-    // Southwest inner wall (facing hallway)
     buildWall(0.12, 2.2, 4.4, -2.2, 1.1, 5.0)
-    // Southeast inner wall (facing hallway)
     buildWall(0.12, 2.2, 4.4, 2.2, 1.1, 5.0)
+
+    // Modern Corridor Water Cooler & Hydration Station
+    const waterCooler = new THREE.Group()
+    const coolerBase = new THREE.Mesh(
+      new THREE.BoxGeometry(0.38, 0.85, 0.38),
+      new THREE.MeshStandardMaterial({ color: darkMode ? 0x1e293b : 0xf1f5f9, roughness: 0.3 })
+    )
+    coolerBase.position.y = 0.425
+    waterCooler.add(coolerBase)
+    const coolerBottle = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.15, 0.15, 0.4, 16),
+      new THREE.MeshPhysicalMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.65, roughness: 0.1 })
+    )
+    coolerBottle.position.y = 1.05
+    waterCooler.add(coolerBottle)
+    waterCooler.position.set(2.0, 0, 1.8)
+    scene.add(waterCooler)
 
     // ── SYNAPSE LIGHT PATHS (Floor circuits leading from Brain Core to each Office) ──
     DESK_STATIONS.filter((s) => s.id !== 'cerebro').forEach((st) => {
@@ -237,7 +345,7 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
       const lineMat = new THREE.LineBasicMaterial({
         color: new THREE.Color(st.color),
         transparent: true,
-        opacity: darkMode ? 0.6 : 0.85,
+        opacity: darkMode ? 0.7 : 0.85,
         linewidth: 2,
       })
       const pathLine = new THREE.Line(lineGeo, lineMat)
@@ -249,8 +357,8 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
       new THREE.CylinderGeometry(2.3, 2.5, 0.18, 32),
       new THREE.MeshStandardMaterial({
         color: darkMode ? 0x140d28 : 0xf3e8ff,
-        metalness: 0.5,
-        roughness: 0.3,
+        metalness: 0.6,
+        roughness: 0.25,
       })
     )
     centralDais.position.set(0, 0.09, 0)
@@ -264,18 +372,42 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
     daisBorder.position.set(0, 0.19, 0)
     scene.add(daisBorder)
 
-    // ── CHARACTER BUILDER (SITTING AGENTS) ──
-    const createSittingAgent = (colorHex, skinToneHex, hairColorHex) => {
+    // Concentric glowing inner ring
+    const daisInnerRing = new THREE.Mesh(
+      new THREE.RingGeometry(1.6, 1.72, 32),
+      new THREE.MeshBasicMaterial({ color: 0x00e5ff, side: THREE.DoubleSide, transparent: true, opacity: 0.8 })
+    )
+    daisInnerRing.rotation.x = -Math.PI / 2
+    daisInnerRing.position.set(0, 0.195, 0)
+    scene.add(daisInnerRing)
+
+    // ── CHARACTER BUILDER (SITTING AGENTS WITH DIRECTOR TIE ACCENTS) ──
+    const createSittingAgent = (colorHex, skinToneHex, hairColorHex, isCeo = false) => {
       const agentGroup = new THREE.Group()
 
-      // Torso / Shirt
+      // Torso / Suit jacket or director shirt
       const torso = new THREE.Mesh(
         new THREE.BoxGeometry(0.44, 0.52, 0.28),
-        new THREE.MeshStandardMaterial({ color: new THREE.Color(colorHex), roughness: 0.5 })
+        new THREE.MeshStandardMaterial({
+          color: isCeo ? 0x0f172a : new THREE.Color(colorHex),
+          roughness: 0.45,
+        })
       )
       torso.position.set(0, 0.94, 0.72)
       torso.castShadow = true
       agentGroup.add(torso)
+
+      // Golden tie or director accent tie
+      const tie = new THREE.Mesh(
+        new THREE.BoxGeometry(0.08, 0.28, 0.02),
+        new THREE.MeshStandardMaterial({
+          color: new THREE.Color(colorHex),
+          roughness: 0.3,
+          metalness: isCeo ? 0.8 : 0.2,
+        })
+      )
+      tie.position.set(0, 0.98, 0.57)
+      agentGroup.add(tie)
 
       // Neck
       const neck = new THREE.Mesh(
@@ -303,7 +435,10 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
       agentGroup.add(hair)
 
       // Arms typing towards desk
-      const armMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(colorHex), roughness: 0.5 })
+      const armMat = new THREE.MeshStandardMaterial({
+        color: isCeo ? 0x0f172a : new THREE.Color(colorHex),
+        roughness: 0.5,
+      })
       const handMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(skinToneHex) })
       const leftArm = new THREE.Group()
       const rightArm = new THREE.Group()
@@ -326,17 +461,14 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
       // Legs sitting on chair (bent at 90 degrees)
       const pantsMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.7 })
       for (const sx of [-1, 1]) {
-        // Thighs
         const thigh = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.12, 0.42), pantsMat)
         thigh.position.set(sx * 0.14, 0.62, 0.52)
         agentGroup.add(thigh)
 
-        // Calves
         const calf = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.36, 0.12), pantsMat)
         calf.position.set(sx * 0.14, 0.38, 0.32)
         agentGroup.add(calf)
 
-        // Shoes
         const shoe = new THREE.Mesh(
           new THREE.BoxGeometry(0.13, 0.08, 0.2),
           new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.4 })
@@ -348,53 +480,257 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
       return { root: agentGroup, head, leftArm, rightArm }
     }
 
-    // ── DECORATIVE ELEMENTS PER SUITE (Rugs, Plants, Shelves) ──
+    // ── DECORATIVE ELEMENTS PER SUITE (Luxury Rugs, Plants, Executive Credenzas, Art & Lounge) ──
     const addDecor = (st) => {
       if (st.id === 'cerebro') return
 
-      // Executive Suite Plush Rug
-      const rug = new THREE.Mesh(
-        new THREE.BoxGeometry(3.6, 0.02, 3.2),
+      // 1. Executive Suite Designer Rug with contrasting stitched borders
+      const rugGroup = new THREE.Group()
+      const rugBase = new THREE.Mesh(
+        new THREE.BoxGeometry(4.0, 0.02, 3.6),
         new THREE.MeshStandardMaterial({
-          color: new THREE.Color(st.color),
-          roughness: 0.9,
-          transparent: true,
-          opacity: darkMode ? 0.35 : 0.45,
+          color: darkMode ? 0x111827 : 0xf1f5f9,
+          roughness: 0.85,
         })
       )
-      rug.position.set(st.x, 0.03, st.z)
-      scene.add(rug)
+      rugBase.position.y = 0.01
+      rugGroup.add(rugBase)
 
-      // Potted Office Plant in suite corner
-      const plantGroup = new THREE.Group()
-      const pot = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.2, 0.14, 0.45, 12),
-        new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 })
+      // Outer accent border in director color
+      const rugBorder = new THREE.Mesh(
+        new THREE.RingGeometry(1.6, 1.75, 4),
+        new THREE.MeshBasicMaterial({
+          color: new THREE.Color(st.color),
+          side: THREE.DoubleSide,
+          transparent: true,
+          opacity: 0.75,
+        })
       )
-      pot.position.y = 0.225
+      rugBorder.rotation.x = -Math.PI / 2
+      rugBorder.rotation.z = Math.PI / 4
+      rugBorder.scale.set(1.5, 1.4, 1)
+      rugBorder.position.y = 0.022
+      rugGroup.add(rugBorder)
+
+      // Inner woven motif
+      const innerBorder = new THREE.Mesh(
+        new THREE.BoxGeometry(3.6, 0.005, 3.2),
+        new THREE.MeshStandardMaterial({
+          color: new THREE.Color(st.color),
+          transparent: true,
+          opacity: darkMode ? 0.2 : 0.28,
+          roughness: 0.9,
+        })
+      )
+      innerBorder.position.y = 0.018
+      rugGroup.add(innerBorder)
+
+      rugGroup.position.set(st.x, 0, st.z)
+      scene.add(rugGroup)
+
+      // 2. High-End Executive Credenza & Bookshelf against rear partition wall
+      const credenzaZ = st.z > 0 ? st.z + 1.6 : st.z - 1.6
+      const credenzaGroup = new THREE.Group()
+
+      const credenzaBody = new THREE.Mesh(
+        new THREE.BoxGeometry(2.4, 0.85, 0.42),
+        new THREE.MeshStandardMaterial({
+          color: darkMode ? 0x1e293b : 0x475569,
+          roughness: 0.35,
+          metalness: 0.3,
+        })
+      )
+      credenzaBody.position.y = 0.425
+      credenzaGroup.add(credenzaBody)
+
+      const credenzaTop = new THREE.Mesh(
+        new THREE.BoxGeometry(2.46, 0.04, 0.46),
+        new THREE.MeshStandardMaterial({
+          color: darkMode ? 0x0f172a : 0xf8fafc,
+          roughness: 0.2,
+          metalness: 0.5,
+        })
+      )
+      credenzaTop.position.y = 0.87
+      credenzaGroup.add(credenzaTop)
+
+      // Hardcover books and binders
+      const bookColors = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4']
+      for (let b = -0.9; b <= -0.2; b += 0.09) {
+        const bookH = 0.22 + (Math.sin(b * 10) * 0.5 + 0.5) * 0.06
+        const bCol = bookColors[Math.floor(Math.abs(b * 10)) % bookColors.length]
+        const book = new THREE.Mesh(
+          new THREE.BoxGeometry(0.06, bookH, 0.26),
+          new THREE.MeshStandardMaterial({ color: bCol, roughness: 0.5 })
+        )
+        book.position.set(b, 0.87 + bookH / 2, 0.02)
+        credenzaGroup.add(book)
+      }
+
+      const folderStack = new THREE.Mesh(
+        new THREE.BoxGeometry(0.32, 0.08, 0.26),
+        new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.6 })
+      )
+      folderStack.position.set(-0.02, 0.87 + 0.04, 0.02)
+      credenzaGroup.add(folderStack)
+
+      // Signature Prop per Director
+      if (st.id === 'ceo') {
+        // 🏆 Marlon's Golden Trophy Cup & Gold Diploma
+        const trophyGroup = new THREE.Group()
+        const trophyMat = new THREE.MeshStandardMaterial({ color: 0xffb703, metalness: 0.9, roughness: 0.2 })
+        const pedestal = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.1, 0.08, 12), new THREE.MeshStandardMaterial({ color: 0x1e293b }))
+        trophyGroup.add(pedestal)
+        const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.14, 8), trophyMat)
+        stem.position.y = 0.11
+        trophyGroup.add(stem)
+        const cup = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.04, 0.15, 12), trophyMat)
+        cup.position.y = 0.22
+        trophyGroup.add(cup)
+        trophyGroup.position.set(0.65, 0.89, 0)
+        credenzaGroup.add(trophyGroup)
+
+        // Framed Gold Leadership Award
+        const frame = new THREE.Mesh(
+          new THREE.BoxGeometry(0.9, 0.6, 0.04),
+          new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.8, roughness: 0.2 })
+        )
+        frame.position.set(st.x, 1.8, st.z > 0 ? st.z + 1.75 : st.z - 1.75)
+        scene.add(frame)
+        const frameInner = new THREE.Mesh(
+          new THREE.BoxGeometry(0.82, 0.52, 0.045),
+          new THREE.MeshStandardMaterial({ color: 0xfffbeb, roughness: 0.4 })
+        )
+        frameInner.position.set(st.x, 1.8, st.z > 0 ? st.z + 1.75 : st.z - 1.75)
+        scene.add(frameInner)
+      } else if (st.id === 'admin') {
+        const posUnit = new THREE.Mesh(
+          new THREE.BoxGeometry(0.24, 0.14, 0.28),
+          new THREE.MeshStandardMaterial({ color: 0x00e5ff, roughness: 0.3 })
+        )
+        posUnit.position.set(0.6, 0.94, 0)
+        credenzaGroup.add(posUnit)
+      } else if (st.id === 'cto') {
+        const serverChassis = new THREE.Mesh(
+          new THREE.BoxGeometry(0.35, 0.45, 0.3),
+          new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.8, roughness: 0.2 })
+        )
+        serverChassis.position.set(0.65, 0.87 + 0.225, 0)
+        credenzaGroup.add(serverChassis)
+        for (let l = 0; l < 4; l++) {
+          const led = new THREE.Mesh(
+            new THREE.BoxGeometry(0.04, 0.02, 0.02),
+            new THREE.MeshBasicMaterial({ color: l % 2 === 0 ? 0x00e5ff : 0xc084fc })
+          )
+          led.position.set(0.55 + (l % 2) * 0.08, 0.95 + Math.floor(l / 2) * 0.08, 0.16)
+          credenzaGroup.add(led)
+        }
+      } else if (st.id === 'cmo') {
+        const displayBox = new THREE.Mesh(
+          new THREE.BoxGeometry(0.3, 0.24, 0.25),
+          new THREE.MeshStandardMaterial({ color: 0x00ff87, roughness: 0.4 })
+        )
+        displayBox.position.set(0.65, 0.99, 0)
+        credenzaGroup.add(displayBox)
+      }
+
+      credenzaGroup.position.set(st.x, 0, credenzaZ)
+      scene.add(credenzaGroup)
+
+      // 3. Botanical Plant with fluted ceramic pot and lush leaves
+      const plantGroup = new THREE.Group()
+      const saucer = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.24, 0.26, 0.04, 16),
+        new THREE.MeshStandardMaterial({ color: darkMode ? 0xd4af37 : 0x94a3b8, metalness: 0.6 })
+      )
+      saucer.position.y = 0.02
+      plantGroup.add(saucer)
+
+      const pot = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.22, 0.16, 0.52, 16),
+        new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.25 })
+      )
+      pot.position.y = 0.28
       plantGroup.add(pot)
 
-      const leaves = new THREE.Mesh(
-        new THREE.DodecahedronGeometry(0.35, 1),
-        new THREE.MeshStandardMaterial({ color: 0x10b981, roughness: 0.6 })
+      const soil = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.2, 0.2, 0.04, 16),
+        new THREE.MeshStandardMaterial({ color: 0x3e2723, roughness: 0.9 })
       )
-      leaves.position.y = 0.55
-      leaves.scale.set(1, 1.3, 1)
-      plantGroup.add(leaves)
+      soil.position.y = 0.52
+      plantGroup.add(soil)
 
-      // Place in outer corner of each suite
-      const px = st.x > 0 ? st.x + 1.8 : st.x - 1.8
+      const leafMat = new THREE.MeshStandardMaterial({ color: 0x15803d, roughness: 0.5 })
+      const stemMat = new THREE.MeshStandardMaterial({ color: 0x166534, roughness: 0.7 })
+
+      for (let i = 0; i < 7; i++) {
+        const angle = (i / 7) * Math.PI * 2
+        const rad = 0.16 + (i % 2) * 0.08
+        const leafH = 0.65 + (i % 3) * 0.12
+
+        const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.015, leafH - 0.45, 6), stemMat)
+        stem.position.set(Math.cos(angle) * 0.05, 0.5 + (leafH - 0.5) / 2, Math.sin(angle) * 0.05)
+        stem.rotation.z = Math.cos(angle) * 0.35
+        stem.rotation.x = Math.sin(angle) * 0.35
+        plantGroup.add(stem)
+
+        const leaf = new THREE.Mesh(new THREE.DodecahedronGeometry(0.18, 1), leafMat)
+        leaf.scale.set(0.7, 1.4, 0.3)
+        leaf.position.set(Math.cos(angle) * rad, leafH, Math.sin(angle) * rad)
+        leaf.rotation.y = angle
+        leaf.rotation.x = 0.4
+        plantGroup.add(leaf)
+      }
+
+      const px = st.x > 0 ? st.x + 1.85 : st.x - 1.85
       const pz = st.z > 0 ? st.z + 1.6 : st.z - 1.6
       plantGroup.position.set(px, 0, pz)
       scene.add(plantGroup)
 
-      // Executive Office Credenza / Filing Cabinet behind the desk
-      const cabinet = new THREE.Mesh(
-        new THREE.BoxGeometry(1.6, 0.8, 0.45),
-        new THREE.MeshStandardMaterial({ color: darkMode ? 0x1e293b : 0xcbd5e1, metalness: 0.3 })
+      // 4. Executive Visitor Armchair & Side Table in corner
+      const loungeGroup = new THREE.Group()
+      const chairCloth = new THREE.MeshStandardMaterial({
+        color: darkMode ? 0x1e293b : 0x64748b,
+        roughness: 0.7,
+      })
+      const vSeat = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.14, 0.6), chairCloth)
+      vSeat.position.set(0, 0.38, 0)
+      loungeGroup.add(vSeat)
+      const vBack = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.55, 0.14), chairCloth)
+      vBack.position.set(0, 0.65, 0.25)
+      loungeGroup.add(vBack)
+      for (const ax of [-0.32, 0.32]) {
+        const vArm = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.38, 0.55), chairCloth)
+        vArm.position.set(ax, 0.52, 0)
+        loungeGroup.add(vArm)
+      }
+      const vLegMat = new THREE.MeshStandardMaterial({ color: 0x92400e })
+      for (const lx of [-0.26, 0.26]) {
+        for (const lz of [-0.26, 0.26]) {
+          const vLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.015, 0.32, 8), vLegMat)
+          vLeg.position.set(lx, 0.16, lz)
+          loungeGroup.add(vLeg)
+        }
+      }
+
+      const sideTable = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.24, 0.24, 0.03, 16),
+        new THREE.MeshStandardMaterial({ color: darkMode ? 0xd4af37 : 0xcbd5e1, metalness: 0.4 })
       )
-      cabinet.position.set(st.x, 0.4, st.z > 0 ? st.z + 1.6 : st.z - 1.6)
-      scene.add(cabinet)
+      sideTable.position.set(-0.55, 0.42, 0)
+      loungeGroup.add(sideTable)
+      const tablePole = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.02, 0.02, 0.4, 8),
+        new THREE.MeshStandardMaterial({ color: 0x334155 })
+      )
+      tablePole.position.set(-0.55, 0.2, 0)
+      loungeGroup.add(tablePole)
+
+      const lx = st.x > 0 ? st.x + 1.4 : st.x - 1.4
+      const lz = st.z > 0 ? st.z - 1.1 : st.z + 1.1
+      loungeGroup.position.set(lx, 0, lz)
+      loungeGroup.rotation.y = st.x > 0 ? -Math.PI / 4 : Math.PI / 4
+      scene.add(loungeGroup)
     }
 
     // ── BUILD STATIONS & AGENTS ──
@@ -412,11 +748,11 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
       addDecor(st)
 
       // Desk Table
-      const tableGeo = new THREE.BoxGeometry(isCentral ? 2.6 : 2.2, 0.12, isCentral ? 2.6 : 1.25)
+      const tableGeo = new THREE.BoxGeometry(isCentral ? 2.6 : 2.3, 0.12, isCentral ? 2.6 : 1.35)
       const tableMat = new THREE.MeshStandardMaterial({
-        color: isCentral ? (darkMode ? 0x1e1035 : 0xf3e8ff) : darkMode ? 0x0e1d2d : 0xffffff,
-        roughness: 0.3,
-        metalness: 0.5,
+        color: isCentral ? (darkMode ? 0x1e1035 : 0xf3e8ff) : darkMode ? 0x0e1726 : 0xf8fafc,
+        roughness: 0.25,
+        metalness: 0.45,
       })
       const table = new THREE.Mesh(tableGeo, tableMat)
       table.position.y = 1.0
@@ -424,9 +760,56 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
       table.receiveShadow = true
       group.add(table)
 
+      // Desk modesty panel & accessories
+      if (!isCentral) {
+        const modestyPanel = new THREE.Mesh(
+          new THREE.BoxGeometry(2.1, 0.58, 0.04),
+          new THREE.MeshStandardMaterial({ color: darkMode ? 0x1e293b : 0xcbd5e1, roughness: 0.4 })
+        )
+        modestyPanel.position.set(0, 0.65, -0.62)
+        group.add(modestyPanel)
+
+        // Large leather desk mat
+        const deskMat = new THREE.Mesh(
+          new THREE.BoxGeometry(1.2, 0.015, 0.6),
+          new THREE.MeshStandardMaterial({ color: darkMode ? 0x0b0f19 : 0x334155, roughness: 0.8 })
+        )
+        deskMat.position.set(0, 1.065, 0.05)
+        group.add(deskMat)
+
+        // Modern Architect Desk Lamp
+        const lampGroup = new THREE.Group()
+        const lampMat = new THREE.MeshStandardMaterial({ color: darkMode ? 0xd4af37 : 0x475569, metalness: 0.7 })
+        lampGroup.add(new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.07, 0.02, 12), lampMat))
+        const lampArm = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 0.35, 8), lampMat)
+        lampArm.position.set(-0.06, 0.18, 0)
+        lampArm.rotation.z = -0.3
+        lampGroup.add(lampArm)
+        const lampShade = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.08, 12), lampMat)
+        lampShade.position.set(-0.12, 0.33, 0)
+        lampShade.rotation.z = 0.5
+        lampGroup.add(lampShade)
+        const lampGlow = new THREE.Mesh(
+          new THREE.SphereGeometry(0.025, 8, 8),
+          new THREE.MeshBasicMaterial({ color: 0xffedd5 })
+        )
+        lampGlow.position.set(-0.12, 0.3, 0)
+        lampGroup.add(lampGlow)
+        lampGroup.position.set(-0.85, 1.06, -0.2)
+        group.add(lampGroup)
+
+        // Coffee Mug on desk
+        const mug = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.045, 0.04, 0.09, 12),
+          new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2 })
+        )
+        mug.position.set(0.75, 1.11, -0.1)
+        group.add(mug)
+      }
+
       // Desk Legs
       const legGeo = new THREE.CylinderGeometry(0.045, 0.045, 1.0)
-      const legMat = new THREE.MeshStandardMaterial({ color: darkMode ? 0x334155 : 0x94a3b8 })
+      const legMat = new THREE.MeshStandardMaterial({ color: darkMode ? 0x334155 : 0x94a3b8, metalness: 0.6 })
       const legOffsets = isCentral
         ? [
             [-1.1, -1.1],
@@ -435,10 +818,10 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
             [1.1, 1.1],
           ]
         : [
-            [-0.95, -0.48],
-            [0.95, -0.48],
-            [-0.95, 0.48],
-            [0.95, 0.48],
+            [-0.98, -0.52],
+            [0.98, -0.52],
+            [-0.98, 0.52],
+            [0.98, 0.52],
           ]
 
       legOffsets.forEach(([lx, lz]) => {
@@ -447,37 +830,119 @@ export default function Office3DPreview({ darkMode = true, onSelectStation = nul
         group.add(leg)
       })
 
-      // Laptop / Screen
-      const laptopBase = new THREE.Mesh(
-        new THREE.BoxGeometry(0.52, 0.03, 0.36),
-        new THREE.MeshStandardMaterial({ color: 0x475569 })
-      )
-      laptopBase.position.set(0, 1.07, 0)
-      group.add(laptopBase)
+      // Dual Widescreen Curved Monitors Setup
+      if (!isCentral) {
+        // Main Curved Widescreen Display
+        const mainScreenFrame = new THREE.Mesh(
+          new THREE.BoxGeometry(0.85, 0.44, 0.03),
+          new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.7 })
+        )
+        mainScreenFrame.position.set(-0.15, 1.35, -0.25)
+        mainScreenFrame.rotation.x = -0.08
+        group.add(mainScreenFrame)
 
-      const screenGeo = new THREE.BoxGeometry(0.5, 0.34, 0.02)
-      const screenMat = new THREE.MeshBasicMaterial({
-        color: new THREE.Color(st.color),
+        const screenFace = new THREE.Mesh(
+          new THREE.BoxGeometry(0.81, 0.4, 0.005),
+          new THREE.MeshBasicMaterial({ color: new THREE.Color(st.color) })
+        )
+        screenFace.position.set(-0.15, 1.35, -0.23)
+        screenFace.rotation.x = -0.08
+        group.add(screenFace)
+        group.userData.screen = screenFace
+
+        // Secondary Vertical Coding / Metrics Monitor
+        const secScreenFrame = new THREE.Mesh(
+          new THREE.BoxGeometry(0.3, 0.48, 0.03),
+          new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.7 })
+        )
+        secScreenFrame.position.set(0.48, 1.37, -0.22)
+        secScreenFrame.rotation.y = -0.32
+        secScreenFrame.rotation.x = -0.08
+        group.add(secScreenFrame)
+
+        const secScreenFace = new THREE.Mesh(
+          new THREE.BoxGeometry(0.28, 0.45, 0.005),
+          new THREE.MeshBasicMaterial({ color: new THREE.Color(st.color) })
+        )
+        secScreenFace.position.set(0.48, 1.37, -0.2)
+        secScreenFace.rotation.y = -0.32
+        secScreenFace.rotation.x = -0.08
+        group.add(secScreenFace)
+
+        // Articulated Monitor Desk Mount
+        const standBase = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.08, 0.09, 0.02, 12),
+          new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.8 })
+        )
+        standBase.position.set(0, 1.07, -0.28)
+        group.add(standBase)
+        const standPole = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.02, 0.02, 0.32, 8),
+          new THREE.MeshStandardMaterial({ color: 0x64748b, metalness: 0.9 })
+        )
+        standPole.position.set(0, 1.22, -0.28)
+        group.add(standPole)
+
+        // Keyboard & Mouse
+        const keyboard = new THREE.Mesh(
+          new THREE.BoxGeometry(0.42, 0.015, 0.14),
+          new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.4 })
+        )
+        keyboard.position.set(-0.05, 1.07, 0.12)
+        group.add(keyboard)
+
+        const mouse = new THREE.Mesh(
+          new THREE.BoxGeometry(0.07, 0.02, 0.1),
+          new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.3 })
+        )
+        mouse.position.set(0.26, 1.07, 0.12)
+        group.add(mouse)
+      }
+
+      // Ergonomic Executive Chair
+      const chairMat = new THREE.MeshStandardMaterial({
+        color: darkMode ? 0x0f172a : 0x334155,
+        roughness: 0.4,
       })
-      const screen = new THREE.Mesh(screenGeo, screenMat)
-      screen.position.set(0, 1.26, -0.15)
-      screen.rotation.x = -0.2
-      group.add(screen)
-      group.userData.screen = screen
-
-      // Chair
-      const chairMat = new THREE.MeshStandardMaterial({ color: darkMode ? 0x1e293b : 0x64748b })
-      const chairSeat = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.08, 0.65), chairMat)
-      chairSeat.position.set(0, 0.6, 0.75)
-      group.add(chairSeat)
-
-      const chairBack = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.65, 0.08), chairMat)
-      chairBack.position.set(0, 0.98, 1.02)
-      group.add(chairBack)
+      const chairAccentMat = new THREE.MeshStandardMaterial({
+        color: new THREE.Color(st.color),
+        roughness: 0.4,
+      })
+      const chairGroup = new THREE.Group()
+      const chairBase = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.28, 8), chairMat)
+      chairBase.position.y = 0.16
+      chairGroup.add(chairBase)
+      for (let w = 0; w < 5; w++) {
+        const rad = (w / 5) * Math.PI * 2
+        const spoke = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.03, 0.34), chairMat)
+        spoke.position.set(Math.sin(rad) * 0.15, 0.06, Math.cos(rad) * 0.15)
+        spoke.rotation.y = rad
+        chairGroup.add(spoke)
+      }
+      const chairSeat = new THREE.Mesh(new THREE.BoxGeometry(0.64, 0.09, 0.62), chairMat)
+      chairSeat.position.set(0, 0.58, 0)
+      chairGroup.add(chairSeat)
+      const chairBack = new THREE.Mesh(new THREE.BoxGeometry(0.58, 0.68, 0.07), chairMat)
+      chairBack.position.set(0, 0.98, 0.28)
+      chairBack.rotation.x = 0.08
+      chairGroup.add(chairBack)
+      const headrest = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.18, 0.06), chairAccentMat)
+      headrest.position.set(0, 1.38, 0.32)
+      chairGroup.add(headrest)
+      for (const ax of [-0.34, 0.34]) {
+        const armPost = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.22, 6), chairMat)
+        armPost.position.set(ax, 0.68, 0)
+        chairGroup.add(armPost)
+        const armPad = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.03, 0.32), chairMat)
+        armPad.position.set(ax, 0.79, 0)
+        chairGroup.add(armPad)
+      }
+      chairGroup.position.set(0, 0, 0.75)
+      group.add(chairGroup)
 
       // ── SITTING AGENT (Only for the 4 human directors; Central Core has Neural Orb) ──
       if (!isCentral) {
-        const agent = createSittingAgent(st.color, st.skinTone, st.hairColor)
+        const agent = createSittingAgent(st.color, st.skinTone, st.hairColor, st.id === 'ceo')
         group.add(agent.root)
         animatedAgents.push({ id: st.id, ...agent })
       }

@@ -36,8 +36,8 @@ const STATIONS = [
     role: 'CEO & Fundador',
     area: 'Estrategia & Dirección Ejecutiva',
     desc: 'Despacho principal de liderazgo, expansión nacional y alianzas con centros comerciales y cadenas retail.',
-    color: '#9C4DCC',
-    icon: '👔',
+    color: '#F59E0B',
+    icon: '👑',
     status: 'En línea',
   },
   {
