@@ -36,7 +36,7 @@ export type InteractKind = keyof InteractKinds;
 
 /** Something you can use. Its scene object carries it as `userData.interact`, for clicking. */
 export interface Interactable {
-  kind: InteractKind;
+  kind: InteractKind | (string & {});
   x: number;
   z: number;
   /** The floor it's on, when that's not the office floor (the loft's). */
